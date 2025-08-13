@@ -15,7 +15,7 @@ export async function api<T>(
             "Content-Type": "application/json",
             ...headers,
         },
-        credentials: "include", // si usás cookies httpOnly
+        credentials: "include",
         body: body ? JSON.stringify(body) : undefined,
         cache: "no-store",
     });

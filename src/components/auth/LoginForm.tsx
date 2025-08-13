@@ -20,7 +20,6 @@ export default function LoginForm() {
         try {
             await login(data);
             toast.success("Logged in");
-            // redirect a dashboard si querés
         } catch (e: any) {
             toast.error(e.message ?? "Login failed");
         }

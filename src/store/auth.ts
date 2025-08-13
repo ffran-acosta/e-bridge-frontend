@@ -39,7 +39,6 @@ export const useAuthStore = create<State & Actions>((set) => ({
         set({ loading: true });
         try {
             await api("/users/create", { method: "POST", body: { ...data, role: "doctor" } });
-            // Podés redirigir o loguear automáticamente
         } finally {
             set({ loading: false });
         }
@@ -57,7 +56,7 @@ export const useAuthStore = create<State & Actions>((set) => ({
     logout: async () => {
         set({ loading: true });
         try {
-            await api("/auth/logout", { method: "POST" }); // endpoint opcional
+            await api("/auth/logout", { method: "POST" });
             set({ user: null });
         } finally {
             set({ loading: false });
