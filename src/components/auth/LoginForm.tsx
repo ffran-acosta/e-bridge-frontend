@@ -29,25 +29,40 @@ export default function LoginForm() {
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="you@example.com" {...register("email")} />
-                {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+                <Input
+                    id="email"
+                    type="email"
+                    placeholder="email@ejemplo.com"
+                    {...register("email")}
+                />
+                {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
             </div>
 
             <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input id="password" type="password" placeholder="••••••••" {...register("password")} />
-                {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+                <Label htmlFor="password">Contraseña</Label>
+                <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    {...register("password")}
+                />
+                {errors.password && (
+                    <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
             </div>
 
             <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Entering..." : "Login"}
+                {loading ? "Ingresando..." : "Login"}
             </Button>
 
-            <div className="text-sm text-right">
+            <div className="text-sm text-right text-muted-foreground">
                 <Link href="/auth/forgot-password" className="underline">
                     Recuperar contraseña
                 </Link>
             </div>
         </form>
     );
+
 }

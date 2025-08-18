@@ -38,7 +38,7 @@ export const useAuthStore = create<State & Actions>((set) => ({
     registerDoctor: async (data) => {
         set({ loading: true });
         try {
-            await api("/users/create", { method: "POST", body: { ...data, role: "doctor" } });
+            await api("/auth/register/doctor", { method: "POST", body: data });
         } finally {
             set({ loading: false });
         }
@@ -47,7 +47,7 @@ export const useAuthStore = create<State & Actions>((set) => ({
     registerAdmin: async (data) => {
         set({ loading: true });
         try {
-            await api("/users/create", { method: "POST", body: { ...data, role: "admin" } });
+            await api("/auth/register/admin", { method: "POST", body: data });
         } finally {
             set({ loading: false });
         }

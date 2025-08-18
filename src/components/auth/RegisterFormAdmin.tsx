@@ -30,38 +30,51 @@ export default function RegisterFormAdmin() {
     return (
         <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-2">
-                <Label>Full name</Label>
-                <Input {...register("full_name")} />
-                {errors.full_name && <p className="text-sm text-red-600">{errors.full_name.message}</p>}
+                <Label>Nombre</Label>
+                <Input {...register("firstName")} />
+                {errors.firstName && (
+                    <p className="text-sm text-destructive">{errors.firstName.message}</p>
+                )}
+            </div>
+
+            <div className="space-y-2">
+                <Label>Apellido</Label>
+                <Input {...register("lastName")} />
+                {errors.lastName && (
+                    <p className="text-sm text-destructive">{errors.lastName.message}</p>
+                )}
             </div>
 
             <div className="space-y-2">
                 <Label>Email</Label>
                 <Input type="email" {...register("email")} />
-                {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
+                {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
             </div>
 
             <div className="space-y-2">
-                <Label>Password</Label>
+                <Label>Contraseña</Label>
                 <Input type="password" {...register("password")} />
-                {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
+                {errors.password && (
+                    <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
             </div>
 
-            <div className="space-y-2">
-                <Label>Clinic name</Label>
-                <Input {...register("clinic_name")} />
-                {errors.clinic_name && <p className="text-sm text-red-600">{errors.clinic_name.message}</p>}
-            </div>
-
-            <div className="space-y-2">
-                <Label>Phone</Label>
+                        {/*
+                <div className="space-y-2">
+                <Label>Teléfono</Label>
                 <Input {...register("phone")} />
-                {errors.phone && <p className="text-sm text-red-600">{errors.phone.message}</p>}
-            </div>
+                {errors.phone && (
+                    <p className="text-sm text-destructive">{errors.phone.message}</p>
+                )}
+                </div>
+                */}
 
             <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Creating..." : "Register Admin"}
+                {loading ? "Creando..." : "Registrar Administrador"}
             </Button>
         </form>
     );
+
 }

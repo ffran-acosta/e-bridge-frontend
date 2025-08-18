@@ -22,7 +22,7 @@ export default function Page() {
 
                 <p className="text-sm text-neutral-600">
                     ¿Ya tenés cuenta?{" "}
-                    <Link href="/auth/login" className="underline">
+                    <Link href="/login" className="underline">
                         Iniciar sesión
                     </Link>
                 </p>

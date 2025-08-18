@@ -112,6 +112,42 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* Tema oscuro E-Bridge sin romper estilos existentes */
+.theme-ebridge-dark {
+  /* tokens base shadcn */
+  --background: #0b0f14;
+  --foreground: #e6edf3;
+
+  --muted: #1a2330;
+  --muted-foreground: #a9b5c1;
+
+  --popover: #121923;
+  --popover-foreground: var(--foreground);
+
+  --card: #121923;
+  --card-foreground: var(--foreground);
+
+  --border: #253041;
+  --input: #253041;
+
+  --primary: #3b82f6;
+  --primary-foreground: #061018;
+
+  --secondary: #1a2330;
+  --secondary-foreground: var(--foreground);
+
+  --accent: #22d3ee;
+  --accent-foreground: #061018;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #061018;
+
+  --ring: #3b82f6;
+
+  /* radios/sombras por defecto */
+  --radius: 0.75rem;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
