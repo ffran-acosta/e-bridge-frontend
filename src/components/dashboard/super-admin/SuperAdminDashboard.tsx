@@ -196,7 +196,7 @@ const SuperAdminDashboard = () => {
                         <div className="flex items-center space-x-2">
                             <Users className="h-5 w-5 text-accent" />
                             <div>
-                                <p className="text-sm font-medium text-muted-foreground">Secretarias</p>
+                                <p className="text-sm font-medium text-muted-foreground">Administradores</p>
                                 <p className="text-2xl font-bold text-foreground">
                                     {adminsData.filter(a => a.isActive).length}
                                 </p>
@@ -338,7 +338,7 @@ const SuperAdminDashboard = () => {
                 <CardHeader>
                     <CardTitle className="flex items-center space-x-2">
                         <Building2 className="h-5 w-5" />
-                        <span>Gestión de Secretarias</span>
+                        <span>Asignacion de Medicos</span>
                     </CardTitle>
                 </CardHeader>
                 <CardContent>

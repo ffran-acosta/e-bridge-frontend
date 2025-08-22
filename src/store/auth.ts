@@ -1,63 +1,179 @@
 import { create } from "zustand";
 import { api } from "@/lib/api";
 import type { LoginInput, RegisterAdminInput, RegisterDoctorInput } from "@/lib/schemas";
-import type { LoginResponse, User } from "@/types/auth";
+import type { User } from "@/types/auth";
+
+type ApiResponse<T = any> = {
+    statusCode: number;
+    message: string;
+    data?: T;
+};
+
+let isRefreshing = false;
+let refreshPromise: Promise<void> | null = null;
 
 type State = {
     user: User | null;
     loading: boolean;
+    isInitialized: boolean;
 };
 
 type Actions = {
+    // Métodos principales
     login: (data: LoginInput) => Promise<void>;
+    logout: () => Promise<void>;
+    getCurrentUser: () => Promise<void>;
+    refresh: () => Promise<void>;
+    initialize: () => Promise<void>;
+
     registerDoctor: (data: RegisterDoctorInput) => Promise<void>;
     registerAdmin: (data: RegisterAdminInput) => Promise<void>;
-    logout: () => Promise<void>;
-    setUser: (u: User | null) => void;
+
+    setUser: (user: User | null) => void;
+    clearAuth: () => void;
+
+    apiWithAuth: <T>(path: string, opts?: any) => Promise<T>;
 };
 
-export const useAuthStore = create<State & Actions>((set) => ({
+export const useAuthStore = create<State & Actions>((set, get) => ({
     user: null,
     loading: false,
+    isInitialized: false,
 
-    setUser: (u) => set({ user: u }),
+    // Helper para limpiar estado
+    clearAuth: () => set({ user: null }),
 
+    // Helper para establecer usuario
+    setUser: (user) => set({ user }),
+
+    apiWithAuth: async <T>(path: string, opts: any = {}): Promise<T> => {
+        try {
+            return await api<T>(path, opts);
+        } catch (error) {
+            // Si es error 401 y no estamos haciendo refresh
+            if (error instanceof Error && error.message.includes('401') && !isRefreshing) {
+                try {
+                    // Evitar múltiples refresh simultáneos
+                    if (!refreshPromise) {
+                        isRefreshing = true;
+                        refreshPromise = get().refresh();
+                    }
+
+                    await refreshPromise;
+
+                    // Reintentar la request original
+                    return await api<T>(path, opts);
+
+                } catch (refreshError) {
+                    // Si falla el refresh, logout automático
+                    console.warn("Refresh falló, cerrando sesión");
+                    get().clearAuth();
+                    throw refreshError;
+                } finally {
+                    isRefreshing = false;
+                    refreshPromise = null;
+                }
+            }
+
+            throw error;
+        }
+    },
+
+    // Inicializar - verificar si hay sesión activa
+    initialize: async () => {
+        if (get().isInitialized) return;
+
+        set({ loading: true });
+        try {
+            await get().getCurrentUser();
+        } catch (error) {
+            // Si falla, el usuario no está autenticado
+            console.log("No hay sesión activa");
+        } finally {
+            set({ loading: false, isInitialized: true });
+        }
+    },
+
+    // Obtener datos del usuario actual
+    getCurrentUser: async () => {
+        try {
+            const response = await api<ApiResponse<User>>("/auth/me");
+            set({ user: response.data || null });
+        } catch (error) {
+            // Si falla, limpiar estado
+            set({ user: null });
+            throw error;
+        }
+    },
+
+    // Login - ahora solo establece cookies, luego obtiene user
     login: async (data) => {
         set({ loading: true });
         try {
-            const res = await api<LoginResponse>("/auth/login", {
+            // 1. Login establece cookies
+            await api<ApiResponse>("/auth/login", {
                 method: "POST",
                 body: data,
             });
-            set({ user: res.user });
+
+            // 2. Obtener datos del usuario
+            await get().getCurrentUser();
         } finally {
             set({ loading: false });
         }
     },
 
-    registerDoctor: async (data) => {
-        set({ loading: true });
+    // Refresh tokens
+    refresh: async () => {
         try {
-            await api("/auth/register/doctor", { method: "POST", body: data });
-        } finally {
-            set({ loading: false });
+            await api<ApiResponse>("/auth/refresh", {
+                method: "POST",
+            });
+            // Después del refresh, obtener usuario actualizado
+            await get().getCurrentUser();
+        } catch (error) {
+            // Si falla el refresh, limpiar sesión
+            get().clearAuth();
+            throw error;
         }
     },
 
-    registerAdmin: async (data) => {
-        set({ loading: true });
-        try {
-            await api("/auth/register/admin", { method: "POST", body: data });
-        } finally {
-            set({ loading: false });
-        }
-    },
-
+    // Logout
     logout: async () => {
         set({ loading: true });
         try {
-            await api("/auth/logout", { method: "POST" });
-            set({ user: null });
+            await api<ApiResponse>("/auth/logout", {
+                method: "POST",
+            });
+        } catch (error) {
+            // Incluso si falla el logout en el server, limpiar localmente
+            console.warn("Error en logout:", error);
+        } finally {
+            set({ user: null, loading: false });
+        }
+    },
+
+    // Registro de doctor
+    registerDoctor: async (data) => {
+        set({ loading: true });
+        try {
+            await api<ApiResponse>("/auth/register/doctor", {
+                method: "POST",
+                body: data,
+            });
+        } finally {
+            set({ loading: false });
+        }
+    },
+
+    // Registro de admin
+    registerAdmin: async (data) => {
+        set({ loading: true });
+        try {
+            await api<ApiResponse>("/auth/register/admin", {
+                method: "POST",
+                body: data,
+            });
         } finally {
             set({ loading: false });
         }
