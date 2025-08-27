@@ -32,7 +32,7 @@ type DashboardActions = {
     clearError: () => void;
 };
 
-const transformDoctor = (backendDoctor: BackendDoctor): Doctor => ({
+export const transformDoctor = (backendDoctor: BackendDoctor): Doctor => ({
     id: backendDoctor.id,
     firstName: backendDoctor.user.firstName,
     lastName: backendDoctor.user.lastName,
@@ -43,9 +43,8 @@ const transformDoctor = (backendDoctor: BackendDoctor): Doctor => ({
         id: backendDoctor.specialty.id,
         name: backendDoctor.specialty.name,
     },
-    assignedAdminsCount: backendDoctor._count.adminLinks,
+    assignedAdminsCount: backendDoctor._count?.adminLinks ?? 0, // ← Opcional con fallback
 });
-
 const transformAdmin = (backendAdmin: BackendAdmin): Admin => ({
     id: backendAdmin.id,
     firstName: backendAdmin.user.firstName,

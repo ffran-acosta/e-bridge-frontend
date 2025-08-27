@@ -17,5 +17,11 @@ export const ENDPOINTS = {
         assignDoctors: (adminId: string) => `/super-admin/admins/${adminId}/assign-doctors`,
         removeDoctorFromAdmin: (adminId: string, doctorId: string) => `/super-admin/admins/${adminId}/doctors/${doctorId}`,
         availableDoctors: (adminId: string) => `/super-admin/admins/${adminId}/available-doctors`
-    }
+    },
+    
+    admin: {
+        doctors: '/admin/doctors'
+    },
+    
 } as const;
+
