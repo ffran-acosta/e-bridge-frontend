@@ -1,5 +1,7 @@
-import { AuthCard } from "@/components/auth/AuthCard";
-import LoginForm from "@/components/auth/LoginForm";
+"use client";
+
+import { AuthCard } from "@/features";
+import LoginForm from "@/features/auth/components/forms/LoginForm";
 import Link from "next/link";
 
 export default function Page() {

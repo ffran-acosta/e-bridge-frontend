@@ -1,18 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AuthGuard } from "@/components/auth/AuthGuard";
-import { Stethoscope } from 'lucide-react';
-
-// Componentes reutilizables
-import { SearchInput } from '@/components/dashboard/SearchInput';
-import { DoctorCardAdmin } from '@/components/dashboard/DoctorCardAdmin';
-import { StatsCard } from '@/components/dashboard/StatsCard';
-
-// Hooks
-import { useAdminDoctors } from '@/hooks/useAdminDoctors';
-import { useSearch } from '@/hooks/useSearch';
-import { useRouter } from 'next/navigation';
+import { useAdminDoctors,  StatsCard, SearchInput, DoctorCardAdmin } from "@/features";
+import { AuthGuard } from "@/features/auth";
+import { useSearch, Card, CardHeader, CardTitle, CardContent } from "@/shared";
+import { Stethoscope } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function AdminPage() {
     const router = useRouter();

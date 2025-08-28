@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { AuthProvider } from "@/components/auth/AuthProvider";
 import "./globals.css";
+import { AuthProvider } from "@/providers/AuthProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,10 +22,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className="theme-ebridge-dark">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-svh bg-background text-foreground`}
-      >
+    <html lang="es" suppressHydrationWarning className="theme-ebridge-dark">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-svh bg-background text-foreground`}>
         <AuthProvider>
           {children}
         </AuthProvider>

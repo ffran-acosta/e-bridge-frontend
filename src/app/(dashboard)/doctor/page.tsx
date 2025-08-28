@@ -1,11 +1,6 @@
-// import DoctorDashboard from '@/components/dashboard/doctor/DoctorDashboard';
+"use client";
 
-// export default function DoctorPage() {
-
-//     return <DoctorDashboard />;
-// }
-
-import { AuthGuard } from "@/components/auth/AuthGuard";
+import { AuthGuard } from "@/features";
 
 export default function DoctorPage() {
     return (

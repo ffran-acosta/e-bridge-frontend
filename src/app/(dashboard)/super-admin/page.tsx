@@ -1,27 +1,10 @@
 "use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { AuthGuard } from "@/components/auth/AuthGuard";
-import {
-    Stethoscope,
-    User,
-    Users,
-    Link2,
-    Building2
-} from 'lucide-react';
-
-// Componentes reutilizables
-import { StatsCard } from '@/components/dashboard/StatsCard';
-import { DoctorCard } from '@/components/dashboard/DoctorCard';
-import { AdminCard } from '@/components/dashboard/AdminCard';
-import { SearchInput } from '@/components/dashboard/SearchInput';
-
-// Hooks
-import { useDoctors } from '@/hooks/useDoctors';
-import { useAdmins } from '@/hooks/useAdmins';
-import { useSearch } from '@/hooks/useSearch';
-import { useDashboardStats } from '@/hooks/useAdminStats';
+import { useDoctors, useAdmins, useDashboardStats, StatsCard, SearchInput, DoctorCard, AdminCard } from "@/features";
+import { AuthGuard } from "@/features/auth";
+import { useSearch, Card, CardHeader, CardTitle, CardContent } from "@/shared";
+import { Stethoscope, Users, User, Link2, Building2 } from "lucide-react";
+import { useState } from "react";
 
 export default function SuperAdminPage() {
     // Search states
