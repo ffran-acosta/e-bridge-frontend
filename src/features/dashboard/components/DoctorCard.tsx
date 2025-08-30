@@ -2,7 +2,7 @@
 
 import { Doctor } from "../types/dashboard";
 import { StatusToggleButton } from "./StatusToggleButton";
-import { UserAvatar } from "./UserAvatar";
+import { UserAvatar } from "@/shared/components";
 import { Badge } from "@/shared";
 
 interface DoctorCardProps {

@@ -3,7 +3,7 @@ import { Button, Badge } from "@/shared";
 import { Unlink, Plus } from "lucide-react";
 import { Admin, Doctor } from "../types/dashboard";
 import { StatusToggleButton } from "./StatusToggleButton";
-import { UserAvatar } from "./UserAvatar";
+import { UserAvatar } from "@/shared/components";
 
 interface AdminCardProps {
     admin: Admin;

@@ -4,7 +4,6 @@ export * from './components/DoctorCardAdmin';
 export * from './components/SearchInput';
 export * from './components/StatsCard';
 export * from './components/StatusToggleButton';
-export * from './components/UserAvatar';
 export * from './constants/endpoints';
 export * from './hooks/useAdminDoctors';
 export * from './hooks/useAdminStats';

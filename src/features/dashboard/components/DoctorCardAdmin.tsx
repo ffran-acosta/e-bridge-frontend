@@ -1,8 +1,7 @@
 import { Button, Badge } from "@/shared";
 import { Eye } from "lucide-react";
 import { Doctor } from "../types/dashboard";
-import { UserAvatar } from "./UserAvatar";
-
+import { UserAvatar } from "@/shared/components";
 interface DoctorCardAdminProps {
     doctor: Doctor;
     onViewProfile: (doctorId: string) => void;
