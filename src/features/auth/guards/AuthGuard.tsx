@@ -34,17 +34,14 @@ export function AuthGuard({
 
     useEffect(() => {
         if (!isCheckingAuth && !loading) {
-            // Si no hay usuario, redirect a login
             if (!user) {
-                router.push('/login');
+                router.replace('/login');
                 return;
             }
 
-            // Si hay roles específicos requeridos, verificar
             if (allowedRoles && !allowedRoles.includes(user.role)) {
-                // Redirect a su dashboard correspondiente
                 const userDashboard = getRedirectPath(user.role);
-                router.push(userDashboard);
+                router.replace(userDashboard);
                 return;
             }
         }

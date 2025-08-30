@@ -11,6 +11,7 @@ import { Button } from '@/shared'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared';
 import { UserAvatar } from '@/shared/components/UserAvatar';
 import { useAuthStore } from '@/features';
+import { useRouter } from 'next/navigation';
 
 interface AppHeaderProps {
     title: string;
@@ -30,12 +31,14 @@ export function AppHeader({
     onProfileClick
 }: AppHeaderProps) {
     const { user, logout } = useAuthStore();
-
+    const router = useRouter();
     const handleLogout = async () => {
         try {
             await logout();
+            router.replace('/login');
         } catch (error) {
             console.error('Error al cerrar sesión:', error);
+            router.replace('/login');
         }
     };
 
