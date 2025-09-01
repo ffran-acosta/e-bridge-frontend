@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { api } from "@/lib/api";
 import { LoginInput, RegisterDoctorInput, RegisterAdminInput } from "../lib/schemas";
-import { User } from "../../types/auth";
+import { User } from "../../../shared/types/auth";
 
 type ApiResponse<T = any> = {
     statusCode: number;

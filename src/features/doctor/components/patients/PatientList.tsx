@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Eye, X, AlertCircle, Loader2 } from 'lucide-react';
-import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/shared';
+import React, { useState, useMemo } from 'react';
+import { Search, Eye, X, AlertCircle, Loader2, Plus } from 'lucide-react';
+import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose, SelectItem, SelectContent, SelectTrigger, Select, SelectValue } from '@/shared';
 import { useDoctorPatients } from '../../hooks/useDoctorPatients';
-import { Patient } from '../../types/patients.types';
+import { Patient } from '@/shared/types/patients.types';
 
 interface PatientsListProps {
     onPatientClick?: (patient: Patient) => void;
@@ -62,6 +62,11 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
         clearError();
         refetch();
     };
+    const handleRetry2 = () => {
+        clearError();
+        window.location.reload();
+    };
+
 
     // Error State
     if (error && !loading) {
@@ -74,6 +79,9 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
                         <Button variant="outline" size="sm" onClick={handleRetry}>
                             Reintentar
                         </Button>
+                        <Button variant="outline" size="sm" onClick={handleRetry2}>
+                            Recargar
+                        </Button>
                     </div>
                 </CardContent>
             </Card>
@@ -83,7 +91,7 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
     return (
         <div className="space-y-6">
             {/* Search & Filters */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
@@ -95,18 +103,28 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
                     />
                 </div>
 
-                {/* Sort Options */}
-                <select
-                    value={sortBy || ''}
-                    onChange={(e) => setSortBy(e.target.value || undefined)}
-                    className="px-3 py-2 border rounded-md"
-                    disabled={loading}
-                >
-                    <option value="">Sin ordenar</option>
-                    <option value="lastConsultation">Última consulta</option>
-                    <option value="name">Nombre</option>
-                    <option value="status">Estado</option>
-                </select>
+                <div className="flex gap-2 sm:gap-3">
+                    {/* Sort Options */}
+                    <Select value={sortBy || "lastConsultation"} onValueChange={(value) => setSortBy(value === "none" ? undefined : value)}>
+                        <SelectTrigger className="w-[180px]" disabled={loading}>
+                            <SelectValue placeholder="lastConsultation" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="lastConsultation">Última consulta</SelectItem>
+                            <SelectItem value="name">Nombre</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    {/* Add Patient Button */}
+                    <Button
+                        onClick={() => console.log('Agregar paciente - funcionalidad pendiente')}
+                        disabled={loading}
+                        className="whitespace-nowrap"
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Agregar Paciente
+                    </Button>
+                </div>
             </div>
 
             {/* Patients Table Card */}
@@ -246,7 +264,10 @@ const PatientsTable = ({
                 </thead>
                 <tbody>
                     {patients.map((patient) => (
-                        <tr key={patient.id} className="border-b hover:bg-muted/30 transition-colors">
+                        <tr 
+                            key={patient.id} 
+                            className="border-b hover:bg-muted/30 transition-colors"
+                            >
                             <td className="p-3">
                                 <div>
                                     <div className="font-medium">{patient.fullName}</div>
@@ -355,12 +376,12 @@ const PatientPreviewSheet = ({
             <SheetContent className="w-full sm:max-w-md">
                 <SheetHeader>
                     <div className="flex items-center justify-between">
-                        <SheetTitle>Vista Rápida - Paciente</SheetTitle>
-                        <SheetClose asChild>
+                        <SheetTitle>Vista Rápida</SheetTitle>
+                        {/* <SheetClose asChild>
                             <Button variant="ghost" size="sm">
                                 <X className="h-4 w-4" />
                             </Button>
-                        </SheetClose>
+                        </SheetClose> */}
                     </div>
                 </SheetHeader>
 
@@ -425,7 +446,7 @@ const PatientPreviewSheet = ({
                     {/* Action Buttons */}
                     <div className="flex gap-3">
                         <Button onClick={onViewFullProfile} className="flex-1">
-                            Ver Perfil Completo
+                            Ver Perfil 
                         </Button>
                         <Button variant="outline" onClick={onClose}>
                             Cerrar

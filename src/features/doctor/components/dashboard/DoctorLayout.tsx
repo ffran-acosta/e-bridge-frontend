@@ -4,24 +4,20 @@ import React, { useState } from 'react';
 import { Sheet, SheetContent } from '@/shared';
 import { AppHeader } from '@/shared/components/Header';
 import { DoctorSidebar } from './Sidebar';
+import { useAuthStore } from '@/features/auth/store/auth';
 
 interface DoctorLayoutProps {
     children: React.ReactNode;
-    doctorName?: string;
     currentView?: 'dashboard' | 'patientProfile';
     onBackClick?: () => void;
-    onLogout?: () => void;
-    onProfileClick?: () => void;
 }
 
 export function DoctorLayout({
     children,
-    doctorName = 'juan-perez',
     currentView = 'dashboard',
-    onBackClick,
-    onLogout,
-    onProfileClick
+    onBackClick
 }: DoctorLayoutProps) {
+    const { user, logout } = useAuthStore();
     const [activeSection, setActiveSection] = useState('pacientes');
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
@@ -47,10 +43,18 @@ export function DoctorLayout({
         return titles[activeSection as keyof typeof titles] || 'Dashboard';
     };
 
-    const getUserDisplayName = () => {
-        const displayName = doctorName.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
-        return `Dr. ${displayName}`;
+    const handleProfileClick = () => {
+        console.log('Navigate to doctor profile');
     };
+
+    // Early return si no hay usuario
+    if (!user || !['DOCTOR', 'ADMIN', 'SUPER_ADMIN'].includes(user.role)) {
+        return (
+            <div className="h-screen flex items-center justify-center">
+                <p>Cargando...</p>
+            </div>
+        );
+    }
 
     return (
         <div className="h-screen flex">
@@ -60,7 +64,7 @@ export function DoctorLayout({
                     <DoctorSidebar
                         activeSection={activeSection}
                         setActiveSection={setActiveSection}
-                        doctorName={doctorName}
+                        user={user}
                     />
                 </div>
             )}
@@ -75,7 +79,7 @@ export function DoctorLayout({
                                 setActiveSection(section);
                                 setIsMobileSidebarOpen(false);
                             }}
-                            doctorName={doctorName}
+                            user={user}
                         />
                     </SheetContent>
                 </Sheet>
@@ -85,14 +89,11 @@ export function DoctorLayout({
             <div className="flex-1 flex flex-col min-w-0">
                 <AppHeader
                     title={getSectionTitle()}
-                    userDisplayName={getUserDisplayName()}
-                    userRole="DOCTOR"
                     isMobile={isMobile}
                     onMobileMenuClick={() => setIsMobileSidebarOpen(true)}
                     showBackButton={currentView === 'patientProfile'}
                     onBackClick={onBackClick}
-                    onLogout={onLogout}
-                    onProfileClick={onProfileClick}
+                    onProfileClick={handleProfileClick}
                 />
 
                 <main className="flex-1 overflow-auto p-6">

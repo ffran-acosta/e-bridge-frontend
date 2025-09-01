@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { api } from "@/lib/api";
-import { Patient, PatientsParams, PatientsResponse } from "../types/patients.types";
+import { Patient, PatientsParams, PatientsResponse } from "@/shared/types/patients.types";
 import { DOCTOR_ENDPOINTS } from "../constants/endpoints";
 
 type State = {
@@ -26,6 +26,7 @@ type Actions = {
     setPage: (page: number) => void;
     clearError: () => void;
     reset: () => void;
+    refetch: () => Promise<void>;
 };
 
 const initialState: State = {
@@ -79,6 +80,14 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
                 error: error instanceof Error ? error.message : 'Error al cargar pacientes',
             });
         }
+    },
+
+    refetch: async () => {
+        const currentState = get();
+        await get().fetchPatients({
+            page: currentState.pagination.page,
+            sortBy: currentState.sortBy
+        });
     },
 
     setSearchTerm: (term) => set({ searchTerm: term }),

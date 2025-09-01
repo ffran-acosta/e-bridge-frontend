@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AuthCard, RoleSelector } from "@/features";
-import { Role } from "@/features/types/auth";
+import { Role } from "@/shared/types/auth";
 import RegisterFormDoctor from "@/features/auth/components/forms/RegisterFormDoctor";
 import RegisterFormAdmin from "@/features/auth/components/forms/RegisterFormAdmin";
 

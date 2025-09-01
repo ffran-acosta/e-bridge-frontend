@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/shared";
-import { Role } from "@/features/types/auth";
+import { Role } from "@/shared/types/auth";
 
 export function RoleSelector({ onChange }: { onChange: (role: Role) => void }) {
     const [role, setRole] = useState<Role>("DOCTOR");

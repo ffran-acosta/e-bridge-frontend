@@ -13,13 +13,17 @@ import { Button } from '@/shared';
 interface DoctorSidebarProps {
     activeSection: string;
     setActiveSection: (section: string) => void;
-    doctorName: string;
+    user: {
+        firstName: string;
+        lastName: string;
+        role: string;
+    };
 }
 
 export function DoctorSidebar({
     activeSection,
     setActiveSection,
-    doctorName
+    user
 }: DoctorSidebarProps) {
     const menuItems = [
         { id: 'pacientes', label: 'Pacientes', icon: Users, active: true },
@@ -28,7 +32,7 @@ export function DoctorSidebar({
         { id: 'exportar', label: 'Exportar', icon: Download, active: false }
     ];
 
-    const displayName = doctorName.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const displayName = `${user.firstName} ${user.lastName}`;
 
     return (
         <div className="flex flex-col h-full border-r">

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getRedirectPath } from '../lib/redirects';
 import { useAuthStore } from '../store/auth';
-import { Role } from '../../types/auth';
+import { Role } from '../../../shared/types/auth';
 
 interface AuthGuardProps {
     children: React.ReactNode;

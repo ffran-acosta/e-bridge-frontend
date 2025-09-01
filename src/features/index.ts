@@ -30,4 +30,3 @@ export * from './doctor/components/patients/PatientProfile';
 export * from './doctor/constants/endpoints';
 export * from './doctor/hooks/useDoctorPatients';
 export * from './doctor/store/doctorStore';
-export * from './doctor/types/patients.types';
