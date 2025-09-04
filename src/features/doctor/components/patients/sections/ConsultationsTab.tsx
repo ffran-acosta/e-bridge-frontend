@@ -71,16 +71,20 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
             {/* Header con información de resumen */}
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                        <Stethoscope className="h-5 w-5" />
-                        Historial de Consultas
+                    <CardTitle className="flex items-start justify-between">
+                        <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                                <Stethoscope className="h-5 w-5" />
+                                Historial de Consultas
+                            </div>
+                            <Badge variant="secondary" className="w-fit">
+                                {pagination?.total || consultations.length} total
+                            </Badge>
+                        </div>
                         <Button>
                             <Plus className="h-4 w-4 mr-2" />
                             Nueva Consulta
                         </Button>
-                        <Badge variant="secondary" className="ml-auto">
-                            {pagination?.total || consultations.length} total
-                        </Badge>
                     </CardTitle>
                 </CardHeader>
             </Card>

@@ -178,3 +178,51 @@ export interface ConsultationsApiResponse {
     path: string;
     data: ConsultationsResponse;
 }
+
+// ========== TIPOS PARA TURNOS ==========
+
+export interface PatientInfo {
+    id: string;
+    fullName: string;
+    dni: string;
+    age: number;
+}
+
+export interface MedicalEstablishmentInfo {
+    id: string;
+    name: string;
+    cuit: string;
+}
+
+export interface Appointment {
+    id: string;
+    scheduledDateTime: string;
+    status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+    notes: string;
+    patient: PatientInfo;
+    medicalEstablishment: MedicalEstablishmentInfo;
+    hasOriginConsultation: boolean;
+    hasCompletedConsultation: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface AppointmentsPagination {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+}
+
+export interface AppointmentsResponse {
+    appointments: Appointment[];
+    pagination: AppointmentsPagination;
+}
+
+export interface AppointmentsApiResponse {
+    success: boolean;
+    statusCode: number;
+    timestamp: string;
+    path: string;
+    data: AppointmentsResponse;
+}

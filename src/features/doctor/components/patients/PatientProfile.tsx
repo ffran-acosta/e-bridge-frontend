@@ -2,11 +2,6 @@
 
 import React, { useState } from "react";
 import {
-    Calendar,
-    Plus,
-    FileText
-} from "lucide-react";
-import {
     Button,
     Card,
     CardContent,
@@ -25,6 +20,7 @@ import { OverviewTab } from "./sections/OverviewTab";
 import { isARTPatient } from "../../utils/patientMappers";
 import { SiniestroTab } from "./sections/SiniestroTab";
 import { ConsultationsTab } from "./sections/ConsultationsTab";
+import { AppointmentsTab } from "./sections/AppoinmentTab";
 
 interface PatientProfileProps {
     patientId?: string;
@@ -115,79 +111,14 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                 )}
 
                 {/* Tab: Consultas (Placeholder) */}
-                <TabsContent value="consultations" className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold">Historial de Consultas</h3>
-                        <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Nueva Consulta
-                        </Button>
-                    </div>
-
-                    {/* <Card>
-                        <CardContent className="pt-6">
-                            <div className="text-center text-muted-foreground py-12">
-                                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                <p>Las consultas se implementarán próximamente</p>
-                                <p className="text-sm">
-                                    Total de consultas: {patient.stats.totalConsultations}
-                                </p>
-                            </div>
-                        </CardContent>
-                    </Card> */}
-                </TabsContent>
                 <TabsContent value="consultations" className="space-y-6">
                     <ConsultationsTab patient={patient} />
                 </TabsContent>
 
                 {/* Tab: Turnos (Placeholder) */}
-                <TabsContent value="appointments" className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold">Próximos Turnos</h3>
-                        <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Nuevo Turno
-                        </Button>
-                    </div>
-
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="text-center text-muted-foreground py-12">
-                                <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                <p>Los turnos se implementarán próximamente</p>
-                                <p className="text-sm">
-                                    Total de turnos: {patient.stats.totalAppointments}
-                                </p>
-                                {patient.stats.nextAppointmentDate && (
-                                    <p className="text-sm">
-                                        Próximo turno: {new Date(patient.stats.nextAppointmentDate).toLocaleDateString('es-AR')}
-                                    </p>
-                                )}
-                            </div>
-                        </CardContent>
-                    </Card>
+                <TabsContent value="appointments" className="space-y-6">
+                    <AppointmentsTab patient={patient} />
                 </TabsContent>
-
-                {/* Tab: Documentos (Placeholder) */}
-                {/* <TabsContent value="documents" className="space-y-4">
-                    <div className="flex justify-between items-center">
-                        <h3 className="text-lg font-semibold">Documentos</h3>
-                        <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Subir Documento
-                        </Button>
-                    </div>
-
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="text-center text-muted-foreground py-12">
-                                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                                <p>No hay documentos subidos aún</p>
-                                <p className="text-sm">Los estudios médicos, radiografías y reportes aparecerán aquí</p>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent> */}
             </Tabs>
 
             {/* Modal de edición (placeholder) */}

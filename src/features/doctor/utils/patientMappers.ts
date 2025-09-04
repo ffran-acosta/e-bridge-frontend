@@ -282,3 +282,150 @@ export const truncateText = (text: string, maxLength: number = 100): string => {
     if (text.length <= maxLength) return text;
     return `${text.substring(0, maxLength)}...`;
 };
+
+// ========== FUNCIONES PARA TURNOS ==========
+
+import type { Appointment } from '@/shared/types/patients.types';
+
+/**
+ * Formatea la fecha y hora del turno
+ */
+export const formatAppointmentDateTime = (dateString: string): string => {
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleString('es-AR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch {
+        return 'Fecha no válida';
+    }
+};
+
+/**
+ * Formatea solo la fecha del turno
+ */
+export const formatAppointmentDate = (dateString: string): string => {
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-AR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        });
+    } catch {
+        return 'Fecha no válida';
+    }
+};
+
+/**
+ * Formatea solo la hora del turno
+ */
+export const formatAppointmentTime = (dateString: string): string => {
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleTimeString('es-AR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch {
+        return 'Hora no válida';
+    }
+};
+
+/**
+ * Obtiene el estado del turno con estilo
+ */
+export const getAppointmentStatus = (appointment: Appointment): {
+    status: 'scheduled' | 'completed' | 'cancelled' | 'no_show';
+    label: string;
+    variant: 'default' | 'secondary' | 'destructive' | 'outline';
+} => {
+    const statusMap = {
+        'SCHEDULED': {
+            status: 'scheduled' as const,
+            label: 'Programado',
+            variant: 'default' as const
+        },
+        'COMPLETED': {
+            status: 'completed' as const,
+            label: 'Completado',
+            variant: 'secondary' as const
+        },
+        'CANCELLED': {
+            status: 'cancelled' as const,
+            label: 'Cancelado',
+            variant: 'destructive' as const
+        },
+        'NO_SHOW': {
+            status: 'no_show' as const,
+            label: 'No asistió',
+            variant: 'outline' as const
+        }
+    };
+
+    return statusMap[appointment.status] || statusMap['SCHEDULED'];
+};
+
+/**
+ * Determina si el turno está próximo (en las próximas 24 horas)
+ */
+export const isUpcomingAppointment = (appointment: Appointment): boolean => {
+    if (appointment.status !== 'SCHEDULED') return false;
+
+    const appointmentDate = new Date(appointment.scheduledDateTime);
+    const now = new Date();
+    const hoursDiff = (appointmentDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    return hoursDiff > 0 && hoursDiff <= 24;
+};
+
+/**
+ * Determina si el turno está vencido
+ */
+export const isOverdueAppointment = (appointment: Appointment): boolean => {
+    if (appointment.status !== 'SCHEDULED') return false;
+
+    const appointmentDate = new Date(appointment.scheduledDateTime);
+    const now = new Date();
+
+    return appointmentDate < now;
+};
+
+/**
+ * Obtiene información de seguimiento del turno
+ */
+export const getAppointmentFollowUp = (appointment: Appointment): {
+    hasOrigin: boolean;
+    hasCompletion: boolean;
+    status: string;
+} => {
+    const { hasOriginConsultation, hasCompletedConsultation } = appointment;
+
+    let status = 'Sin seguimiento';
+
+    if (hasOriginConsultation && hasCompletedConsultation) {
+        status = 'Seguimiento completo';
+    } else if (hasOriginConsultation) {
+        status = 'Con consulta origen';
+    } else if (hasCompletedConsultation) {
+        status = 'Con consulta completada';
+    }
+
+    return {
+        hasOrigin: hasOriginConsultation,
+        hasCompletion: hasCompletedConsultation,
+        status
+    };
+};
+
+/**
+ * Formatea la información del establecimiento médico
+ */
+export const formatMedicalEstablishmentInfo = (appointment: Appointment): string => {
+    const { medicalEstablishment } = appointment;
+    return `${medicalEstablishment.name} (CUIT: ${medicalEstablishment.cuit})`;
+};
