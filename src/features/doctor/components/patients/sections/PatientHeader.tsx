@@ -9,7 +9,7 @@ import {
     MapPin,
     User,
 } from "lucide-react";
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from "@/shared";
+import { Badge, Button, Card, CardHeader, CardTitle } from "@/shared";
 import { PatientProfile } from "@/shared/types/patients.types";
 import { 
     getFullName, 
@@ -20,6 +20,7 @@ import {
     formatStatus, 
     formatLastConsultation
 } from "../../../utils/patientMappers";
+import { isARTPatient } from "../../../utils/patientMappers";
 
 interface PatientHeaderProps {
     patient: PatientProfile;
@@ -61,6 +62,11 @@ export function PatientHeader({ patient, onEdit, onExport }: PatientHeaderProps)
                                     <Badge variant={getStatusBadgeVariant(patient.currentStatus)}>
                                         {formatStatus(patient.currentStatus)}
                                     </Badge>
+                                    {isARTPatient(patient) && (
+                                        <Badge variant="destructive">
+                                            ART
+                                        </Badge>
+                                    )}
                                     <span className="text-sm text-muted-foreground">•</span>
                                     <span className="text-sm text-muted-foreground">
                                         Última consulta: {formatLastConsultation(patient.stats.lastConsultationDate)}

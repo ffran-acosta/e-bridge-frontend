@@ -22,6 +22,8 @@ import {
 import { usePatientProfile } from "../../hooks/usePatientProfile";
 import { PatientHeader } from "./sections/PatientHeader";
 import { OverviewTab } from "./sections/OverviewTab";
+import { isARTPatient } from "../../utils/patientMappers";
+import { SiniestroTab } from "./sections/SiniestroTab";
 
 interface PatientProfileProps {
     patientId?: string;
@@ -90,17 +92,26 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
 
             {/* Tabs para diferentes secciones */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className="grid w-full grid-cols-4">
+                <TabsList className={`grid w-full ${isARTPatient(patient) ? 'grid-cols-5' : 'grid-cols-4'}`}>
                     <TabsTrigger value="overview">Resumen</TabsTrigger>
                     <TabsTrigger value="consultations">Consultas</TabsTrigger>
                     <TabsTrigger value="appointments">Turnos</TabsTrigger>
                     <TabsTrigger value="documents">Documentos</TabsTrigger>
+                    {isARTPatient(patient) && (
+                        <TabsTrigger value="siniestro">Siniestro</TabsTrigger>
+                    )}
                 </TabsList>
 
                 {/* Tab: Resumen */}
                 <TabsContent value="overview" className="space-y-6">
                     <OverviewTab patient={patient} />
                 </TabsContent>
+
+                {isARTPatient(patient) && (
+                    <TabsContent value="siniestro" className="space-y-6">
+                        <SiniestroTab patient={patient} />
+                    </TabsContent>
+                )}
 
                 {/* Tab: Consultas (Placeholder) */}
                 <TabsContent value="consultations" className="space-y-4">

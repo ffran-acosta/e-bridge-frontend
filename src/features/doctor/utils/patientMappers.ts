@@ -163,3 +163,18 @@ export const formatLastConsultation = (dateString: string | null | undefined): s
 
     return formatDateTime(dateString);
 };
+
+export const isARTPatient = (patient: PatientProfile): boolean => {
+    return patient.siniestro !== null;
+};
+
+// Formatear tipo de contingencia
+export const formatContingencyType = (contingencyType: string): string => {
+    const types = {
+        'ACCIDENTE_TRABAJO': 'Accidente de Trabajo',
+        'ENFERMEDAD_PROFESIONAL': 'Enfermedad Profesional',
+        'ACCIDENTE_IN_ITINERE': 'Accidente In Itinere',
+        'INTERCURRENCIA': 'Intercurrencia'
+    };
+    return types[contingencyType as keyof typeof types] || contingencyType;
+};

@@ -63,7 +63,7 @@ export interface PatientProfile {
         contactInfo?: string | null;
         isActive: boolean;
     };
-    siniestro?: any;
+    siniestro: Siniestro | null
     assignedDoctors: Array<{
         id: string;
         assignedAt: string;
@@ -97,4 +97,27 @@ export interface PatientProfileResponse {
     timestamp: string;
     path: string;
     data: PatientProfile;
+}
+
+export interface Siniestro {
+    id: string;
+    contingencyType: 'ACCIDENTE_TRABAJO' | 'ENFERMEDAD_PROFESIONAL' | 'ACCIDENTE_IN_ITINERE' | 'INTERCURRENCIA';
+    accidentDateTime: string;
+    art: {
+        id: string;
+        name: string;
+        code: string;
+    };
+    medicalEstablishment: {
+        id: string;
+        name: string;
+        cuit: string;
+    };
+    employer: {
+        id: string;
+        name: string;
+        cuit: string;
+    };
+    createdAt: string;
+    updatedAt: string;
 }
