@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useDoctorStore } from "../store/doctorStore";
-import { PatientsParams } from "../types/patients.types";
+import { PatientsParams } from "@/shared/types/patients.types"; // 
 
 export function useDoctorPatients(initialParams?: PatientsParams) {
     const {

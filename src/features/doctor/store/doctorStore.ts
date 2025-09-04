@@ -2,10 +2,11 @@
 
 import { create } from "zustand";
 import { api } from "@/lib/api";
-import { Patient, PatientsParams, PatientsResponse } from "@/shared/types/patients.types";
+import { Patient, PatientsParams, PatientsResponse, PatientProfile, PatientProfileResponse } from "@/shared/types/patients.types";
 import { DOCTOR_ENDPOINTS } from "../constants/endpoints";
 
 type State = {
+    // Estado existente de pacientes (lista)
     patients: Patient[];
     pagination: {
         page: number;
@@ -17,9 +18,15 @@ type State = {
     error: string | null;
     searchTerm: string;
     sortBy: string | undefined;
+
+    // Estado para perfil del paciente
+    selectedPatient: PatientProfile | null;
+    profileLoading: boolean;
+    profileError: string | null;
 };
 
 type Actions = {
+    // Acciones existentes para lista de pacientes
     fetchPatients: (params?: PatientsParams) => Promise<void>;
     setSearchTerm: (term: string) => void;
     setSortBy: (sortBy: string | undefined) => void;
@@ -27,9 +34,15 @@ type Actions = {
     clearError: () => void;
     reset: () => void;
     refetch: () => Promise<void>;
+
+    // Acciones para perfil del paciente
+    fetchPatientProfile: (patientId: string) => Promise<void>;
+    clearSelectedPatient: () => void;
+    clearProfileError: () => void;
 };
 
 const initialState: State = {
+    // Estado inicial existente
     patients: [],
     pagination: {
         page: 1,
@@ -41,18 +54,22 @@ const initialState: State = {
     error: null,
     searchTerm: "",
     sortBy: undefined,
+
+    // Estado inicial del perfil
+    selectedPatient: null,
+    profileLoading: false,
+    profileError: null,
 };
 
 export const useDoctorStore = create<State & Actions>((set, get) => ({
     ...initialState,
 
+    // ========== ACCIONES EXISTENTES ==========
     fetchPatients: async (params) => {
         set({ loading: true, error: null });
 
         try {
             const queryParams = new URLSearchParams();
-
-            // Usar parámetros pasados o estado actual
             const currentState = get();
             const page = params?.page ?? currentState.pagination.page;
             const limit = params?.limit ?? currentState.pagination.limit;
@@ -94,18 +111,41 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
 
     setSortBy: (sortBy) => {
         set({ sortBy });
-        // Auto-fetch con nuevo sorting
         get().fetchPatients({ sortBy, page: 1 });
     },
 
     setPage: (page) => {
         const currentState = get();
         set({ pagination: { ...currentState.pagination, page } });
-        // Auto-fetch con nueva página
         get().fetchPatients({ page });
     },
 
     clearError: () => set({ error: null }),
 
     reset: () => set(initialState),
+
+    // ========== ACCIONES PARA PERFIL ==========
+    fetchPatientProfile: async (patientId: string) => {
+        set({ profileLoading: true, profileError: null });
+
+        try {
+            const response = await api<PatientProfileResponse>(
+                DOCTOR_ENDPOINTS.patientProfile(patientId)
+            );
+
+            set({
+                selectedPatient: response.data,
+                profileLoading: false,
+            });
+        } catch (error) {
+            set({
+                profileLoading: false,
+                profileError: error instanceof Error ? error.message : 'Error al cargar perfil del paciente',
+                selectedPatient: null,
+            });
+        }
+    },
+
+    clearSelectedPatient: () => set({ selectedPatient: null }),
+    clearProfileError: () => set({ profileError: null }),
 }));

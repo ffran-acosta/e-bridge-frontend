@@ -1,3 +1,5 @@
+// En @/shared/types/patients.types.ts
+
 export interface Patient {
     id: string;
     fullName: string;
@@ -12,19 +14,6 @@ export interface Patient {
     insuranceName: string;
 }
 
-// Para el perfil extendido
-export interface PatientProfile extends Patient {
-    emergencyContact: {
-        name: string;
-        phone: string;
-        relationship: string;
-    };
-    medicalHistory: string[];
-    currentMedications: string[];
-    allergies: string[];
-}
-
-// Para respuestas de API
 export interface PatientsResponse {
     patients: Patient[];
     pagination: {
@@ -40,4 +29,72 @@ export interface PatientsParams {
     limit?: number;
     searchTerm?: string;
     sortBy?: string;
+}
+
+export interface PatientProfile {
+    id: string;
+    firstName: string;
+    lastName: string;
+    dni: string;
+    gender: 'FEMENINO' | 'MASCULINO' | 'NO_BINARIO';
+    birthdate: string;
+    currentStatus: 'INGRESO' | 'EN_TRATAMIENTO' | 'ALTA' | 'DERIVADO';
+    street: string;
+    streetNumber: string;
+    floor?: string | null;
+    apartment?: string | null;
+    city: string;
+    province: string;
+    postalCode: string;
+    phone1: string;
+    phone2?: string | null;
+    email: string;
+    emergencyContactName?: string | null;
+    emergencyContactPhone?: string | null;
+    emergencyContactRelation?: string | null;
+    medicalHistory: string[];
+    currentMedications: string[];
+    allergies: string[];
+    insurance: {
+        id: string;
+        code: string;
+        name: string;
+        planName: string;
+        contactInfo?: string | null;
+        isActive: boolean;
+    };
+    siniestro?: any;
+    assignedDoctors: Array<{
+        id: string;
+        assignedAt: string;
+        isActive: boolean;
+        notes: string;
+        doctor: {
+            id: string;
+            licenseNumber: string;
+            user: {
+                firstName: string;
+                lastName: string;
+            };
+            specialty: {
+                name: string;
+            };
+        };
+    }>;
+    stats: {
+        totalConsultations: number;
+        totalAppointments: number;
+        lastConsultationDate?: string | null;
+        nextAppointmentDate?: string | null;
+    };
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface PatientProfileResponse {
+    success: boolean;
+    statusCode: number;
+    timestamp: string;
+    path: string;
+    data: PatientProfile;
 }
