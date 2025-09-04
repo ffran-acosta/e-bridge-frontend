@@ -1,3 +1,6 @@
+export * from './components/Header';
+export * from './components/UserAvatar';
+export * from './components/ui/alert';
 export * from './components/ui/badge';
 export * from './components/ui/button';
 export * from './components/ui/card';
@@ -9,5 +12,8 @@ export * from './components/ui/label';
 export * from './components/ui/select';
 export * from './components/ui/separator';
 export * from './components/ui/sheet';
+export * from './components/ui/skeleton';
 export * from './components/ui/tabs';
 export * from './hooks/useSearch';
+export * from './types/auth';
+export * from './types/patients.types';

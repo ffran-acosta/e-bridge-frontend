@@ -178,3 +178,107 @@ export const formatContingencyType = (contingencyType: string): string => {
     };
     return types[contingencyType as keyof typeof types] || contingencyType;
 };
+
+
+// ========== FUNCIONES PARA CONSULTAS ==========
+
+import type { Consultation } from '@/shared/types/patients.types';
+
+/**
+ * Formatea la fecha de consulta
+ */
+export const formatConsultationDate = (dateString: string): string => {
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleString('es-AR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch {
+        return 'Fecha no válida';
+    }
+};
+
+/**
+ * Formatea la fecha de próxima cita
+ */
+export const formatNextAppointmentDate = (dateString: string | null): string => {
+    if (!dateString) return 'No programada';
+
+    try {
+        const date = new Date(dateString);
+        return date.toLocaleString('es-AR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch {
+        return 'Fecha no válida';
+    }
+};
+
+/**
+ * Obtiene el estado de la consulta basado en appointmentInfo
+ */
+export const getConsultationStatus = (consultation: Consultation): {
+    status: 'completed' | 'pending' | 'scheduled';
+    label: string;
+    variant: 'default' | 'secondary' | 'outline';
+} => {
+    const { appointmentInfo, nextAppointmentDate } = consultation;
+
+    if (appointmentInfo.hasNextAppointment && nextAppointmentDate) {
+        return {
+            status: 'scheduled',
+            label: 'Con seguimiento',
+            variant: 'outline'
+        };
+    }
+
+    if (nextAppointmentDate) {
+        return {
+            status: 'pending',
+            label: 'Pendiente seguimiento',
+            variant: 'secondary'
+        };
+    }
+
+    return {
+        status: 'completed',
+        label: 'Completada',
+        variant: 'default'
+    };
+};
+
+/**
+ * Formatea el nombre del doctor con especialidad
+ */
+export const formatDoctorInfo = (consultation: Consultation): string => {
+    const { doctor } = consultation;
+    return `${doctor.fullName} - ${doctor.specialtyName} (${doctor.licenseNumber})`;
+};
+
+/**
+ * Determina si la consulta es un caso ART
+ */
+export const getArtCaseLabel = (isArtCase: boolean): {
+    label: string;
+    variant: 'destructive' | 'default';
+} => {
+    return isArtCase
+        ? { label: 'Caso ART', variant: 'destructive' }
+        : { label: 'Consulta General', variant: 'default' };
+};
+
+/**
+ * Trunca texto largo para mostrar en cards
+ */
+export const truncateText = (text: string, maxLength: number = 100): string => {
+    if (text.length <= maxLength) return text;
+    return `${text.substring(0, maxLength)}...`;
+};

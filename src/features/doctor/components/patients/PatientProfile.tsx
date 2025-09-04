@@ -24,6 +24,7 @@ import { PatientHeader } from "./sections/PatientHeader";
 import { OverviewTab } from "./sections/OverviewTab";
 import { isARTPatient } from "../../utils/patientMappers";
 import { SiniestroTab } from "./sections/SiniestroTab";
+import { ConsultationsTab } from "./sections/ConsultationsTab";
 
 interface PatientProfileProps {
     patientId?: string;
@@ -92,11 +93,11 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
 
             {/* Tabs para diferentes secciones */}
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-                <TabsList className={`grid w-full ${isARTPatient(patient) ? 'grid-cols-5' : 'grid-cols-4'}`}>
+                <TabsList className={`grid w-full ${isARTPatient(patient) ? 'grid-cols-4' : 'grid-cols-3'}`}>
                     <TabsTrigger value="overview">Resumen</TabsTrigger>
                     <TabsTrigger value="consultations">Consultas</TabsTrigger>
                     <TabsTrigger value="appointments">Turnos</TabsTrigger>
-                    <TabsTrigger value="documents">Documentos</TabsTrigger>
+                    {/* <TabsTrigger value="documents">Documentos</TabsTrigger> */}
                     {isARTPatient(patient) && (
                         <TabsTrigger value="siniestro">Siniestro</TabsTrigger>
                     )}
@@ -123,7 +124,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                         </Button>
                     </div>
 
-                    <Card>
+                    {/* <Card>
                         <CardContent className="pt-6">
                             <div className="text-center text-muted-foreground py-12">
                                 <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -133,7 +134,10 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                                 </p>
                             </div>
                         </CardContent>
-                    </Card>
+                    </Card> */}
+                </TabsContent>
+                <TabsContent value="consultations" className="space-y-6">
+                    <ConsultationsTab patient={patient} />
                 </TabsContent>
 
                 {/* Tab: Turnos (Placeholder) */}
@@ -165,7 +169,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                 </TabsContent>
 
                 {/* Tab: Documentos (Placeholder) */}
-                <TabsContent value="documents" className="space-y-4">
+                {/* <TabsContent value="documents" className="space-y-4">
                     <div className="flex justify-between items-center">
                         <h3 className="text-lg font-semibold">Documentos</h3>
                         <Button>
@@ -183,7 +187,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                             </div>
                         </CardContent>
                     </Card>
-                </TabsContent>
+                </TabsContent> */}
             </Tabs>
 
             {/* Modal de edición (placeholder) */}

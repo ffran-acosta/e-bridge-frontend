@@ -121,3 +121,60 @@ export interface Siniestro {
     createdAt: string;
     updatedAt: string;
 }
+
+export interface MedicalEstablishment {
+    id: string;
+    name: string;
+}
+
+export interface DoctorInfo {
+    id: string;
+    fullName: string;
+    licenseNumber: string;
+    specialtyName: string;
+}
+
+export interface EmployerInfo {
+    id: string;
+    name: string;
+}
+
+export interface AppointmentInfo {
+    hasOriginAppointment: boolean;
+    hasNextAppointment: boolean;
+    nextAppointmentId: string | null;
+}
+
+export interface Consultation {
+    id: string;
+    consultationReason: string;
+    diagnosis: string;
+    nextAppointmentDate: string | null;
+    isArtCase: boolean;
+    medicalEstablishment: MedicalEstablishment;
+    employer: EmployerInfo | null;
+    doctor: DoctorInfo;
+    appointmentInfo: AppointmentInfo;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface ConsultationsPagination {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+}
+
+export interface ConsultationsResponse {
+    consultations: Consultation[];
+    pagination: ConsultationsPagination;
+}
+
+export interface ConsultationsApiResponse {
+    success: boolean;
+    statusCode: number;
+    timestamp: string;
+    path: string;
+    data: ConsultationsResponse;
+}
