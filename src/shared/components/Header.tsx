@@ -61,7 +61,7 @@ export function AppHeader({
     if (!user) return null;
 
     return (
-        <header className="border-b px-6 py-4 flex items-center justify-between">
+        <header className="border-b px-6 py-6 flex items-center justify-between">
             <div className="flex items-center">
                 {showBackButton ? (
                     <Button variant="ghost" onClick={onBackClick} className="mr-3">
@@ -73,7 +73,7 @@ export function AppHeader({
                         <Menu className="h-5 w-5" />
                     </Button>
                 )}
-                <h1 className="text-2xl font-semibold">{title}</h1>
+                {/* <h1 className="text-2xl font-semibold">{title}</h1> */}
             </div>
 
             <DropdownMenu>

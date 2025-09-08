@@ -50,14 +50,14 @@ export default function SuperAdminPage() {
         <AuthGuard allowedRoles={["SUPER_ADMIN"]}>
             <div className="min-h-screen bg-background p-4">
                 {/* Header */}
-                <div className="mb-6">
+                {/* <div className="mb-6">
                     <h1 className="text-2xl font-bold text-foreground mb-2">
                         Panel de Administración
                     </h1>
                     <p className="text-muted-foreground">
                         Gestión completa del sistema médico
                     </p>
-                </div>
+                </div> */}
 
                 {/* Stats Overview */}
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">

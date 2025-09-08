@@ -2,7 +2,7 @@
 
 import { useAdminDoctors,  StatsCard, SearchInput, DoctorCardAdmin } from "@/features";
 import { AuthGuard } from "@/features/auth";
-import { useSearch, Card, CardHeader, CardTitle, CardContent } from "@/shared";
+import { useSearch, Card, CardHeader, CardTitle, CardContent, AppHeader } from "@/shared";
 import { Stethoscope } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -29,15 +29,6 @@ export default function AdminPage() {
     return (
         <AuthGuard allowedRoles={["SUPER_ADMIN", "ADMIN"]}>
             <div className="min-h-screen bg-background p-4">
-                {/* Header */}
-                <div className="mb-6">
-                    <h1 className="text-2xl font-bold text-foreground mb-2">
-                        Panel de Administración
-                    </h1>
-                    <p className="text-muted-foreground">
-                        Gestión de médicos asignados
-                    </p>
-                </div>
 
                 {/* Stats Overview */}
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
@@ -47,18 +38,6 @@ export default function AdminPage() {
                         icon={Stethoscope}
                         iconColor="text-primary"
                     />
-                    {/* <StatsCard
-                        title="Médicos Activos"
-                        value={activeDoctors}
-                        icon={Stethoscope}
-                        iconColor="text-green-500"
-                    /> */}
-                    {/* <StatsCard
-                        title="Médicos Inactivos"
-                        value={totalDoctors - activeDoctors}
-                        icon={Stethoscope}
-                        iconColor="text-gray-500"
-                    /> */}
                 </div>
 
                 {/* Doctors Management Section */}

@@ -3,8 +3,6 @@
 import React, { useState } from "react";
 import {
     Button,
-    Card,
-    CardContent,
     Dialog,
     DialogContent,
     DialogHeader,
@@ -39,7 +37,6 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
     };
 
     const handleExport = () => {
-        // TODO: Implementar exportación
         console.log("Exportar perfil del paciente");
     };
 

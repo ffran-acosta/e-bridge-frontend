@@ -27,9 +27,9 @@ export function DoctorSidebar({
 }: DoctorSidebarProps) {
     const menuItems = [
         { id: 'pacientes', label: 'Pacientes', icon: Users, active: true },
-        { id: 'turnos', label: 'Turnos', icon: Calendar, active: false },
-        { id: 'validador', label: 'Validador', icon: FileCheck, active: false },
-        { id: 'exportar', label: 'Exportar', icon: Download, active: false }
+        { id: 'turnos', label: 'Turnos', icon: Calendar, active: true },
+        { id: 'validador', label: 'Validador', icon: FileCheck, active: true },
+        { id: 'exportar', label: 'Exportar', icon: Download, active: true }
     ];
 
     const displayName = `${user.firstName} ${user.lastName}`;
@@ -37,8 +37,8 @@ export function DoctorSidebar({
     return (
         <div className="flex flex-col h-full border-r">
             <div className="p-6 border-b">
-                <h2 className="text-xl font-semibold">Dr. {displayName}</h2>
-                <p className="text-sm text-muted-foreground">Dashboard Médico</p>
+                <h2 className="text-3xl font-semibold">E-BRIDGE</h2>
+                {/* <p className="text-sm text-muted-foreground">Dashboard Médico</p> */}
             </div>
             <nav className="flex-1 p-4">
                 <ul className="space-y-2">
