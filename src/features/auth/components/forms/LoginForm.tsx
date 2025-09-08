@@ -1,57 +1,54 @@
 "use client";
 
 import Link from "next/link";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input, Button, Label } from "@/shared";
+import { Input, Button, useFormSubmission } from "@/shared";
+import { FormFieldWrapper } from "@/shared/components/forms/FormField";
 import { useAuthRedirect } from "../../hook/useAuthRedirect";
 import { LoginInput, loginSchema } from "../../lib/schemas";
 import { useAuthStore } from "../../store/auth";
 
 export default function LoginForm() {
-    const { loading, login } = useAuthStore();
+    const { login } = useAuthStore();
     useAuthRedirect();
     const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>({
         resolver: zodResolver(loginSchema),
     });
 
-    const onSubmit = async (data: LoginInput) => {
-        try {
-            await login(data);
-            toast.success("Logged in");
-        } catch (e: any) {
-            toast.error(e.message ?? "Login failed");
-        }
-    };
+    const { loading, handleSubmit: handleFormSubmit } = useFormSubmission({
+        onSubmit: login,
+        successMessage: "Sesión iniciada correctamente",
+        errorMessage: "Error al iniciar sesión"
+    });
 
     return (
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+        <form className="space-y-4" onSubmit={handleSubmit(handleFormSubmit)}>
+            <FormFieldWrapper
+                label="Email"
+                error={errors.email?.message}
+                required
+            >
                 <Input
                     id="email"
                     type="email"
                     placeholder="email@ejemplo.com"
                     {...register("email")}
                 />
-                {errors.email && (
-                    <p className="text-sm text-destructive">{errors.email.message}</p>
-                )}
-            </div>
+            </FormFieldWrapper>
 
-            <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
+            <FormFieldWrapper
+                label="Contraseña"
+                error={errors.password?.message}
+                required
+            >
                 <Input
                     id="password"
                     type="password"
                     placeholder="••••••••"
                     {...register("password")}
                 />
-                {errors.password && (
-                    <p className="text-sm text-destructive">{errors.password.message}</p>
-                )}
-            </div>
+            </FormFieldWrapper>
 
             <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Ingresando..." : "Login"}
@@ -64,5 +61,4 @@ export default function LoginForm() {
             </div>
         </form>
     );
-
 }

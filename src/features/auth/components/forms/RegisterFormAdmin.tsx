@@ -2,75 +2,60 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Label } from "@radix-ui/react-dropdown-menu";
-import { toast } from "sonner";
 import { RegisterAdminInput, adminRegisterSchema } from "../../lib/schemas";
 import { useAuthStore } from "../../store/auth";
-import { Input, Button } from "@/shared";
+import { Input, Button, useFormSubmission } from "@/shared";
+import { FormFieldWrapper } from "@/shared/components/forms/FormField";
 
 export default function RegisterFormAdmin() {
-    const { loading, registerAdmin } = useAuthStore();
+    const { registerAdmin } = useAuthStore();
     const { register, handleSubmit, formState: { errors } } = useForm<RegisterAdminInput>({
         resolver: zodResolver(adminRegisterSchema),
     });
 
-    const onSubmit = async (data: RegisterAdminInput) => {
-        try {
-            await registerAdmin(data);
-            toast.success("Admin created");
-        } catch (e: any) {
-            toast.error(e.message ?? "Register failed");
-        }
-    };
+    const { loading, handleSubmit: handleFormSubmit } = useFormSubmission({
+        onSubmit: registerAdmin,
+        successMessage: "Administrador creado correctamente",
+        errorMessage: "Error al crear administrador"
+    });
 
     return (
-        <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            <div className="space-y-2">
-                <Label>Nombre</Label>
+        <form className="space-y-4" onSubmit={handleSubmit(handleFormSubmit)}>
+            <FormFieldWrapper
+                label="Nombre"
+                error={errors.firstName?.message}
+                required
+            >
                 <Input {...register("firstName")} />
-                {errors.firstName && (
-                    <p className="text-sm text-destructive">{errors.firstName.message}</p>
-                )}
-            </div>
+            </FormFieldWrapper>
 
-            <div className="space-y-2">
-                <Label>Apellido</Label>
+            <FormFieldWrapper
+                label="Apellido"
+                error={errors.lastName?.message}
+                required
+            >
                 <Input {...register("lastName")} />
-                {errors.lastName && (
-                    <p className="text-sm text-destructive">{errors.lastName.message}</p>
-                )}
-            </div>
+            </FormFieldWrapper>
 
-            <div className="space-y-2">
-                <Label>Email</Label>
+            <FormFieldWrapper
+                label="Email"
+                error={errors.email?.message}
+                required
+            >
                 <Input type="email" {...register("email")} />
-                {errors.email && (
-                    <p className="text-sm text-destructive">{errors.email.message}</p>
-                )}
-            </div>
+            </FormFieldWrapper>
 
-            <div className="space-y-2">
-                <Label>Contraseña</Label>
+            <FormFieldWrapper
+                label="Contraseña"
+                error={errors.password?.message}
+                required
+            >
                 <Input type="password" {...register("password")} />
-                {errors.password && (
-                    <p className="text-sm text-destructive">{errors.password.message}</p>
-                )}
-            </div>
-
-                        {/*
-                <div className="space-y-2">
-                <Label>Teléfono</Label>
-                <Input {...register("phone")} />
-                {errors.phone && (
-                    <p className="text-sm text-destructive">{errors.phone.message}</p>
-                )}
-                </div>
-                */}
+            </FormFieldWrapper>
 
             <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Creando..." : "Registrar Administrador"}
             </Button>
         </form>
     );
-
 }

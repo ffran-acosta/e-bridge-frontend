@@ -6,7 +6,7 @@ export type SpecialtyOption = {
 
 export const SPECIALTIES: SpecialtyOption[] = [
     {
-        id: "a062c69e-7365-4c27-9b0f-4d66efe76f35",
+        id: "58b4aca3-21b8-4d2c-a96f-180f0a4a4d18",
         label: "Ortopedia y Traumatología",
         code: "TRAUM",
     },

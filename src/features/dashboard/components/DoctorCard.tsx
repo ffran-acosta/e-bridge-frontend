@@ -1,9 +1,8 @@
 "use client";
 
 import { Doctor } from "../types/dashboard";
-import { StatusToggleButton } from "./StatusToggleButton";
-import { UserAvatar } from "@/shared/components";
-import { Badge } from "@/shared";
+import { BaseUserCard } from "@/shared/components/cards/BaseUserCard";
+import { mapDoctorToUserDisplay, mapAssignmentsToBadges } from "@/shared/utils/userMappers";
 
 interface DoctorCardProps {
     doctor: Doctor;
@@ -22,61 +21,37 @@ export function DoctorCard({
     assignedAdminIds = [],
     patientsCount
 }: DoctorCardProps) {
+    // Mapeo de datos usando utilidades
+    const userData = {
+        firstName: doctor.firstName,
+        lastName: doctor.lastName,
+        email: doctor.email,
+        isActive: doctor.isActive
+    };
+
+    const display = mapDoctorToUserDisplay(doctor, patientsCount);
+
+    const actions = {
+        onToggleStatus: () => onToggleStatus(doctor.id)
+    };
+
+    const badges = showAssignments && getAdminName
+        ? mapAssignmentsToBadges(assignedAdminIds, getAdminName)
+        : [];
+
+    const config = {
+        showStatusToggle: true,
+        showAssignments,
+        avatarVariant: "primary" as const
+    };
+
     return (
-        <div
-            className={`p-4 rounded-lg border transition-all ${doctor.isActive
-                    ? 'border-border bg-card'
-                    : 'border-border bg-muted/50 opacity-75'
-                }`}
-        >
-            <div className="flex items-start space-x-4">
-                <UserAvatar
-                    firstName={doctor.firstName}
-                    lastName={doctor.lastName}
-                    variant="primary"
-                />
-
-                <div className="flex-1">
-                    <div className="flex items-start justify-between mb-2">
-                        <div>
-                            <h3 className="text-lg font-semibold text-foreground">
-                                Dr. {doctor.firstName} {doctor.lastName}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                                {doctor.specialty.name} • {doctor.licenseNumber}
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                                {doctor.email}
-                                {patientsCount !== undefined && ` • ${patientsCount} pacientes`}
-                            </p>
-                        </div>
-
-                        <StatusToggleButton
-                            isActive={doctor.isActive}
-                            onToggle={() => onToggleStatus(doctor.id)}
-                        />
-                    </div>
-
-                    {showAssignments && (
-                        <div className="flex items-center space-x-2">
-                            <span className="text-sm text-muted-foreground">Asignado a:</span>
-                            {assignedAdminIds.length === 0 ? (
-                                <Badge variant="outline" className="text-muted-foreground">
-                                    Sin asignar
-                                </Badge>
-                            ) : (
-                                <div className="flex flex-wrap gap-1">
-                                    {assignedAdminIds.map((adminId) => (
-                                        <Badge key={adminId} variant="secondary" className="text-xs">
-                                            {getAdminName ? getAdminName(adminId) : adminId}
-                                        </Badge>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
+        <BaseUserCard
+            user={userData}
+            display={display}
+            actions={actions}
+            badges={badges}
+            config={config}
+        />
     );
 }
