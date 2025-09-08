@@ -1,10 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sheet, SheetContent } from '@/shared';
+import { Sheet, SheetContent, Alert } from '@/shared';
 import { AppHeader } from '@/shared/components/Header';
 import { DoctorSidebar } from './Sidebar';
 import { useAuthStore } from '@/features/auth/store/auth';
+import { useDoctorStore } from '@/features/doctor/store/doctorStore';
+import { useImpersonationCleanup } from '@/features/doctor/hooks/useImpersonationCleanup';
+import { useRouter } from 'next/navigation';
 
 interface DoctorLayoutProps {
     children: React.ReactNode;
@@ -18,9 +21,14 @@ export function DoctorLayout({
     onBackClick
 }: DoctorLayoutProps) {
     const { user, logout } = useAuthStore();
+    const { isImpersonating, clearImpersonation } = useDoctorStore();
+    const router = useRouter();
     const [activeSection, setActiveSection] = useState('pacientes');
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+
+    // Limpiar impersonación cuando se navega fuera del contexto del doctor
+    useImpersonationCleanup();
 
     // Detectar mobile
     React.useEffect(() => {
@@ -45,6 +53,11 @@ export function DoctorLayout({
 
     const handleProfileClick = () => {
         console.log('Navigate to doctor profile');
+    };
+
+    const handleExitImpersonation = () => {
+        clearImpersonation();
+        router.push('/admin');
     };
 
     // Early return si no hay usuario
@@ -97,6 +110,23 @@ export function DoctorLayout({
                 />
 
                 <main className="flex-1 overflow-auto p-6">
+                    {/* Banner de impersonación */}
+                    {isImpersonating && (
+                        <Alert className="mb-4 border-amber-200 bg-amber-50 text-amber-800">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <span className="font-medium">Modo Administrador</span>
+                                    <span className="text-sm">Estás viendo la vista del doctor</span>
+                                </div>
+                                <button
+                                    onClick={handleExitImpersonation}
+                                    className="text-sm underline hover:no-underline"
+                                >
+                                    Volver al panel de administración
+                                </button>
+                            </div>
+                        </Alert>
+                    )}
                     {children}
                 </main>
             </div>

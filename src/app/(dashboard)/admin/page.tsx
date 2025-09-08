@@ -5,6 +5,7 @@ import { AuthGuard } from "@/features/auth";
 import { useSearch, Card, CardHeader, CardTitle, CardContent, AppHeader } from "@/shared";
 import { Stethoscope } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useDoctorStore } from "@/features/doctor/store/doctorStore";
 
 export default function AdminPage() {
     const router = useRouter();
@@ -20,8 +21,13 @@ export default function AdminPage() {
         totalDoctors
     } = useAdminDoctors(searchDoctors);
 
+    // Doctor store para impersonación
+    const { setImpersonatedDoctor } = useDoctorStore();
+
     const handleViewProfile = (doctorId: string) => {
-        router.push(`/doctor/${doctorId}`);
+        // Configurar impersonación y navegar al dashboard del doctor
+        setImpersonatedDoctor(doctorId);
+        router.push('/doctor/dashboard');
     };
 
     const activeDoctors = doctors.filter(d => d.isActive).length;

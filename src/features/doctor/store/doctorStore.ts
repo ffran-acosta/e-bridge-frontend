@@ -23,6 +23,10 @@ type State = {
     selectedPatient: PatientProfile | null;
     profileLoading: boolean;
     profileError: string | null;
+
+    // Estado para impersonación (admin viendo doctor)
+    impersonatedDoctorId: string | null;
+    isImpersonating: boolean;
 };
 
 type Actions = {
@@ -39,6 +43,10 @@ type Actions = {
     fetchPatientProfile: (patientId: string) => Promise<void>;
     clearSelectedPatient: () => void;
     clearProfileError: () => void;
+
+    // Acciones para impersonación
+    setImpersonatedDoctor: (doctorId: string | null) => void;
+    clearImpersonation: () => void;
 };
 
 const initialState: State = {
@@ -59,6 +67,10 @@ const initialState: State = {
     selectedPatient: null,
     profileLoading: false,
     profileError: null,
+
+    // Estado inicial de impersonación
+    impersonatedDoctorId: null,
+    isImpersonating: false,
 };
 
 export const useDoctorStore = create<State & Actions>((set, get) => ({
@@ -80,6 +92,11 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
 
             if (sortBy) {
                 queryParams.set('sortBy', sortBy);
+            }
+
+            // Si estamos impersonando, agregar el doctorId como query param
+            if (currentState.isImpersonating && currentState.impersonatedDoctorId) {
+                queryParams.set('doctorId', currentState.impersonatedDoctorId);
             }
 
             const response = await api<PatientsResponse>(
@@ -129,9 +146,15 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
         set({ profileLoading: true, profileError: null });
 
         try {
-            const response = await api<PatientProfileResponse>(
-                DOCTOR_ENDPOINTS.patientProfile(patientId)
-            );
+            const currentState = get();
+            let endpoint = DOCTOR_ENDPOINTS.patientProfile(patientId);
+            
+            // Si estamos impersonando, agregar el doctorId como query param
+            if (currentState.isImpersonating && currentState.impersonatedDoctorId) {
+                endpoint += `?doctorId=${currentState.impersonatedDoctorId}`;
+            }
+
+            const response = await api<PatientProfileResponse>(endpoint);
 
             set({
                 selectedPatient: response.data,
@@ -148,4 +171,19 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
 
     clearSelectedPatient: () => set({ selectedPatient: null }),
     clearProfileError: () => set({ profileError: null }),
+
+    // ========== ACCIONES PARA IMPERSONACIÓN ==========
+    setImpersonatedDoctor: (doctorId: string | null) => {
+        set({ 
+            impersonatedDoctorId: doctorId,
+            isImpersonating: !!doctorId
+        });
+    },
+
+    clearImpersonation: () => {
+        set({ 
+            impersonatedDoctorId: null,
+            isImpersonating: false
+        });
+    },
 }));
