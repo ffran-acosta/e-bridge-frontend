@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { AlertCircle, Calendar, FileText, MapPin, Plus, RefreshCw, Stethoscope, User } from 'lucide-react';
 import {
     Alert,
@@ -13,12 +14,15 @@ import {
 import type { PatientProfile } from '@/shared/types/patients.types';
 import { usePatientConsultations } from '@/features/doctor/hooks/usePatientConsultations';
 import { formatConsultationDate, formatDoctorInfo, formatNextAppointmentDate, getArtCaseLabel, getConsultationStatus, truncateText } from '@/features/doctor/utils/patientMappers';
+import { CreateConsultationModal } from '../../modals';
 
 interface ConsultationsTabProps {
     patient: PatientProfile;
 }
 
 export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    
     const {
         consultations,
         pagination,
@@ -54,15 +58,34 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
 
     if (consultations.length === 0) {
         return (
-            <Card>
-                <CardContent className="pt-6">
-                    <div className="text-center text-muted-foreground">
-                        <Stethoscope className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                        <p className="text-lg font-medium">No hay consultas registradas</p>
-                        <p className="text-sm">Este paciente aún no tiene consultas médicas.</p>
-                    </div>
-                </CardContent>
-            </Card>
+            <>
+                <Card>
+                    <CardContent className="pt-6">
+                        <div className="text-center text-muted-foreground">
+                            <Stethoscope className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                            <p className="text-lg font-medium">No hay consultas registradas</p>
+                            <p className="text-sm mb-4">Este paciente aún no tiene consultas médicas.</p>
+                            <Button onClick={() => setIsCreateModalOpen(true)}>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Crear Primera Consulta
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Modal para crear consulta */}
+                <CreateConsultationModal
+                    isOpen={isCreateModalOpen}
+                    onClose={() => setIsCreateModalOpen(false)}
+                    patientId={patient.id}
+                    patientName={`${patient.firstName} ${patient.lastName}`}
+                    isArtCase={!!patient.siniestro}
+                    onSuccess={() => {
+                        refetch();
+                        setIsCreateModalOpen(false);
+                    }}
+                />
+            </>
         );
     }
 
@@ -81,7 +104,7 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                                 {pagination?.total || consultations.length} total
                             </Badge>
                         </div>
-                        <Button>
+                        <Button onClick={() => setIsCreateModalOpen(true)}>
                             <Plus className="h-4 w-4 mr-2" />
                             Nueva Consulta
                         </Button>
@@ -227,6 +250,19 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                     </div>
                 </div>
             )}
+
+            {/* Modal para crear consulta */}
+            <CreateConsultationModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                patientId={patient.id}
+                patientName={`${patient.firstName} ${patient.lastName}`}
+                isArtCase={!!patient.siniestro}
+                onSuccess={() => {
+                    refetch();
+                    setIsCreateModalOpen(false);
+                }}
+            />
         </div>
     );
 };

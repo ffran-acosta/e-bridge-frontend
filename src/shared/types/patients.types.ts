@@ -226,3 +226,34 @@ export interface AppointmentsApiResponse {
     path: string;
     data: AppointmentsResponse;
 }
+
+// ========== TIPOS PARA CREAR CONSULTAS ==========
+
+export interface CreateConsultationFormData {
+    consultationReason: string;
+    diagnosis: string;
+    medicalIndications: string;
+    medicalEstablishmentId: string;
+    isArtCase: boolean;
+    employerId?: string;
+    nextAppointmentDate?: string;
+    fromAppointmentId?: string;
+}
+
+export interface CreateConsultationDto {
+    consultationReason: string;
+    diagnosis: string;
+    medicalIndications: string;
+    medicalEstablishmentId: string;
+    employerId?: string;
+    nextAppointmentDate?: string;
+    fromAppointmentId?: string;
+}
+
+export interface CreateConsultationResponse {
+    success: boolean;
+    statusCode: number;
+    timestamp: string;
+    path: string;
+    data: Consultation;
+}
