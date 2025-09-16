@@ -140,6 +140,76 @@ export interface PatientProfileResponse {
     data: PatientProfile;
 }
 
+// Respuesta real del backend para perfil de paciente
+export interface BackendPatientProfileResponse {
+    success: boolean;
+    statusCode: number;
+    timestamp: string;
+    path: string;
+    data: {
+        statusCode: number;
+        data: BackendPatientProfile;
+    };
+}
+
+// Tipo para el perfil real del backend
+export interface BackendPatientProfile {
+    id: string;
+    firstName: string;
+    lastName: string;
+    dni: string;
+    gender: 'FEMENINO' | 'MASCULINO' | 'NO_BINARIO';
+    birthdate: string;
+    type: 'NORMAL' | 'ART';
+    currentStatus: 'ATENCION' | 'INGRESO' | 'ALTA_MEDICA' | 'CIRUGIA';
+    street: string;
+    streetNumber: string;
+    floor: string | null;
+    apartment: string | null;
+    city: string;
+    province: string;
+    postalCode: string;
+    phone1: string;
+    phone2: string | null;
+    email: string;
+    allergies: string[];
+    currentMedications: string[];
+    emergencyContactName: string | null;
+    emergencyContactPhone: string | null;
+    emergencyContactRelation: string | null;
+    medicalHistory: string[];
+    insurance: {
+        id: string;
+        name: string;
+        planName: string;
+        isActive: boolean;
+    };
+    assignedDoctors: Array<{
+        id: string;
+        assignedAt: string;
+        isActive: boolean;
+        doctor: {
+            id: string;
+            licenseNumber: string;
+            user: {
+                firstName: string;
+                lastName: string;
+            };
+            specialty: {
+                name: string;
+            };
+        };
+    }>;
+    stats: {
+        totalConsultations: number;
+        totalAppointments: number;
+        lastConsultationDate: string | null;
+        nextAppointmentDate: string | null;
+    };
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface Siniestro {
     id: string;
     contingencyType: 'ACCIDENTE_TRABAJO' | 'ENFERMEDAD_PROFESIONAL' | 'ACCIDENTE_IN_ITINERE' | 'INTERCURRENCIA';

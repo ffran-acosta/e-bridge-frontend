@@ -2,7 +2,7 @@
  * Mappers para transformar datos entre diferentes formatos
  */
 
-import { BackendPatient, Patient } from "@/shared/types/patients.types";
+import { BackendPatient, Patient, BackendPatientProfile, PatientProfile } from "@/shared/types/patients.types";
 
 // ========== MAPPER PARA LISTA DE PACIENTES ==========
 
@@ -22,5 +22,72 @@ export const mapBackendPatientToFrontend = (backendPatient: BackendPatient): Pat
         status: backendPatient.currentStatus,
         lastConsultationDate: backendPatient.lastConsultationDate || '',
         insuranceName: backendPatient.insurance.name
+    };
+};
+
+// ========== MAPPER PARA PERFIL DE PACIENTE ==========
+
+/**
+ * Transforma el perfil de paciente del backend al formato esperado por el frontend
+ */
+export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatientProfile): PatientProfile => {
+    return {
+        id: backendProfile.id,
+        firstName: backendProfile.firstName,
+        lastName: backendProfile.lastName,
+        dni: backendProfile.dni,
+        gender: backendProfile.gender,
+        birthdate: backendProfile.birthdate,
+        currentStatus: backendProfile.currentStatus as 'INGRESO' | 'EN_TRATAMIENTO' | 'ALTA' | 'DERIVADO',
+        street: backendProfile.street,
+        streetNumber: backendProfile.streetNumber,
+        floor: backendProfile.floor,
+        apartment: backendProfile.apartment,
+        city: backendProfile.city,
+        province: backendProfile.province,
+        postalCode: backendProfile.postalCode,
+        phone1: backendProfile.phone1,
+        phone2: backendProfile.phone2,
+        email: backendProfile.email,
+        emergencyContactName: backendProfile.emergencyContactName,
+        emergencyContactPhone: backendProfile.emergencyContactPhone,
+        emergencyContactRelation: backendProfile.emergencyContactRelation,
+        medicalHistory: backendProfile.medicalHistory,
+        currentMedications: backendProfile.currentMedications,
+        allergies: backendProfile.allergies,
+        insurance: {
+            id: backendProfile.insurance.id,
+            code: '', // No viene en la respuesta del backend
+            name: backendProfile.insurance.name,
+            planName: backendProfile.insurance.planName,
+            contactInfo: null, // No viene en la respuesta del backend
+            isActive: backendProfile.insurance.isActive
+        },
+        siniestro: null, // No viene en la respuesta del backend, se manejará por separado
+        assignedDoctors: backendProfile.assignedDoctors.map(assignment => ({
+            id: assignment.id,
+            assignedAt: assignment.assignedAt,
+            isActive: assignment.isActive,
+            notes: '', // No viene en la respuesta del backend
+            doctor: {
+                id: assignment.doctor.id,
+                licenseNumber: assignment.doctor.licenseNumber,
+                user: {
+                    firstName: assignment.doctor.user.firstName,
+                    lastName: assignment.doctor.user.lastName
+                },
+                specialty: {
+                    name: assignment.doctor.specialty.name
+                }
+            }
+        })),
+        stats: {
+            totalConsultations: backendProfile.stats.totalConsultations,
+            totalAppointments: backendProfile.stats.totalAppointments,
+            lastConsultationDate: backendProfile.stats.lastConsultationDate,
+            nextAppointmentDate: backendProfile.stats.nextAppointmentDate
+        },
+        createdAt: backendProfile.createdAt,
+        updatedAt: backendProfile.updatedAt
     };
 };

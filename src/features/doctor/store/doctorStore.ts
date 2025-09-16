@@ -2,9 +2,9 @@
 
 import { create } from "zustand";
 import { api } from "@/lib/api";
-import { Patient, PatientsParams, PatientsResponse, PatientProfile, PatientProfileResponse, BackendPatientsResponse } from "@/shared/types/patients.types";
+import { Patient, PatientsParams, PatientsResponse, PatientProfile, PatientProfileResponse, BackendPatientsResponse, BackendPatientProfileResponse } from "@/shared/types/patients.types";
 import { DOCTOR_ENDPOINTS } from "../constants/endpoints";
-import { mapBackendPatientToFrontend } from "../utils/patientMappers";
+import { mapBackendPatientToFrontend, mapBackendPatientProfileToFrontend } from "../utils/patientMappers";
 
 type State = {
     // Estado existente de pacientes (lista)
@@ -158,10 +158,13 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
                 endpoint += `?doctorId=${currentState.impersonatedDoctorId}`;
             }
 
-            const response = await api<PatientProfileResponse>(endpoint);
+            const response = await api<BackendPatientProfileResponse>(endpoint);
+
+            // Mapear el perfil del backend al formato del frontend
+            const mappedProfile = mapBackendPatientProfileToFrontend(response.data.data);
 
             set({
-                selectedPatient: response.data,
+                selectedPatient: mappedProfile,
                 profileLoading: false,
             });
         } catch (error) {
