@@ -2,8 +2,9 @@
 
 import { create } from "zustand";
 import { api } from "@/lib/api";
-import { Patient, PatientsParams, PatientsResponse, PatientProfile, PatientProfileResponse } from "@/shared/types/patients.types";
+import { Patient, PatientsParams, PatientsResponse, PatientProfile, PatientProfileResponse, BackendPatientsResponse } from "@/shared/types/patients.types";
 import { DOCTOR_ENDPOINTS } from "../constants/endpoints";
+import { mapBackendPatientToFrontend } from "../utils/patientMappers";
 
 type State = {
     // Estado existente de pacientes (lista)
@@ -99,12 +100,15 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
                 queryParams.set('doctorId', currentState.impersonatedDoctorId);
             }
 
-            const response = await api<PatientsResponse>(
+            const response = await api<BackendPatientsResponse>(
                 `${DOCTOR_ENDPOINTS.patients}?${queryParams.toString()}`
             );
 
+            // Mapear los pacientes del backend al formato del frontend
+            const mappedPatients = response.data.data.map(mapBackendPatientToFrontend);
+
             set({
-                patients: response.data.patients,
+                patients: mappedPatients,
                 pagination: response.data.pagination,
                 loading: false,
             });

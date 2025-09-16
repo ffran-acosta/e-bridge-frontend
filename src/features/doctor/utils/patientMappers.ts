@@ -1,4 +1,4 @@
-import { PatientProfile } from "@/shared/types/patients.types";
+import { PatientProfile, BackendPatient, Patient } from "@/shared/types/patients.types";
 
 // Calcular edad desde fecha de nacimiento
 export const calculateAge = (birthdate: string): number => {
@@ -428,4 +428,25 @@ export const getAppointmentFollowUp = (appointment: Appointment): {
 export const formatMedicalEstablishmentInfo = (appointment: Appointment): string => {
     const { medicalEstablishment } = appointment;
     return `${medicalEstablishment.name} (CUIT: ${medicalEstablishment.cuit})`;
+};
+
+// ========== MAPPER PARA LISTA DE PACIENTES ==========
+
+/**
+ * Transforma un paciente del backend al formato esperado por el frontend
+ */
+export const mapBackendPatientToFrontend = (backendPatient: BackendPatient): Patient => {
+    return {
+        id: backendPatient.id,
+        fullName: `${backendPatient.firstName} ${backendPatient.lastName}`,
+        dni: backendPatient.dni,
+        age: backendPatient.age,
+        gender: backendPatient.gender,
+        phone: backendPatient.phone1,
+        email: backendPatient.email,
+        address: `${backendPatient.city}, ${backendPatient.province}`,
+        status: backendPatient.currentStatus,
+        lastConsultationDate: backendPatient.lastConsultationDate || '',
+        insuranceName: backendPatient.insurance.name
+    };
 };

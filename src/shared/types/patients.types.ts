@@ -14,6 +14,29 @@ export interface Patient {
     insuranceName: string;
 }
 
+// Tipo para la respuesta real del backend
+export interface BackendPatient {
+    id: string;
+    firstName: string;
+    lastName: string;
+    dni: string;
+    gender: 'FEMENINO' | 'MASCULINO' | 'NO_BINARIO';
+    birthdate: string;
+    age: number;
+    type: 'NORMAL' | 'ART';
+    currentStatus: 'ATENCION' | 'INGRESO' | 'ALTA_MEDICA' | 'CIRUGIA';
+    phone1: string;
+    email: string;
+    city: string;
+    province: string;
+    insurance: {
+        name: string;
+    };
+    lastConsultationDate: string | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface PatientsResponse {
     patients: Patient[];
     pagination: {
@@ -21,6 +44,24 @@ export interface PatientsResponse {
         limit: number;
         total: number;
         totalPages: number;
+    };
+}
+
+// Respuesta real del backend
+export interface BackendPatientsResponse {
+    success: boolean;
+    statusCode: number;
+    timestamp: string;
+    path: string;
+    data: {
+        statusCode: number;
+        data: BackendPatient[];
+        pagination: {
+            page: number;
+            limit: number;
+            total: number;
+            totalPages: number;
+        };
     };
 }
 
