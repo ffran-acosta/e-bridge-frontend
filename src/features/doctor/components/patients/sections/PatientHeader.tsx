@@ -11,16 +11,16 @@ import {
 } from "lucide-react";
 import { Badge, Button, Card, CardHeader, CardTitle } from "@/shared";
 import { PatientProfile } from "@/shared/types/patients.types";
-import { 
+import {
     getFullName, 
     calculateAge, 
     formatPhone, 
     formatAddress,
     getStatusBadgeVariant,
-    formatStatus, 
-    formatLastConsultation
-} from "../../../utils/patientMappers";
-import { isARTPatient } from "../../../utils/patientMappers";
+    formatStatus,
+    isARTPatient
+} from "../../../utils/patientFormatters";
+import { formatLastConsultation } from "../../../utils/dateFormatters";
 
 interface PatientHeaderProps {
     patient: PatientProfile;

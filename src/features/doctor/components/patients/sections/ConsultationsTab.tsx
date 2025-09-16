@@ -13,7 +13,9 @@ import {
 } from '@/shared';
 import type { PatientProfile } from '@/shared/types/patients.types';
 import { usePatientConsultations } from '@/features/doctor/hooks/usePatientConsultations';
-import { formatConsultationDate, formatDoctorInfo, formatNextAppointmentDate, getArtCaseLabel, getConsultationStatus, truncateText } from '@/features/doctor/utils/patientMappers';
+import { formatConsultationDate, formatNextAppointmentDate } from '@/features/doctor/utils/dateFormatters';
+import { getConsultationStatus, formatDoctorInfo, getArtCaseLabel } from '@/features/doctor/utils/consultationFormatters';
+import { truncateText } from '@/features/doctor/utils/patientFormatters';
 import { CreateConsultationModal } from '../../modals';
 
 interface ConsultationsTabProps {

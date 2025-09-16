@@ -8,17 +8,9 @@ import {
     CardTitle,
     Skeleton
 } from '@/shared';
-import {
-    formatAppointmentDateTime,
-    formatAppointmentDate,
-    formatAppointmentTime,
-    getAppointmentStatus,
-    isUpcomingAppointment,
-    isOverdueAppointment,
-    getAppointmentFollowUp,
-    formatMedicalEstablishmentInfo,
-    truncateText
-} from '../../../utils/patientMappers';
+import { formatAppointmentDateTime, formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
+import { getAppointmentStatus, isUpcomingAppointment, isOverdueAppointment, getAppointmentFollowUp, formatMedicalEstablishmentInfo } from '../../../utils/appointmentFormatters';
+import { truncateText } from '../../../utils/patientFormatters';
 import type { PatientProfile } from '@/shared/types/patients.types';
 import { usePatientAppointments } from '@/features/doctor/hooks/usePatientAppoinment';
 

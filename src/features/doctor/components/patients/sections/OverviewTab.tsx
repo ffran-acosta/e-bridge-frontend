@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/shared";
 import { PatientProfile } from "@/shared/types/patients.types";
-import { mapEmergencyContact } from "../../../utils/patientMappers";
+import { mapEmergencyContact } from "../../../utils/patientFormatters";
 
 interface OverviewTabProps {
     patient: PatientProfile;

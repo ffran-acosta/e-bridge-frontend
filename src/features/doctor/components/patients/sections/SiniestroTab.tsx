@@ -11,7 +11,8 @@ import {
 } from "lucide-react";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/shared";
 import { PatientProfile } from "@/shared/types/patients.types";
-import { formatDateTime, formatContingencyType } from "../../../utils/patientMappers";
+import { formatDateTime } from "../../../utils/dateFormatters";
+import { formatContingencyType } from "../../../utils/patientFormatters";
 
 interface SiniestroTabProps {
     patient: PatientProfile;
