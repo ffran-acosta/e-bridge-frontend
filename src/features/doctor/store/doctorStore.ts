@@ -19,6 +19,7 @@ type State = {
     error: string | null;
     searchTerm: string;
     sortBy: string | undefined;
+    patientType: 'NORMAL' | 'ART';
 
     // Estado para perfil del paciente
     selectedPatient: PatientProfile | null;
@@ -35,6 +36,7 @@ type Actions = {
     fetchPatients: (params?: PatientsParams) => Promise<void>;
     setSearchTerm: (term: string) => void;
     setSortBy: (sortBy: string | undefined) => void;
+    setPatientType: (type: 'NORMAL' | 'ART') => void;
     setPage: (page: number) => void;
     clearError: () => void;
     reset: () => void;
@@ -63,6 +65,7 @@ const initialState: State = {
     error: null,
     searchTerm: "",
     sortBy: undefined,
+    patientType: 'NORMAL',
 
     // Estado inicial del perfil
     selectedPatient: null,
@@ -87,9 +90,11 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
             const page = params?.page ?? currentState.pagination.page;
             const limit = params?.limit ?? currentState.pagination.limit;
             const sortBy = params?.sortBy ?? currentState.sortBy;
+            const patientType = currentState.patientType;
 
             queryParams.set('page', page.toString());
             queryParams.set('limit', limit.toString());
+            queryParams.set('type', patientType);
 
             if (sortBy) {
                 queryParams.set('sortBy', sortBy);
@@ -131,8 +136,21 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
     setSearchTerm: (term) => set({ searchTerm: term }),
 
     setSortBy: (sortBy) => {
-        set({ sortBy });
+        const currentState = get();
+        set({ 
+            sortBy,
+            pagination: { ...currentState.pagination, page: 1 }
+        });
         get().fetchPatients({ sortBy, page: 1 });
+    },
+
+    setPatientType: (patientType) => {
+        const currentState = get();
+        set({ 
+            patientType,
+            pagination: { ...currentState.pagination, page: 1 }
+        });
+        get().fetchPatients({ page: 1 });
     },
 
     setPage: (page) => {

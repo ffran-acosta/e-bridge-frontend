@@ -7,10 +7,12 @@ import type {
     ConsultationsApiResponse,
     ConsultationsPagination,
     CreateConsultationDto,
-    CreateConsultationResponse
+    CreateConsultationResponse,
+    BackendConsultationsApiResponse
 } from '@/shared/types/patients.types';
 import { api } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
+import { mapBackendConsultationToFrontend } from '../utils/patientMappers';
 
 interface ConsultationsState {
     consultations: Consultation[];
@@ -43,7 +45,7 @@ export const useConsultationsStore = create<ConsultationsStore>()(
         (set, get) => ({
             ...initialState,
 
-            fetchConsultations: async (patientId: string, page = 1, limit = 20) => {
+            fetchConsultations: async (patientId: string, page = 1, limit = 5) => {
                 const { currentPatientId, loading } = get();
 
                 // Evitar múltiples requests para el mismo paciente
@@ -52,20 +54,27 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                 set({ loading: true, error: null, currentPatientId: patientId });
 
                 try {
-                    const response = await api<ConsultationsApiResponse>(
-                        `${DOCTOR_ENDPOINTS.patientConsultations(patientId)}?page=${page}&limit=${limit}`
+                    const response = await api<BackendConsultationsApiResponse>(
+                        `${DOCTOR_ENDPOINTS.consultations}?patientId=${patientId}&page=${page}&limit=${limit}`
                     );
 
-                    if (response.data) {
-                        set({
-                            consultations: response.data.consultations,
-                            pagination: response.data.pagination,
-                            loading: false,
-                            error: null,
-                        });
-                    } else {
-                        throw new Error('Error al obtener las consultas');
-                    }
+                    // Mapear las consultas del backend al formato del frontend
+                    const mappedConsultations = response.data.data.map(mapBackendConsultationToFrontend);
+
+                    // Crear paginación simulada (el backend no devuelve paginación en este endpoint)
+                    const pagination: ConsultationsPagination = {
+                        page: page,
+                        limit: limit,
+                        total: mappedConsultations.length,
+                        totalPages: Math.ceil(mappedConsultations.length / limit)
+                    };
+
+                    set({
+                        consultations: mappedConsultations,
+                        pagination: pagination,
+                        loading: false,
+                        error: null,
+                    });
                 } catch (error) {
                     const errorMessage = error instanceof Error
                         ? error.message
@@ -85,7 +94,7 @@ export const useConsultationsStore = create<ConsultationsStore>()(
 
                 try {
                     const response = await api<CreateConsultationResponse>(
-                        `${DOCTOR_ENDPOINTS.patientConsultations(patientId)}`,
+                        `${DOCTOR_ENDPOINTS.consultations}`,
                         {
                             method: 'POST',
                             body: JSON.stringify(data),

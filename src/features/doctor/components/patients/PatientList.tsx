@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Search, Eye, X, AlertCircle, Loader2, Plus } from 'lucide-react';
-import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose, SelectItem, SelectContent, SelectTrigger, Select, SelectValue } from '@/shared';
+import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose, SelectItem, SelectContent, SelectTrigger, Select, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared';
 import { useDoctorPatients } from '../../hooks/useDoctorPatients';
 import { Patient } from '@/shared/types/patients.types';
 
@@ -23,8 +23,10 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
         error,
         searchTerm,
         sortBy,
+        patientType,
         setSearchTerm,
         setSortBy,
+        setPatientType,
         setPage,
         clearError,
         refetch,
@@ -90,94 +92,49 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
 
     return (
         <div className="space-y-6">
-            {/* Search & Filters */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                        placeholder="Buscar paciente por nombre, DNI o email..."
-                        value={searchTerm}
-                        onChange={handleSearchChange}
-                        className="pl-9"
-                        disabled={loading}
-                    />
-                </div>
+            {/* Tabs para NORMAL y ART */}
+            <Tabs value={patientType} onValueChange={(value) => setPatientType(value as 'NORMAL' | 'ART')}>
+                <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="NORMAL">Pacientes Normales</TabsTrigger>
+                    <TabsTrigger value="ART">Pacientes ART</TabsTrigger>
+                </TabsList>
 
-                <div className="flex gap-2 sm:gap-3">
-                    {/* Sort Options */}
-                    <Select value={sortBy || "lastConsultation"} onValueChange={(value) => setSortBy(value === "none" ? undefined : value)}>
-                        <SelectTrigger className="w-[180px]" disabled={loading}>
-                            <SelectValue placeholder="lastConsultation" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="lastConsultation">Última consulta</SelectItem>
-                            <SelectItem value="name">Nombre</SelectItem>
-                        </SelectContent>
-                    </Select>
-
-                    {/* Add Patient Button */}
-                    <Button
-                        onClick={() => console.log('Agregar paciente - funcionalidad pendiente')}
-                        disabled={loading}
-                        className="whitespace-nowrap"
-                    >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Agregar Paciente
-                    </Button>
-                </div>
-            </div>
-
-            {/* Patients Table Card */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                            <span>Mis Pacientes</span>
-                            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
-                        </div>
-                        <div className="flex items-center space-x-2">
-                            <Badge variant="secondary">
-                                {searchTerm ? filteredPatients.length : pagination.total}
-                                {searchTerm && ` de ${pagination.total}`} pacientes
-                            </Badge>
-                        </div>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <PatientsTable
+                <TabsContent value="NORMAL" className="space-y-6">
+                    <PatientContent 
                         patients={filteredPatients}
-                        onPatientClick={handlePatientPreview}
+                        pagination={pagination}
                         loading={loading}
+                        error={error}
+                        searchTerm={searchTerm}
+                        sortBy={sortBy}
+                        onSearchChange={handleSearchChange}
+                        onSortByChange={setSortBy}
+                        onRetry={handleRetry}
+                        onRetry2={handleRetry2}
+                        onPatientClick={handlePatientPreview}
+                        onPageChange={setPage}
+                        patientType="NORMAL"
                     />
+                </TabsContent>
 
-                    {/* Paginación */}
-                    {!searchTerm && pagination.totalPages > 1 && (
-                        <div className="flex justify-center mt-4 space-x-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={pagination.page <= 1 || loading}
-                                onClick={() => setPage(pagination.page - 1)}
-                            >
-                                Anterior
-                            </Button>
-
-                            <span className="flex items-center px-4 text-sm text-muted-foreground">
-                                Página {pagination.page} de {pagination.totalPages}
-                            </span>
-
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                disabled={pagination.page >= pagination.totalPages || loading}
-                                onClick={() => setPage(pagination.page + 1)}
-                            >
-                                Siguiente
-                            </Button>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
+                <TabsContent value="ART" className="space-y-6">
+                    <PatientContent 
+                        patients={filteredPatients}
+                        pagination={pagination}
+                        loading={loading}
+                        error={error}
+                        searchTerm={searchTerm}
+                        sortBy={sortBy}
+                        onSearchChange={handleSearchChange}
+                        onSortByChange={setSortBy}
+                        onRetry={handleRetry}
+                        onRetry2={handleRetry2}
+                        onPatientClick={handlePatientPreview}
+                        onPageChange={setPage}
+                        patientType="ART"
+                    />
+                </TabsContent>
+            </Tabs>
 
             {/* Patient Preview Sheet */}
             <PatientPreviewSheet
@@ -189,6 +146,153 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
         </div>
     );
 }
+
+// Componente para el contenido de cada tab
+interface PatientContentProps {
+    patients: Patient[];
+    pagination: any;
+    loading: boolean;
+    error: string | null;
+    searchTerm: string;
+    sortBy: string | undefined;
+    onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onSortByChange: (value: string | undefined) => void;
+    onRetry: () => void;
+    onRetry2: () => void;
+    onPatientClick: (patient: Patient) => void;
+    onPageChange: (page: number) => void;
+    patientType: 'NORMAL' | 'ART';
+}
+
+const PatientContent = ({
+    patients,
+    pagination,
+    loading,
+    error,
+    searchTerm,
+    sortBy,
+    onSearchChange,
+    onSortByChange,
+    onRetry,
+    onRetry2,
+    onPatientClick,
+    onPageChange,
+    patientType
+}: PatientContentProps) => {
+    // Error State
+    if (error && !loading) {
+        return (
+            <Card>
+                <CardContent className="pt-6">
+                    <div className="flex items-center justify-center space-x-2 text-destructive">
+                        <AlertCircle className="h-5 w-5" />
+                        <span>Error al cargar pacientes: {error}</span>
+                        <Button variant="outline" size="sm" onClick={onRetry}>
+                            Reintentar
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={onRetry2}>
+                            Recargar
+                        </Button>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    return (
+        <>
+            {/* Search & Filters */}
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                        placeholder={`Buscar paciente ${patientType === 'ART' ? 'ART' : 'normal'} por nombre, DNI o email...`}
+                        value={searchTerm}
+                        onChange={onSearchChange}
+                        className="pl-9"
+                        disabled={loading}
+                    />
+                </div>
+
+                <div className="flex gap-2 sm:gap-3">
+                    {/* Sort Options */}
+                    <Select value={sortBy || "lastConsultation"} onValueChange={(value) => onSortByChange(value === "none" ? undefined : value)}>
+                        <SelectTrigger className="w-[180px]" disabled={loading}>
+                            <SelectValue placeholder="lastConsultation" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="lastConsultation">Última consulta</SelectItem>
+                            <SelectItem value="name">Nombre</SelectItem>
+                            <SelectItem value="createdAt">Último creado</SelectItem>
+                        </SelectContent>
+                    </Select>
+
+                    {/* Add Patient Button */}
+                    <Button
+                        onClick={() => console.log(`Agregar paciente ${patientType} - funcionalidad pendiente`)}
+                        disabled={loading}
+                        className="whitespace-nowrap"
+                    >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Agregar Paciente {patientType === 'ART' ? 'ART' : 'Normal'}
+                    </Button>
+                </div>
+            </div>
+
+            {/* Patients Table Card */}
+            <Card>
+                <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                            <span>Pacientes {patientType === 'ART' ? 'ART' : 'Normales'}</span>
+                            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            <Badge variant="secondary">
+                                {searchTerm ? patients.length : pagination.total}
+                                {searchTerm && ` de ${pagination.total}`} pacientes
+                            </Badge>
+                        </div>
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <PatientsTable
+                        patients={patients}
+                        onPatientClick={onPatientClick}
+                        loading={loading}
+                    />
+
+                     {/* Paginación */}
+                     {!searchTerm && pagination.totalPages > 1 && (
+                         <div className="flex justify-center mt-4 space-x-2">
+                             <Button
+                                 variant="outline"
+                                 size="sm"
+                                 disabled={pagination.page <= 1 || loading}
+                                 onClick={() => onPageChange(pagination.page - 1)}
+                             >
+                                 Anterior
+                             </Button>
+
+                             <span className="flex items-center px-4 text-sm text-muted-foreground">
+                                 Página {pagination.page} de {pagination.totalPages}
+                             </span>
+
+                             <Button
+                                 variant="outline"
+                                 size="sm"
+                                 disabled={pagination.page >= pagination.totalPages || loading}
+                                 onClick={() => onPageChange(pagination.page + 1)}
+                             >
+                                 Siguiente
+                             </Button>
+                         </div>
+                     )}
+                </CardContent>
+            </Card>
+        </>
+    );
+};
 
 // Tabla de pacientes
 const PatientsTable = ({

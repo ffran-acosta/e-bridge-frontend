@@ -290,6 +290,59 @@ export interface ConsultationsApiResponse {
     data: ConsultationsResponse;
 }
 
+// Respuesta real del backend para consultas
+export interface BackendConsultationsApiResponse {
+    success: boolean;
+    statusCode: number;
+    timestamp: string;
+    path: string;
+    data: {
+        statusCode: number;
+        data: BackendConsultation[];
+    };
+}
+
+// Tipo para consulta real del backend
+export interface BackendConsultation {
+    id: string;
+    patientId: string;
+    doctorId: string;
+    medicalEstablishmentId: string;
+    type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO';
+    consultationReason: string;
+    diagnosis: string;
+    medicalIndications: string;
+    nextAppointmentDate: string | null;
+    createdAt: string;
+    updatedAt: string;
+    medicalAssistancePlace: string;
+    medicalAssistanceDate: string;
+    patientSignature: string | null;
+    doctorSignature: string | null;
+    doctor: {
+        id: string;
+        licenseNumber: string;
+        user: {
+            firstName: string;
+            lastName: string;
+        };
+        specialty: {
+            name: string;
+        };
+    };
+    medicalEstablishment: {
+        id: string;
+        name: string;
+    };
+    artDetails: {
+        id: string;
+        nextRevisionDateTime: string | null;
+        workSickLeave: boolean | null;
+        pendingMedicalTreatment: string | null;
+        treatmentEndDateTime: string | null;
+    };
+}
+
 // ========== TIPOS PARA TURNOS ==========
 
 export interface PatientInfo {

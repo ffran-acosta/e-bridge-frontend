@@ -12,9 +12,11 @@ export function useDoctorPatients(initialParams?: PatientsParams) {
         error,
         searchTerm,
         sortBy,
+        patientType,
         fetchPatients,
         setSearchTerm,
         setSortBy,
+        setPatientType,
         setPage,
         clearError,
     } = useDoctorStore();
@@ -37,11 +39,13 @@ export function useDoctorPatients(initialParams?: PatientsParams) {
         error,
         searchTerm,
         sortBy,
+        patientType,
 
         // Acciones
         refetch,
         setSearchTerm,
         setSortBy,
+        setPatientType,
         setPage,
         clearError,
     };

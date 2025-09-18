@@ -2,7 +2,7 @@
  * Mappers para transformar datos entre diferentes formatos
  */
 
-import { BackendPatient, Patient, BackendPatientProfile, PatientProfile } from "@/shared/types/patients.types";
+import { BackendPatient, Patient, BackendPatientProfile, PatientProfile, BackendConsultation, Consultation } from "@/shared/types/patients.types";
 
 // ========== MAPPER PARA LISTA DE PACIENTES ==========
 
@@ -89,5 +89,38 @@ export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatien
         },
         createdAt: backendProfile.createdAt,
         updatedAt: backendProfile.updatedAt
+    };
+};
+
+// ========== MAPPER PARA CONSULTAS ==========
+
+/**
+ * Transforma una consulta del backend al formato esperado por el frontend
+ */
+export const mapBackendConsultationToFrontend = (backendConsultation: BackendConsultation): Consultation => {
+    return {
+        id: backendConsultation.id,
+        consultationReason: backendConsultation.consultationReason,
+        diagnosis: backendConsultation.diagnosis,
+        nextAppointmentDate: backendConsultation.nextAppointmentDate,
+        isArtCase: backendConsultation.type === 'INGRESO' || backendConsultation.type === 'ATENCION',
+        medicalEstablishment: {
+            id: backendConsultation.medicalEstablishment.id,
+            name: backendConsultation.medicalEstablishment.name
+        },
+        employer: null, // No viene en la respuesta del backend
+        doctor: {
+            id: backendConsultation.doctor.id,
+            licenseNumber: backendConsultation.doctor.licenseNumber,
+            fullName: `${backendConsultation.doctor.user.firstName} ${backendConsultation.doctor.user.lastName}`,
+            specialtyName: backendConsultation.doctor.specialty.name
+        },
+        appointmentInfo: {
+            hasOriginAppointment: false, // No viene en la respuesta del backend
+            hasNextAppointment: !!backendConsultation.nextAppointmentDate,
+            nextAppointmentId: null // No viene en la respuesta del backend
+        },
+        createdAt: backendConsultation.createdAt,
+        updatedAt: backendConsultation.updatedAt
     };
 };
