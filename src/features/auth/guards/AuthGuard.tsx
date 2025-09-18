@@ -33,19 +33,21 @@ export function AuthGuard({
     }, [isInitialized, initialize]);
 
     useEffect(() => {
-        if (!isCheckingAuth && !loading) {
+        if (!isCheckingAuth && !loading && isInitialized) {
             if (!user) {
+                console.log("AuthGuard: No hay usuario autenticado, redirigiendo a login");
                 router.replace('/login');
                 return;
             }
 
             if (allowedRoles && !allowedRoles.includes(user.role)) {
+                console.log(`AuthGuard: Usuario con rol ${user.role} no tiene acceso, redirigiendo`);
                 const userDashboard = getRedirectPath(user.role);
                 router.replace(userDashboard);
                 return;
             }
         }
-    }, [user, loading, isCheckingAuth, allowedRoles, router]);
+    }, [user, loading, isCheckingAuth, isInitialized, allowedRoles, router]);
 
     // Mostrar loading mientras verifica autenticación
     if (isCheckingAuth || loading) {

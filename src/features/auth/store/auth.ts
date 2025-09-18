@@ -68,6 +68,12 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
             refreshTimer = null;
         }
         set({ user: null });
+        
+        // Limpiar cookies del lado del cliente
+        if (typeof document !== 'undefined') {
+            document.cookie = 'accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        }
     },
 
     // Helper para establecer usuario
@@ -118,8 +124,9 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
                 scheduleTokenRefresh(get);
             }
         } catch (error) {
-            // Si falla, el usuario no está autenticado
-            console.log("No hay sesión activa");
+            // Si falla, limpiar completamente el estado de autenticación
+            console.log("No hay sesión activa, limpiando estado");
+            get().clearAuth();
         } finally {
             set({ loading: false, isInitialized: true });
         }
@@ -133,8 +140,9 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
 
             set({ user: userData || null });
         } catch (error) {
-            // Si falla, limpiar estado
-            set({ user: null });
+            // Si falla, limpiar completamente el estado de autenticación
+            console.log("Error obteniendo usuario actual:", error);
+            get().clearAuth();
             throw error;
         }
     },
