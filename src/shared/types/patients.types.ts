@@ -358,6 +358,41 @@ export interface MedicalEstablishmentInfo {
     cuit: string;
 }
 
+// Tipo para la respuesta real del backend de appointments
+export interface BackendAppointment {
+    id: string;
+    patientId: string;
+    doctorId: string;
+    medicalEstablishmentId: string;
+    scheduledDateTime: string;
+    status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+    notes: string;
+    originMedicalEventId: string | null;
+    completedMedicalEventId: string | null;
+    createdAt: string;
+    updatedAt: string;
+    doctor: {
+        id: string;
+        userId: string;
+        licenseNumber: string;
+        specialtyId: string;
+        createdAt: string;
+        updatedAt: string;
+        user: {
+            firstName: string;
+            lastName: string;
+        };
+        specialty: {
+            name: string;
+        };
+    };
+    medicalEstablishment: {
+        id: string;
+        name: string;
+    };
+}
+
+// Tipo mapeado para el frontend (mantiene compatibilidad)
 export interface Appointment {
     id: string;
     scheduledDateTime: string;
@@ -383,6 +418,20 @@ export interface AppointmentsResponse {
     pagination: AppointmentsPagination;
 }
 
+// Respuesta real del backend
+export interface BackendAppointmentsApiResponse {
+    success: boolean;
+    statusCode: number;
+    timestamp: string;
+    path: string;
+    data: {
+        statusCode: number;
+        message: string;
+        data: BackendAppointment[];
+    };
+}
+
+// Respuesta mapeada para el frontend (mantiene compatibilidad)
 export interface AppointmentsApiResponse {
     success: boolean;
     statusCode: number;

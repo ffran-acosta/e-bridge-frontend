@@ -4,7 +4,8 @@ import { api } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import type {
     Appointment,
-    AppointmentsApiResponse,
+    BackendAppointment,
+    BackendAppointmentsApiResponse,
     AppointmentsPagination
 } from '@/shared/types/patients.types';
 
@@ -33,6 +34,31 @@ const initialState: AppointmentsState = {
     currentPatientId: null,
 };
 
+// Función para mapear datos del backend al formato del frontend
+const mapBackendAppointmentToFrontend = (backendAppointment: BackendAppointment): Appointment => {
+    return {
+        id: backendAppointment.id,
+        scheduledDateTime: backendAppointment.scheduledDateTime,
+        status: backendAppointment.status,
+        notes: backendAppointment.notes,
+        patient: {
+            id: backendAppointment.patientId,
+            fullName: '', // No viene en la respuesta del backend
+            dni: '', // No viene en la respuesta del backend
+            age: 0, // No viene en la respuesta del backend
+        },
+        medicalEstablishment: {
+            id: backendAppointment.medicalEstablishment.id,
+            name: backendAppointment.medicalEstablishment.name,
+            cuit: '', // No viene en la respuesta del backend
+        },
+        hasOriginConsultation: !!backendAppointment.originMedicalEventId,
+        hasCompletedConsultation: !!backendAppointment.completedMedicalEventId,
+        createdAt: backendAppointment.createdAt,
+        updatedAt: backendAppointment.updatedAt,
+    };
+};
+
 export const useAppointmentsStore = create<AppointmentsStore>()(
     devtools(
         (set, get) => ({
@@ -47,14 +73,25 @@ export const useAppointmentsStore = create<AppointmentsStore>()(
                 set({ loading: true, error: null, currentPatientId: patientId });
 
                 try {
-                    const response = await api<AppointmentsApiResponse>(
+                    const response = await api<BackendAppointmentsApiResponse>(
                         `${DOCTOR_ENDPOINTS.patientAppointments(patientId)}?page=${page}&limit=${limit}`
                     );
 
                     if (response.success) {
+                        // Mapear los datos del backend al formato del frontend
+                        const mappedAppointments = response.data.data.map(mapBackendAppointmentToFrontend);
+                        
+                        // Crear paginación mock ya que el backend no la devuelve
+                        const mockPagination: AppointmentsPagination = {
+                            page: page,
+                            limit: limit,
+                            total: response.data.data.length,
+                            totalPages: Math.ceil(response.data.data.length / limit),
+                        };
+
                         set({
-                            appointments: response.data.appointments,
-                            pagination: response.data.pagination,
+                            appointments: mappedAppointments,
+                            pagination: mockPagination,
                             loading: false,
                             error: null,
                         });

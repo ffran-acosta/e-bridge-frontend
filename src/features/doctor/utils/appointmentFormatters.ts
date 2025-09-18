@@ -95,5 +95,9 @@ export const getAppointmentFollowUp = (appointment: Appointment): {
  */
 export const formatMedicalEstablishmentInfo = (appointment: Appointment): string => {
     const { medicalEstablishment } = appointment;
+    // Si no hay CUIT, solo mostrar el nombre
+    if (!medicalEstablishment.cuit) {
+        return medicalEstablishment.name;
+    }
     return `${medicalEstablishment.name} (CUIT: ${medicalEstablishment.cuit})`;
 };
