@@ -92,11 +92,11 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
 
     return (
         <div className="space-y-6">
-            {/* Tabs para NORMAL y ART */}
+            {/* Tabs para ART y Obra Social/Particulares */}
             <Tabs value={patientType} onValueChange={(value) => setPatientType(value as 'NORMAL' | 'ART')}>
                 <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="NORMAL">Pacientes Normales</TabsTrigger>
                     <TabsTrigger value="ART">Pacientes ART</TabsTrigger>
+                    <TabsTrigger value="NORMAL">Obra Social/Particulares</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="NORMAL" className="space-y-6">
@@ -206,7 +206,7 @@ const PatientContent = ({
                 <div className="relative flex-1">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
-                        placeholder={`Buscar paciente ${patientType === 'ART' ? 'ART' : 'normal'} por nombre, DNI o email...`}
+                        placeholder={`Buscar paciente ${patientType === 'ART' ? 'ART' : 'Obra Social/Particulares'} por nombre, DNI o email...`}
                         value={searchTerm}
                         onChange={onSearchChange}
                         className="pl-9"
@@ -234,7 +234,7 @@ const PatientContent = ({
                         className="whitespace-nowrap"
                     >
                         <Plus className="h-4 w-4 mr-2" />
-                        Agregar Paciente {patientType === 'ART' ? 'ART' : 'Normal'}
+                        Agregar Paciente {patientType === 'ART' ? 'ART' : ''}
                     </Button>
                 </div>
             </div>
@@ -244,7 +244,7 @@ const PatientContent = ({
                 <CardHeader>
                     <CardTitle className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
-                            <span>Pacientes {patientType === 'ART' ? 'ART' : 'Normales'}</span>
+                            <span>Pacientes {patientType === 'ART' ? 'ART' : 'Obra Social/Particulares'}</span>
                             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                         </div>
                         <div className="flex items-center space-x-2">
