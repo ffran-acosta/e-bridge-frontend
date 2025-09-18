@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
-import { Search, Eye, X, AlertCircle, Loader2, Plus } from 'lucide-react';
-import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose, SelectItem, SelectContent, SelectTrigger, Select, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared';
+import React, { useMemo } from 'react';
+import { Search, AlertCircle, Loader2, Plus } from 'lucide-react';
+import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, SelectItem, SelectContent, SelectTrigger, Select, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared';
 import { useDoctorPatients } from '../../hooks/useDoctorPatients';
 import { Patient } from '@/shared/types/patients.types';
 
@@ -12,8 +12,6 @@ interface PatientsListProps {
 
 // Componente principal - Sección de pacientes
 export function PatientsList({ onPatientClick }: PatientsListProps) {
-    const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     // Hook integrado con API real
     const {
@@ -44,17 +42,6 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
         );
     }, [patients, searchTerm]);
 
-    const handlePatientPreview = (patient: Patient) => {
-        setSelectedPatient(patient);
-        setIsPreviewOpen(true);
-    };
-
-    const handleViewFullProfile = () => {
-        if (selectedPatient && onPatientClick) {
-            onPatientClick(selectedPatient);
-            setIsPreviewOpen(false);
-        }
-    };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
@@ -111,7 +98,7 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
                         onSortByChange={setSortBy}
                         onRetry={handleRetry}
                         onRetry2={handleRetry2}
-                        onPatientClick={handlePatientPreview}
+                        onPatientClick={onPatientClick}
                         onPageChange={setPage}
                         patientType="NORMAL"
                     />
@@ -129,20 +116,13 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
                         onSortByChange={setSortBy}
                         onRetry={handleRetry}
                         onRetry2={handleRetry2}
-                        onPatientClick={handlePatientPreview}
+                        onPatientClick={onPatientClick}
                         onPageChange={setPage}
                         patientType="ART"
                     />
                 </TabsContent>
             </Tabs>
 
-            {/* Patient Preview Sheet */}
-            <PatientPreviewSheet
-                patient={selectedPatient}
-                isOpen={isPreviewOpen}
-                onClose={() => setIsPreviewOpen(false)}
-                onViewFullProfile={handleViewFullProfile}
-            />
         </div>
     );
 }
@@ -159,7 +139,7 @@ interface PatientContentProps {
     onSortByChange: (value: string | undefined) => void;
     onRetry: () => void;
     onRetry2: () => void;
-    onPatientClick: (patient: Patient) => void;
+    onPatientClick?: (patient: Patient) => void;
     onPageChange: (page: number) => void;
     patientType: 'NORMAL' | 'ART';
 }
@@ -301,7 +281,7 @@ const PatientsTable = ({
     loading
 }: {
     patients: Patient[],
-    onPatientClick: (patient: Patient) => void,
+    onPatientClick?: (patient: Patient) => void,
     loading: boolean
 }) => {
     const getStatusBadge = (status: Patient['status']) => {
@@ -363,14 +343,14 @@ const PatientsTable = ({
                         <th className="text-left p-3 font-medium">Estado</th>
                         <th className="text-left p-3 font-medium hidden md:table-cell">Última Consulta</th>
                         <th className="text-left p-3 font-medium hidden lg:table-cell">Obra Social</th>
-                        <th className="text-left p-3 font-medium">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {patients.map((patient) => (
                         <tr 
                             key={patient.id} 
-                            className="border-b hover:bg-muted/30 transition-colors"
+                            className="border-b hover:bg-muted/30 transition-colors cursor-pointer"
+                            onClick={() => onPatientClick?.(patient)}
                             >
                             <td className="p-3">
                                 <div>
@@ -395,22 +375,11 @@ const PatientsTable = ({
                             <td className="p-3 hidden lg:table-cell">
                                 <span className="text-sm">{patient.insuranceName}</span>
                             </td>
-                            <td className="p-3">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => onPatientClick(patient)}
-                                    disabled={loading}
-                                >
-                                    <Eye className="h-4 w-4" />
-                                    <span className="sr-only">Ver preview</span>
-                                </Button>
-                            </td>
                         </tr>
                     ))}
                     {patients.length === 0 && !loading && (
                         <tr>
-                            <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                            <td colSpan={5} className="p-8 text-center text-muted-foreground">
                                 No se encontraron pacientes
                             </td>
                         </tr>
@@ -418,146 +387,5 @@ const PatientsTable = ({
                 </tbody>
             </table>
         </div>
-    );
-};
-
-// Preview del paciente en Sheet
-const PatientPreviewSheet = ({
-    patient,
-    isOpen,
-    onClose,
-    onViewFullProfile
-}: {
-    patient: Patient | null,
-    isOpen: boolean,
-    onClose: () => void,
-    onViewFullProfile: () => void
-}) => {
-    if (!patient) return null;
-
-    const getStatusBadge = (status: Patient['status']) => {
-        const variants = {
-            'ATENCION': 'default',
-            'INGRESO': 'secondary',
-            'ALTA_MEDICA': 'outline',
-            'CIRUGIA': 'destructive'
-        } as const;
-
-        const labels = {
-            'ATENCION': 'Atención',
-            'INGRESO': 'Ingreso',
-            'ALTA_MEDICA': 'Alta Médica',
-            'CIRUGIA': 'Cirugía'
-        };
-
-        return <Badge variant={variants[status]}>{labels[status]}</Badge>;
-    };
-
-    const getGenderLabel = (gender: Patient['gender']) => {
-        const labels = {
-            'FEMENINO': 'Femenino',
-            'MASCULINO': 'Masculino',
-            'NO_BINARIO': 'No Binario'
-        };
-        return labels[gender] || gender;
-    };
-
-    const formatDate = (dateString: string) => {
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('es-AR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        } catch {
-            return dateString;
-        }
-    };
-
-    return (
-        <Sheet open={isOpen} onOpenChange={onClose}>
-            <SheetContent className="w-full sm:max-w-md">
-                <SheetHeader>
-                    <div className="flex items-center justify-between">
-                        <SheetTitle>Vista Rápida</SheetTitle>
-                        {/* <SheetClose asChild>
-                            <Button variant="ghost" size="sm">
-                                <X className="h-4 w-4" />
-                            </Button>
-                        </SheetClose> */}
-                    </div>
-                </SheetHeader>
-
-                <div className="space-y-6 mt-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="text-lg">{patient.fullName}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            {/* Información básica */}
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">DNI</label>
-                                    <p className="text-sm">{patient.dni}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">Edad</label>
-                                    <p className="text-sm">{patient.age} años</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">Género</label>
-                                    <p className="text-sm">{getGenderLabel(patient.gender)}</p>
-                                </div>
-                                <div>
-                                    <label className="text-sm font-medium text-muted-foreground">Estado Actual</label>
-                                    <div className="mt-1">
-                                        {getStatusBadge(patient.status)}
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Obra Social */}
-                            <div>
-                                <label className="text-sm font-medium text-muted-foreground">Obra Social</label>
-                                <p className="text-sm">{patient.insuranceName}</p>
-                            </div>
-
-                            {/* Última consulta */}
-                            <div>
-                                <label className="text-sm font-medium text-muted-foreground">Última Consulta</label>
-                                <p className="text-sm">{formatDate(patient.lastConsultationDate)}</p>
-                            </div>
-
-                            {/* Información de contacto */}
-                            <div className="grid grid-cols-1 gap-2 pt-2 border-t">
-                                <div className="text-sm">
-                                    <span className="font-medium text-muted-foreground">Teléfono:</span>
-                                    <span className="ml-2">{patient.phone}</span>
-                                </div>
-                                <div className="text-sm">
-                                    <span className="font-medium text-muted-foreground">Email:</span>
-                                    <span className="ml-2 break-all">{patient.email}</span>
-                                </div>
-                                <div className="text-sm">
-                                    <span className="font-medium text-muted-foreground">Dirección:</span>
-                                    <span className="ml-2">{patient.address}</span>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3">
-                        <Button onClick={onViewFullProfile} className="flex-1">
-                            Ver Perfil 
-                        </Button>
-                        <Button variant="outline" onClick={onClose}>
-                            Cerrar
-                        </Button>
-                    </div>
-                </div>
-            </SheetContent>
-        </Sheet>
     );
 };
