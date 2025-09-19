@@ -418,7 +418,36 @@ export interface AppointmentsResponse {
     pagination: AppointmentsPagination;
 }
 
-// Respuesta real del backend
+// Respuesta real del backend para los nuevos endpoints de calendario
+export interface BackendCalendarAppointment {
+    id: string;
+    time: string;
+    status: 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'NO_SHOW';
+    patient: string;
+    dni: string;
+    type: 'ART' | 'NORMAL';
+    date: string; // Fecha real del turno (YYYY-MM-DD)
+    patientId: string; // ID del paciente para navegación
+}
+
+export interface BackendCalendarApiResponse {
+    success: boolean;
+    statusCode: number;
+    timestamp: string;
+    path: string;
+    data: {
+        statusCode: number;
+        message: string;
+        data: {
+            appointments: BackendCalendarAppointment[];
+            period: 'day' | 'week' | 'month';
+            date: string;
+            count: number;
+        };
+    };
+}
+
+// Respuesta real del backend (mantener para compatibilidad)
 export interface BackendAppointmentsApiResponse {
     success: boolean;
     statusCode: number;

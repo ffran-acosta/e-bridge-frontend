@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Sheet, SheetContent, Alert } from '@/shared';
 import { AppHeader } from '@/shared/components/Header';
 import { DoctorSidebar } from './Sidebar';
+import { AppointmentsCalendar } from '../calendar';
 import { useAuthStore } from '@/features/auth/store/auth';
 import { useDoctorStore } from '@/features/doctor/store/doctorStore';
 import { useImpersonationCleanup } from '@/features/doctor/hooks/useImpersonationCleanup';
@@ -127,7 +128,15 @@ export function DoctorLayout({
                             </div>
                         </Alert>
                     )}
-                    {children}
+                    
+                    {/* Mostrar calendario cuando la sección activa sea 'turnos' */}
+                    {activeSection === 'turnos' ? (
+                        <div className="max-w-4xl mx-auto">
+                            <AppointmentsCalendar />
+                        </div>
+                    ) : (
+                        children
+                    )}
                 </main>
             </div>
         </div>
