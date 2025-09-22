@@ -44,8 +44,9 @@ const mapCalendarAppointmentToFrontend = (calendarAppointment: BackendCalendarAp
     // Siempre usar la fecha real del turno del backend
     const appointmentDate = calendarAppointment.date;
     
-    // Crear fecha completa combinando la fecha con la hora
-    const scheduledDateTime = `${appointmentDate}T${calendarAppointment.time}:00.000Z`;
+    // Crear fecha completa combinando la fecha con la hora en formato ISO
+    // El backend envía la hora en formato "HH:MM", necesitamos crear un datetime completo
+    const scheduledDateTime = `${appointmentDate}T${calendarAppointment.time}:00`;
     
     return {
         id: calendarAppointment.id,
@@ -84,30 +85,52 @@ const useDoctorAppointmentsStore = create<DoctorAppointmentsStore>()(
 
                 try {
                     let endpoint: string;
+                    const dateStr = formatDateForAPI(date);
                     
                     switch (view) {
                         case 'daily':
-                            // Usar endpoint de semana y filtrar por día específico
-                            // ya que el endpoint /today parece tener problemas de zona horaria
-                            endpoint = DOCTOR_ENDPOINTS.appointmentsWeek(formatDateForAPI(date));
+                            endpoint = DOCTOR_ENDPOINTS.appointmentsToday(dateStr);
                             break;
                         case 'weekly':
-                            endpoint = DOCTOR_ENDPOINTS.appointmentsWeek(formatDateForAPI(date));
+                            endpoint = DOCTOR_ENDPOINTS.appointmentsWeek(dateStr);
                             break;
                         case 'monthly':
-                            endpoint = DOCTOR_ENDPOINTS.appointmentsMonth(formatDateForAPI(date));
+                            endpoint = DOCTOR_ENDPOINTS.appointmentsMonth(dateStr);
                             break;
                         default:
                             throw new Error('Vista de calendario no válida');
                     }
 
+                    console.log('🌐 Making API call:', {
+                        view,
+                        dateStr,
+                        endpoint,
+                        fullUrl: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}${endpoint}`
+                    });
+
                     const response = await api<BackendCalendarApiResponse>(endpoint);
 
                     if (response.success) {
                         const calendarData = response.data.data;
+                        console.log('📅 Backend response:', {
+                            view,
+                            date: calendarData.date,
+                            count: calendarData.count,
+                            appointments: calendarData.appointments.slice(0, 3)
+                        });
+                        
                         const mappedAppointments = calendarData.appointments.map(appointment => 
                             mapCalendarAppointmentToFrontend(appointment, calendarData.date, view)
                         );
+                        
+                        console.log('🔄 Mapped appointments:', {
+                            count: mappedAppointments.length,
+                            appointments: mappedAppointments.slice(0, 3).map(a => ({
+                                id: a.id,
+                                scheduledDateTime: a.scheduledDateTime,
+                                patient: a.patient.fullName
+                            }))
+                        });
                         
                         set({
                             appointments: mappedAppointments,

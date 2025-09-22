@@ -4,3 +4,6 @@ export { usePatientConsultations } from './usePatientConsultations';
 export { usePatientProfile } from './usePatientProfile';
 export { useImpersonationCleanup } from './useImpersonationCleanup';
 export { useDoctorAppointments } from './useDoctorAppointments';
+export { useDailyAppointments } from './useDailyAppointments';
+export { useWeeklyAppointments } from './useWeeklyAppointments';
+export { useMonthlyAppointments } from './useMonthlyAppointments';
