@@ -1,3 +1,4 @@
+export * from './Footer';
 export * from './Header';
 export * from './UserAvatar';
 export * from './ui/alert';
