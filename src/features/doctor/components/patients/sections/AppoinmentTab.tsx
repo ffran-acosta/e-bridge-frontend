@@ -81,7 +81,7 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                                 Turnos del Paciente
                             </div>
                             <Badge variant="secondary" className="w-fit">
-                                {pagination?.total || appointments.length} total
+                                {pagination?.total || appointments.length} turnos total
                             </Badge>
                         </div>
                         <Button>

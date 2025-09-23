@@ -79,7 +79,7 @@ export function OverviewTab({ patient }: OverviewTabProps) {
                 </CardContent>
             </Card>
 
-            {/* Información de Seguro e Información Adicional */}
+            {/* Información de Cobertura e Información Adicional */}
             <div className="space-y-6">
                 {/* Contacto de Emergencia */}
                 <Card>
@@ -100,10 +100,10 @@ export function OverviewTab({ patient }: OverviewTabProps) {
                     </CardContent>
                 </Card>
 
-                {/* Información del Seguro */}
+                {/* Información de la Cobertura */}
                 <Card>
                     <CardHeader>
-                        <CardTitle>Seguro Médico</CardTitle>
+                        <CardTitle>Cobertura Médica</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-2">

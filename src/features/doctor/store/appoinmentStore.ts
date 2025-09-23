@@ -11,6 +11,7 @@ import type {
 
 interface AppointmentsState {
     appointments: Appointment[];
+    allAppointments: Appointment[]; // Cache de todos los appointments del paciente actual
     pagination: AppointmentsPagination | null;
     loading: boolean;
     error: string | null;
@@ -28,6 +29,7 @@ type AppointmentsStore = AppointmentsState & AppointmentsActions;
 
 const initialState: AppointmentsState = {
     appointments: [],
+    allAppointments: [],
     pagination: null,
     loading: false,
     error: null,
@@ -64,8 +66,8 @@ export const useAppointmentsStore = create<AppointmentsStore>()(
         (set, get) => ({
             ...initialState,
 
-            fetchAppointments: async (patientId: string, page = 1, limit = 20) => {
-                const { currentPatientId, loading } = get();
+            fetchAppointments: async (patientId: string, page = 1, limit = 5) => {
+                const { currentPatientId, loading, allAppointments } = get();
 
                 // Evitar múltiples requests para el mismo paciente
                 if (loading && currentPatientId === patientId) return;
@@ -73,31 +75,47 @@ export const useAppointmentsStore = create<AppointmentsStore>()(
                 set({ loading: true, error: null, currentPatientId: patientId });
 
                 try {
-                    const response = await api<BackendAppointmentsApiResponse>(
-                        `${DOCTOR_ENDPOINTS.patientAppointments(patientId)}?page=${page}&limit=${limit}`
-                    );
+                    let appointmentsToUse = allAppointments;
 
-                    if (response.success) {
-                        // Mapear los datos del backend al formato del frontend
-                        const mappedAppointments = response.data.data.map(mapBackendAppointmentToFrontend);
-                        
-                        // Crear paginación mock ya que el backend no la devuelve
-                        const mockPagination: AppointmentsPagination = {
-                            page: page,
-                            limit: limit,
-                            total: response.data.data.length,
-                            totalPages: Math.ceil(response.data.data.length / limit),
-                        };
+                    // Solo hacer fetch si es un paciente diferente o no hay datos en cache
+                    if (currentPatientId !== patientId || allAppointments.length === 0) {
+                        const response = await api<BackendAppointmentsApiResponse>(
+                            `${DOCTOR_ENDPOINTS.patientAppointments(patientId)}`
+                        );
 
-                        set({
-                            appointments: mappedAppointments,
-                            pagination: mockPagination,
-                            loading: false,
-                            error: null,
-                        });
-                    } else {
-                        throw new Error('Error al obtener los turnos');
+                        if (response.success) {
+                            appointmentsToUse = response.data.data.map(mapBackendAppointmentToFrontend);
+                        } else {
+                            throw new Error('Error al obtener los turnos');
+                        }
                     }
+
+                    // Ordenar por fecha de creación (más recientes primero)
+                    const sortedAppointments = appointmentsToUse
+                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+                    // Calcular paginación
+                    const total = sortedAppointments.length;
+                    const totalPages = Math.ceil(total / limit);
+                    
+                    // Calcular el offset para la página actual
+                    const offset = (page - 1) * limit;
+                    const paginatedAppointments = sortedAppointments.slice(offset, offset + limit);
+
+                    const pagination: AppointmentsPagination = {
+                        page: page,
+                        limit: limit,
+                        total: total,
+                        totalPages: totalPages,
+                    };
+
+                    set({
+                        appointments: paginatedAppointments,
+                        allAppointments: appointmentsToUse, // Guardar en cache
+                        pagination: pagination,
+                        loading: false,
+                        error: null,
+                    });
                 } catch (error) {
                     const errorMessage = error instanceof Error
                         ? error.message
@@ -105,6 +123,7 @@ export const useAppointmentsStore = create<AppointmentsStore>()(
 
                     set({
                         appointments: [],
+                        allAppointments: [],
                         pagination: null,
                         loading: false,
                         error: errorMessage,
@@ -115,6 +134,7 @@ export const useAppointmentsStore = create<AppointmentsStore>()(
             clearAppointments: () => {
                 set({
                     appointments: [],
+                    allAppointments: [],
                     pagination: null,
                     currentPatientId: null,
                 });

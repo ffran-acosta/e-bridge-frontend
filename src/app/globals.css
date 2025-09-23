@@ -100,7 +100,7 @@
   --status-no-show: #6b7280;          /* Gris - No asistió */
   --status-no-show-foreground: #ffffff;
   
-  --status-surgery: #8b5cf6;          /* Púrpura - Cirugía */
+  --status-surgery: #dc2626;          /* Rojo - Cirugía */
   --status-surgery-foreground: #ffffff;
   
   --status-referred: #dc2626;         /* Rojo oscuro - Derivado */

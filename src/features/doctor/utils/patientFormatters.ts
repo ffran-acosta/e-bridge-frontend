@@ -155,7 +155,7 @@ export const mapPatientForComponent = (patient: PatientProfile) => {
         // Contacto de emergencia
         emergencyContact: mapEmergencyContact(patient),
 
-        // Seguro médico
+        // Cobertura médica
         insurance: patient.insurance,
 
         // Estadísticas

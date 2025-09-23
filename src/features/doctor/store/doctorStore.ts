@@ -65,7 +65,7 @@ const initialState: State = {
     error: null,
     searchTerm: "",
     sortBy: undefined,
-    patientType: 'NORMAL',
+    patientType: 'ART',
 
     // Estado inicial del perfil
     selectedPatient: null,
