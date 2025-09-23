@@ -106,8 +106,8 @@
   --status-referred: #dc2626;         /* Rojo oscuro - Derivado */
   --status-referred-foreground: #ffffff;
 
-  /* radios/sombras por defecto */
-  --radius: 0.75rem;
+  /* radios/sombras por defecto - DISEÑO CUADRADO */
+  --radius: 0px;
 }
 
 @layer base {

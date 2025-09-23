@@ -8,7 +8,7 @@ import {
     FileCheck,
     Download
 } from 'lucide-react';
-import { Button } from '@/shared';
+import { Button, GlowContainer } from '@/shared';
 
 interface DoctorSidebarProps {
     activeSection: string;
@@ -44,16 +44,22 @@ export function DoctorSidebar({
                 <ul className="space-y-2">
                     {menuItems.map((item) => (
                         <li key={item.id}>
-                            <Button
-                                variant={activeSection === item.id ? "default" : "ghost"}
-                                className="w-full justify-start"
-                                onClick={() => item.active && setActiveSection(item.id)}
-                                disabled={!item.active}
+                            <GlowContainer
+                                glowColor={activeSection === item.id ? "rgba(26, 84, 68, 0.7)" : "rgba(69, 151, 128, 0.6)"}
+                                glowSize={120}
+                                className="rounded-sm"
                             >
-                                <item.icon className="mr-3 h-4 w-4" />
-                                {item.label}
-                                {!item.active && <span className="ml-auto text-xs text-muted-foreground">(Próximamente)</span>}
-                            </Button>
+                                <Button
+                                    variant={activeSection === item.id ? "default" : "ghost"}
+                                    className="w-full justify-start"
+                                    onClick={() => item.active && setActiveSection(item.id)}
+                                    disabled={!item.active}
+                                >
+                                    <item.icon className="mr-3 h-4 w-4" />
+                                    {item.label}
+                                    {!item.active && <span className="ml-auto text-xs text-muted-foreground">(Próximamente)</span>}
+                                </Button>
+                            </GlowContainer>
                         </li>
                     ))}
                 </ul>

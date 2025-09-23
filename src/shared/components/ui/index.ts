@@ -7,6 +7,7 @@ export * from './checkbox';
 export * from './dialog';
 export * from './dropdown-menu';
 export * from './form';
+export * from './glow-container';
 export * from './input';
 export * from './label';
 export * from './popover';
