@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input, Button, useFormSubmission } from "@/shared";
+import { Input, PasswordInput, Button, useFormSubmission } from "@/shared";
 import { FormFieldWrapper } from "@/shared/components/forms/FormField";
 import { useAuthRedirect } from "../../hook/useAuthRedirect";
 import { LoginInput, loginSchema } from "../../lib/schemas";
@@ -42,9 +42,8 @@ export default function LoginForm() {
                 error={errors.password?.message}
                 required
             >
-                <Input
+                <PasswordInput
                     id="password"
-                    type="password"
                     placeholder="••••••••"
                     {...register("password")}
                 />

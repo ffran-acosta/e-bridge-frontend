@@ -11,6 +11,7 @@ export * from './ui/form';
 export * from './ui/glow-container';
 export * from './ui/input';
 export * from './ui/label';
+export * from './ui/password-input';
 export * from './ui/select';
 export * from './ui/separator';
 export * from './ui/sheet';

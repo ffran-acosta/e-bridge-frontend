@@ -10,6 +10,7 @@ export * from './form';
 export * from './glow-container';
 export * from './input';
 export * from './label';
+export * from './password-input';
 export * from './popover';
 export * from './select';
 export * from './separator';
