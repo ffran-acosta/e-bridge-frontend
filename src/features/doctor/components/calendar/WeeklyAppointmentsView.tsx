@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
     Calendar,
     Clock,
@@ -32,7 +32,7 @@ interface DayAppointments {
     appointments: BackendCalendarApiResponse['data']['data']['appointments'];
 }
 
-export const WeeklyAppointmentsView = ({
+export const WeeklyAppointmentsView = React.memo(({
     appointments,
     currentDate,
     loading,
@@ -43,10 +43,10 @@ export const WeeklyAppointmentsView = ({
 }: WeeklyAppointmentsViewProps) => {
     const [expandedDays, setExpandedDays] = useState<Set<string>>(new Set());
 
-    const navigateDate = (direction: 'prev' | 'next') => {
+    const navigateDate = useCallback((direction: 'prev' | 'next') => {
         const newDate = direction === 'next' ? getNextWeek(currentDate) : getPreviousWeek(currentDate);
         onDateChange(newDate);
-    };
+    }, [currentDate, onDateChange]);
 
     // Organizar turnos por día de la semana
     const weekData = useMemo(() => {
@@ -100,7 +100,7 @@ export const WeeklyAppointmentsView = ({
         };
     }, [appointments]);
 
-    const toggleDayExpansion = (dateStr: string) => {
+    const toggleDayExpansion = useCallback((dateStr: string) => {
         setExpandedDays(prev => {
             const newSet = new Set(prev);
             if (newSet.has(dateStr)) {
@@ -110,7 +110,7 @@ export const WeeklyAppointmentsView = ({
             }
             return newSet;
         });
-    };
+    }, []);
 
     const getStatusBadgeVariant = (status: string) => {
         switch (status) {
@@ -392,4 +392,4 @@ export const WeeklyAppointmentsView = ({
             )}
         </div>
     );
-};
+});

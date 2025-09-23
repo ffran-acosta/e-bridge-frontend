@@ -1,5 +1,5 @@
 // features/doctor/hooks/usePatientAppointments.ts
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import type { Appointment, AppointmentsPagination } from '@/shared/types/patients.types';
 import { useAppointmentsStore } from '../store/appoinmentStore';
 
@@ -16,15 +16,27 @@ export const usePatientAppointments = (
     patientId: string | undefined,
     autoFetch = true
 ): UsePatientAppointmentsReturn => {
-    const {
-        appointments,
-        pagination,
-        loading,
-        error,
-        fetchAppointments,
-        clearAppointments,
-        currentPatientId,
-    } = useAppointmentsStore();
+    // Usar selectores específicos para evitar re-renders innecesarios
+    const appointments = useAppointmentsStore(state => state.appointments);
+    const pagination = useAppointmentsStore(state => state.pagination);
+    const loading = useAppointmentsStore(state => state.loading);
+    const error = useAppointmentsStore(state => state.error);
+    const currentPatientId = useAppointmentsStore(state => state.currentPatientId);
+    const fetchAppointments = useAppointmentsStore(state => state.fetchAppointments);
+    const clearAppointments = useAppointmentsStore(state => state.clearAppointments);
+
+    // Funciones memoizadas
+    const refetch = useCallback(() => {
+        if (patientId) {
+            fetchAppointments(patientId);
+        }
+    }, [patientId, fetchAppointments]);
+
+    const loadPage = useCallback((page: number) => {
+        if (patientId) {
+            fetchAppointments(patientId, page);
+        }
+    }, [patientId, fetchAppointments]);
 
     // Auto-fetch cuando cambia el patientId
     useEffect(() => {
@@ -34,7 +46,7 @@ export const usePatientAppointments = (
         if (currentPatientId !== patientId || appointments.length === 0) {
             fetchAppointments(patientId);
         }
-    }, [patientId, autoFetch, fetchAppointments, currentPatientId, appointments.length]);
+    }, [patientId, autoFetch]); // Solo dependemos de patientId y autoFetch
 
     // Limpiar datos cuando se desmonta o cambia el paciente
     useEffect(() => {
@@ -43,19 +55,7 @@ export const usePatientAppointments = (
                 clearAppointments();
             }
         };
-    }, [patientId, currentPatientId, clearAppointments]);
-
-    const refetch = () => {
-        if (patientId) {
-            fetchAppointments(patientId);
-        }
-    };
-
-    const loadPage = (page: number) => {
-        if (patientId) {
-            fetchAppointments(patientId, page);
-        }
-    };
+    }, [patientId]); // Solo dependemos de patientId
 
     return {
         appointments,

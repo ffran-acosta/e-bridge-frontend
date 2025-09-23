@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import {
     Calendar,
     ChevronLeft,
@@ -30,7 +30,7 @@ interface DayAppointments {
     appointments: BackendCalendarApiResponse['data']['data']['appointments'];
 }
 
-export const MonthlyAppointmentsView = ({
+export const MonthlyAppointmentsView = React.memo(({
     appointments,
     currentDate,
     loading,
@@ -39,10 +39,10 @@ export const MonthlyAppointmentsView = ({
     onNavigateToDailyView,
     onRefresh
 }: MonthlyAppointmentsViewProps) => {
-    const navigateDate = (direction: 'prev' | 'next') => {
+    const navigateDate = useCallback((direction: 'prev' | 'next') => {
         const newDate = direction === 'next' ? getNextMonth(currentDate) : getPreviousMonth(currentDate);
         onDateChange(newDate);
-    };
+    }, [currentDate, onDateChange]);
 
     // Organizar turnos por día del mes
     const monthData = useMemo(() => {
@@ -290,4 +290,4 @@ export const MonthlyAppointmentsView = ({
             )}
         </div>
     );
-};
+});

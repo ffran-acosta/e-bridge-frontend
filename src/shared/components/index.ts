@@ -25,3 +25,6 @@ export * from './forms/BaseModal';
 // Card components
 export * from './cards/UserCard';
 export * from './cards/BaseUserCard';
+
+// Performance monitoring
+export * from './PerformanceDebugger';

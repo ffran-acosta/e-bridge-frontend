@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { Search, AlertCircle, Loader2, Plus } from 'lucide-react';
 import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, SelectItem, SelectContent, SelectTrigger, Select, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared';
 import { useDoctorPatients } from '../../hooks/useDoctorPatients';
@@ -11,7 +11,7 @@ interface PatientsListProps {
 }
 
 // Componente principal - Sección de pacientes
-export function PatientsList({ onPatientClick }: PatientsListProps) {
+export const PatientsList = React.memo(({ onPatientClick }: PatientsListProps) => {
 
     // Hook integrado con API real
     const {
@@ -43,18 +43,19 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
     }, [patients, searchTerm]);
 
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchTerm(e.target.value);
-    };
+    }, [setSearchTerm]);
 
-    const handleRetry = () => {
+    const handleRetry = useCallback(() => {
         clearError();
         refetch();
-    };
-    const handleRetry2 = () => {
+    }, [clearError, refetch]);
+
+    const handleRetry2 = useCallback(() => {
         clearError();
         window.location.reload();
-    };
+    }, [clearError]);
 
 
     // Error State
@@ -125,7 +126,7 @@ export function PatientsList({ onPatientClick }: PatientsListProps) {
 
         </div>
     );
-}
+});
 
 // Componente para el contenido de cada tab
 interface PatientContentProps {
@@ -144,7 +145,7 @@ interface PatientContentProps {
     patientType: 'NORMAL' | 'ART';
 }
 
-const PatientContent = ({
+const PatientContent = React.memo(({
     patients,
     pagination,
     loading,
@@ -272,10 +273,10 @@ const PatientContent = ({
             </Card>
         </>
     );
-};
+});
 
 // Tabla de pacientes
-const PatientsTable = ({
+const PatientsTable = React.memo(({
     patients,
     onPatientClick,
     loading
@@ -388,4 +389,4 @@ const PatientsTable = ({
             </table>
         </div>
     );
-};
+});

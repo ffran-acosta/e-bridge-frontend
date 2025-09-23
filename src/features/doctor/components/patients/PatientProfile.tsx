@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
     Button,
     Dialog,
@@ -24,7 +24,7 @@ interface PatientProfileProps {
     patientId?: string;
 }
 
-export function PatientProfile({ patientId }: PatientProfileProps) {
+export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) => {
     const [activeTab, setActiveTab] = useState("overview");
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
@@ -32,13 +32,13 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
     const { patient, loading, error, refetch, clearError } = usePatientProfile(patientId);
 
     // Handlers para acciones del header
-    const handleEdit = () => {
+    const handleEdit = useCallback(() => {
         setIsEditModalOpen(true);
-    };
+    }, []);
 
-    const handleExport = () => {
+    const handleExport = useCallback(() => {
         console.log("Exportar perfil del paciente");
-    };
+    }, []);
 
     // Estados de carga y error
     if (loading) {
@@ -138,7 +138,7 @@ export function PatientProfile({ patientId }: PatientProfileProps) {
                         </Button>
                     </div>
                 </DialogContent>
-            </Dialog>
-        </div>
-    );
-}
+        </Dialog>
+    </div>
+);
+});

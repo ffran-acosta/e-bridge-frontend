@@ -1,20 +1,19 @@
 "use client";
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useDashboardStore } from '../store/dashboard';
 
 export function useAdmins(searchTerm: string = '') {
-    const {
-        admins,
-        doctors,
-        loading,
-        error,
-        fetchDashboard,
-        toggleAdminStatus,
-        assignDoctorToAdmin,
-        unassignDoctorFromAdmin,
-        getAdminById,
-        clearError
-    } = useDashboardStore();
+    // Usar selectores específicos para evitar re-renders innecesarios
+    const admins = useDashboardStore(state => state.admins);
+    const doctors = useDashboardStore(state => state.doctors);
+    const loading = useDashboardStore(state => state.loading);
+    const error = useDashboardStore(state => state.error);
+    const fetchDashboard = useDashboardStore(state => state.fetchDashboard);
+    const toggleAdminStatus = useDashboardStore(state => state.toggleAdminStatus);
+    const assignDoctorToAdmin = useDashboardStore(state => state.assignDoctorToAdmin);
+    const unassignDoctorFromAdmin = useDashboardStore(state => state.unassignDoctorFromAdmin);
+    const getAdminById = useDashboardStore(state => state.getAdminById);
+    const clearError = useDashboardStore(state => state.clearError);
 
     useEffect(() => {
         if (admins.length === 0 && !loading) {
@@ -22,17 +21,19 @@ export function useAdmins(searchTerm: string = '') {
         }
     }, [admins.length, loading, fetchDashboard]);
 
-    // Filtro que reacciona al searchTerm
-    const filteredAdmins = admins.filter(admin => {
-        if (searchTerm && searchTerm.trim() !== '') {
-            const search = searchTerm.toLowerCase().trim();
-            const fullName = `${admin.firstName} ${admin.lastName}`.toLowerCase();
-            const email = admin.email.toLowerCase();
+    // Filtro memoizado que reacciona al searchTerm
+    const filteredAdmins = useMemo(() => {
+        return admins.filter(admin => {
+            if (searchTerm && searchTerm.trim() !== '') {
+                const search = searchTerm.toLowerCase().trim();
+                const fullName = `${admin.firstName} ${admin.lastName}`.toLowerCase();
+                const email = admin.email.toLowerCase();
 
-            return fullName.includes(search) || email.includes(search);
-        }
-        return true;
-    });
+                return fullName.includes(search) || email.includes(search);
+            }
+            return true;
+        });
+    }, [admins, searchTerm]);
 
     return {
         admins: filteredAdmins,
