@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 import { Search, AlertCircle, Loader2, Plus } from 'lucide-react';
 import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, SelectItem, SelectContent, SelectTrigger, Select, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared';
 import { useDoctorPatients } from '../../hooks/useDoctorPatients';
 import { Patient } from '@/shared/types/patients.types';
+import { CreatePatientModal } from '../modals/CreatePatientModal';
+import { CreatePatientResponse } from '../../types/patient-form.types';
 
 interface PatientsListProps {
     onPatientClick?: (patient: Patient) => void;
@@ -12,6 +14,7 @@ interface PatientsListProps {
 
 // Componente principal - Sección de pacientes
 export const PatientsList = React.memo(({ onPatientClick }: PatientsListProps) => {
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     // Hook integrado con API real
     const {
@@ -56,6 +59,14 @@ export const PatientsList = React.memo(({ onPatientClick }: PatientsListProps) =
         clearError();
         window.location.reload();
     }, [clearError]);
+
+    const handlePatientCreated = useCallback((patient: CreatePatientResponse) => {
+        console.log('Paciente creado exitosamente:', patient);
+        // Refrescar la lista de pacientes
+        refetch();
+        // Cerrar el modal
+        setIsCreateModalOpen(false);
+    }, [refetch]);
 
 
     // Error State
@@ -102,6 +113,7 @@ export const PatientsList = React.memo(({ onPatientClick }: PatientsListProps) =
                         onPatientClick={onPatientClick}
                         onPageChange={setPage}
                         patientType="NORMAL"
+                        onCreatePatient={() => setIsCreateModalOpen(true)}
                     />
                 </TabsContent>
 
@@ -120,9 +132,21 @@ export const PatientsList = React.memo(({ onPatientClick }: PatientsListProps) =
                         onPatientClick={onPatientClick}
                         onPageChange={setPage}
                         patientType="ART"
+                        onCreatePatient={() => setIsCreateModalOpen(true)}
                     />
                 </TabsContent>
             </Tabs>
+
+            {/* Modal de creación de pacientes */}
+            <CreatePatientModal
+                isOpen={isCreateModalOpen}
+                onClose={() => setIsCreateModalOpen(false)}
+                defaultType={patientType}
+                onSuccess={handlePatientCreated}
+                onError={(error) => {
+                    console.error('Error al crear paciente:', error);
+                }}
+            />
 
         </div>
     );
@@ -143,6 +167,7 @@ interface PatientContentProps {
     onPatientClick?: (patient: Patient) => void;
     onPageChange: (page: number) => void;
     patientType: 'NORMAL' | 'ART';
+    onCreatePatient: () => void;
 }
 
 const PatientContent = React.memo(({
@@ -158,7 +183,8 @@ const PatientContent = React.memo(({
     onRetry2,
     onPatientClick,
     onPageChange,
-    patientType
+    patientType,
+    onCreatePatient
 }: PatientContentProps) => {
     // Error State
     if (error && !loading) {
@@ -210,7 +236,7 @@ const PatientContent = React.memo(({
 
                     {/* Add Patient Button */}
                     <Button
-                        onClick={() => console.log(`Agregar paciente ${patientType} - funcionalidad pendiente`)}
+                        onClick={onCreatePatient}
                         disabled={loading}
                         className="whitespace-nowrap"
                     >

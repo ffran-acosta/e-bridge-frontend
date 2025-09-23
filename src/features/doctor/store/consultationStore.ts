@@ -54,12 +54,28 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                 set({ loading: true, error: null, currentPatientId: patientId });
 
                 try {
-                    const response = await api<BackendConsultationsApiResponse>(
-                        `${DOCTOR_ENDPOINTS.consultations}?patientId=${patientId}&page=${page}&limit=${limit}`
-                    );
+                    console.log('🔍 Cargando consultas para paciente:', patientId);
+                    const endpoint = DOCTOR_ENDPOINTS.patientConsultations(patientId);
+                    console.log('📡 Llamando endpoint:', endpoint);
+                    
+                    const response = await api<BackendConsultationsApiResponse>(endpoint);
+                    console.log('📦 Respuesta del backend:', response);
 
                     // Mapear las consultas del backend al formato del frontend
                     const mappedConsultations = response.data.data.map(mapBackendConsultationToFrontend);
+                    console.log('✅ Consultas mapeadas:', mappedConsultations);
+                    
+                    // Verificar si las consultas pertenecen realmente al paciente
+                    const patientIdsInConsultations = mappedConsultations.map(c => c.patientId);
+                    const uniquePatientIds = [...new Set(patientIdsInConsultations)];
+                    console.log('🔍 Patient IDs en las consultas:', patientIdsInConsultations);
+                    console.log('🔍 Patient IDs únicos:', uniquePatientIds);
+                    
+                    if (uniquePatientIds.length > 1 || !uniquePatientIds.includes(patientId)) {
+                        console.error('❌ PROBLEMA DETECTADO: Las consultas no pertenecen al paciente correcto!');
+                        console.error('❌ Patient ID esperado:', patientId);
+                        console.error('❌ Patient IDs en consultas:', uniquePatientIds);
+                    }
 
                     // Crear paginación simulada (el backend no devuelve paginación en este endpoint)
                     const pagination: ConsultationsPagination = {

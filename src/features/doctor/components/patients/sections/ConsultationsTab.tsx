@@ -265,6 +265,7 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                     setIsCreateModalOpen(false);
                 }}
             />
+
         </div>
     );
 };
