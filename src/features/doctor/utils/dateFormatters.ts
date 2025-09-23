@@ -1,12 +1,8 @@
-/**
- * Utilidades para formateo de fechas y horas
- */
+// Utilidades para formateo de fechas y horas
 
 // ========== FUNCIONES GENERALES DE FECHAS ==========
 
-/**
- * Formatear fecha y hora completa
- */
+// Formatear fecha y hora completa
 export const formatDateTime = (dateString: string | null | undefined): string => {
     if (!dateString) return 'No especificado';
 
@@ -19,9 +15,7 @@ export const formatDateTime = (dateString: string | null | undefined): string =>
     });
 };
 
-/**
- * Formatear solo fecha
- */
+// Formatear solo fecha
 export const formatDate = (dateString: string | null | undefined): string => {
     if (!dateString) return 'No especificado';
 
@@ -32,9 +26,7 @@ export const formatDate = (dateString: string | null | undefined): string => {
     });
 };
 
-/**
- * Formatear solo hora
- */
+// Formatear solo hora
 export const formatTime = (dateString: string | null | undefined): string => {
     if (!dateString) return 'No especificado';
 
@@ -44,9 +36,7 @@ export const formatTime = (dateString: string | null | undefined): string => {
     });
 };
 
-/**
- * Formatear última consulta específicamente
- */
+// Formatear última consulta específicamente
 export const formatLastConsultation = (dateString: string | null | undefined): string => {
     if (!dateString) return 'Sin consultas';
 
@@ -55,9 +45,7 @@ export const formatLastConsultation = (dateString: string | null | undefined): s
 
 // ========== FUNCIONES PARA CONSULTAS ==========
 
-/**
- * Formatea la fecha de consulta
- */
+// Formatea la fecha de consulta
 export const formatConsultationDate = (dateString: string): string => {
     try {
         const date = new Date(dateString);
@@ -73,9 +61,7 @@ export const formatConsultationDate = (dateString: string): string => {
     }
 };
 
-/**
- * Formatea la fecha de próxima cita
- */
+// Formatea la fecha de próxima cita
 export const formatNextAppointmentDate = (dateString: string | null): string => {
     if (!dateString) return 'No programada';
 
@@ -95,9 +81,7 @@ export const formatNextAppointmentDate = (dateString: string | null): string => 
 
 // ========== FUNCIONES PARA TURNOS ==========
 
-/**
- * Formatea la fecha y hora del turno
- */
+// Formatea la fecha y hora del turno
 export const formatAppointmentDateTime = (dateString: string): string => {
     try {
         const date = new Date(dateString);
@@ -113,9 +97,7 @@ export const formatAppointmentDateTime = (dateString: string): string => {
     }
 };
 
-/**
- * Formatea solo la fecha del turno
- */
+// Formatea solo la fecha del turno
 export const formatAppointmentDate = (dateString: string): string => {
     try {
         const date = new Date(dateString);
@@ -129,9 +111,7 @@ export const formatAppointmentDate = (dateString: string): string => {
     }
 };
 
-/**
- * Formatea solo la hora del turno
- */
+// Formatea solo la hora del turno
 export const formatAppointmentTime = (dateString: string): string => {
     try {
         const date = new Date(dateString);

@@ -1,14 +1,10 @@
-/**
- * Mappers para transformar datos entre diferentes formatos
- */
+// Mappers para transformar datos entre diferentes formatos
 
 import { BackendPatient, Patient, BackendPatientProfile, PatientProfile, BackendConsultation, Consultation } from "@/shared/types/patients.types";
 
 // ========== MAPPER PARA LISTA DE PACIENTES ==========
 
-/**
- * Transforma un paciente del backend al formato esperado por el frontend
- */
+// Transforma un paciente del backend al formato esperado por el frontend
 export const mapBackendPatientToFrontend = (backendPatient: BackendPatient): Patient => {
     return {
         id: backendPatient.id,
@@ -27,9 +23,7 @@ export const mapBackendPatientToFrontend = (backendPatient: BackendPatient): Pat
 
 // ========== MAPPER PARA PERFIL DE PACIENTE ==========
 
-/**
- * Transforma el perfil de paciente del backend al formato esperado por el frontend
- */
+// Transforma el perfil de paciente del backend al formato esperado por el frontend
 export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatientProfile): PatientProfile => {
     return {
         id: backendProfile.id,
@@ -94,9 +88,7 @@ export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatien
 
 // ========== MAPPER PARA CONSULTAS ==========
 
-/**
- * Transforma una consulta del backend al formato esperado por el frontend
- */
+// Transforma una consulta del backend al formato esperado por el frontend
 export const mapBackendConsultationToFrontend = (backendConsultation: BackendConsultation): Consultation => {
     return {
         id: backendConsultation.id,

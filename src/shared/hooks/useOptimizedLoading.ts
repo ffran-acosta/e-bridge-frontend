@@ -18,10 +18,8 @@ interface LoadingState {
     hasData: boolean;
 }
 
-/**
- * Hook optimizado para manejar estados de loading
- * Evita flashes de loading y maneja casos edge
- */
+// Hook optimizado para manejar estados de loading
+// Evita flashes de loading y maneja casos edge
 export function useOptimizedLoading<T>(
     initialData: T | null = null,
     options: OptimizedLoadingOptions = {}
@@ -135,9 +133,7 @@ export function useOptimizedLoading<T>(
     };
 }
 
-/**
- * Hook para manejar loading states en listas con paginación
- */
+// Hook para manejar loading states en listas con paginación
 export function useListLoading<T>(
     initialItems: T[] = [],
     options: OptimizedLoadingOptions = {}
@@ -213,9 +209,7 @@ export function useListLoading<T>(
     };
 }
 
-/**
- * Hook para manejar loading states en operaciones CRUD
- */
+// Hook para manejar loading states en operaciones CRUD
 export function useCrudLoading<T>(
     initialData: T | null = null,
     options: OptimizedLoadingOptions = {}

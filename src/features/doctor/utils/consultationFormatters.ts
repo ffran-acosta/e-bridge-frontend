@@ -1,12 +1,8 @@
-/**
- * Utilidades para formateo de consultas
- */
+// Utilidades para formateo de consultas
 
 import type { Consultation } from '@/shared/types/patients.types';
 
-/**
- * Obtiene el estado de la consulta basado en appointmentInfo - Sistema de 4 pasos
- */
+// Obtiene el estado de la consulta basado en appointmentInfo - Sistema de 4 pasos
 export const getConsultationStatus = (consultation: Consultation): {
     status: 'completed' | 'pending' | 'scheduled';
     label: string;
@@ -37,17 +33,13 @@ export const getConsultationStatus = (consultation: Consultation): {
     };
 };
 
-/**
- * Formatea el nombre del doctor con especialidad
- */
+// Formatea el nombre del doctor con especialidad
 export const formatDoctorInfo = (consultation: Consultation): string => {
     const { doctor } = consultation;
     return `${doctor.fullName} - ${doctor.specialtyName} (${doctor.licenseNumber})`;
 };
 
-/**
- * Determina si la consulta es un caso ART - Sistema de 4 pasos
- */
+// Determina si la consulta es un caso ART - Sistema de 4 pasos
 export const getArtCaseLabel = (isArtCase: boolean): {
     label: string;
     variant: 'surgery' | 'step-1';

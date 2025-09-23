@@ -9,10 +9,8 @@ interface PerformanceDebuggerProps {
     componentName?: string;
 }
 
-/**
- * Componente para debuggear el rendimiento en desarrollo
- * Solo se muestra cuando NODE_ENV === 'development'
- */
+// Componente para debuggear el rendimiento en desarrollo
+// Solo se muestra cuando NODE_ENV === 'development'
 export const PerformanceDebugger: React.FC<PerformanceDebuggerProps> = ({ 
     enabled = true, 
     componentName = 'Unknown' 
@@ -109,9 +107,7 @@ export const PerformanceDebugger: React.FC<PerformanceDebuggerProps> = ({
     );
 };
 
-/**
- * HOC para agregar monitoreo de rendimiento a cualquier componente
- */
+// HOC para agregar monitoreo de rendimiento a cualquier componente
 export function withPerformanceMonitor<P extends object>(
     Component: React.ComponentType<P>,
     componentName?: string

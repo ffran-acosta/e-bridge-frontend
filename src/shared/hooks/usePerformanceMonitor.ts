@@ -9,10 +9,8 @@ interface PerformanceMetrics {
     componentName: string;
 }
 
-/**
- * Hook para monitorear el rendimiento de componentes
- * Útil para detectar componentes que se re-renderizan demasiado
- */
+// Hook para monitorear el rendimiento de componentes
+// Útil para detectar componentes que se re-renderizan demasiado
 export function usePerformanceMonitor(componentName: string, enabled = true) {
     const renderCountRef = useRef(0);
     const renderTimesRef = useRef<number[]>([]);
@@ -58,7 +56,7 @@ export function usePerformanceMonitor(componentName: string, enabled = true) {
         };
     });
 
-    // Función para obtener métricas actuales
+// Función para obtener métricas actuales
     const getMetrics = (): PerformanceMetrics => {
         const averageRenderTime = renderTimesRef.current.length > 0 
             ? renderTimesRef.current.reduce((a, b) => a + b, 0) / renderTimesRef.current.length
@@ -72,7 +70,7 @@ export function usePerformanceMonitor(componentName: string, enabled = true) {
         };
     };
 
-    // Función para resetear métricas
+// Función para resetear métricas
     const resetMetrics = () => {
         renderCountRef.current = 0;
         renderTimesRef.current = [];
@@ -85,9 +83,7 @@ export function usePerformanceMonitor(componentName: string, enabled = true) {
     };
 }
 
-/**
- * Hook para medir el tiempo de ejecución de funciones
- */
+// Hook para medir el tiempo de ejecución de funciones
 export function useFunctionTimer() {
     const timeFunction = (fn: () => void, functionName: string) => {
         const start = performance.now();
@@ -119,9 +115,7 @@ export function useFunctionTimer() {
     };
 }
 
-/**
- * Hook para detectar memory leaks en componentes
- */
+// Hook para detectar memory leaks en componentes
 export function useMemoryLeakDetector(componentName: string) {
     const listenersRef = useRef<(() => void)[]>([]);
     const timersRef = useRef<NodeJS.Timeout[]>([]);
