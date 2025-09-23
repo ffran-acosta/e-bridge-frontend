@@ -5,33 +5,33 @@
 import type { Appointment } from '@/shared/types/patients.types';
 
 /**
- * Obtiene el estado del turno con estilo
+ * Obtiene el estado del turno con estilo - Sistema de 4 pasos
  */
 export const getAppointmentStatus = (appointment: Appointment): {
     status: 'scheduled' | 'completed' | 'cancelled' | 'no_show';
     label: string;
-    variant: 'default' | 'secondary' | 'destructive' | 'outline';
+    variant: 'step-1' | 'step-4' | 'cancelled' | 'no-show';
 } => {
     const statusMap = {
         'SCHEDULED': {
             status: 'scheduled' as const,
             label: 'Programado',
-            variant: 'default' as const
+            variant: 'step-1' as const        // PASO 1 - Azul (Programada)
         },
         'COMPLETED': {
             status: 'completed' as const,
             label: 'Completado',
-            variant: 'secondary' as const
+            variant: 'step-4' as const        // PASO 4 - Verde (Completada)
         },
         'CANCELLED': {
             status: 'cancelled' as const,
             label: 'Cancelado',
-            variant: 'destructive' as const
+            variant: 'cancelled' as const     // ESPECIAL - Rojo (Cancelada)
         },
         'NO_SHOW': {
             status: 'no_show' as const,
             label: 'No asistió',
-            variant: 'outline' as const
+            variant: 'no-show' as const       // ESPECIAL - Gris (No asistió)
         }
     };
 

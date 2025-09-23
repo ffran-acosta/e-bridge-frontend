@@ -76,17 +76,17 @@ export const mapEmergencyContact = (patient: PatientProfile) => {
 // ========== FUNCIONES DE ESTADO Y TIPOS ==========
 
 /**
- * Helper para obtener variante del badge de estado
+ * Helper para obtener variante del badge de estado - Sistema de 4 pasos
  */
 export const getStatusBadgeVariant = (status: PatientProfile['currentStatus']) => {
     const variants = {
-        'INGRESO': 'default',
-        'EN_TRATAMIENTO': 'secondary',
-        'ALTA': 'outline',
-        'DERIVADO': 'destructive'
+        'INGRESO': 'step-1',           // PASO 1 - Azul (Inicio)
+        'EN_TRATAMIENTO': 'step-3',    // PASO 3 - Naranja (En proceso avanzado)
+        'ALTA': 'step-4',              // PASO 4 - Verde (Completado)
+        'DERIVADO': 'referred'         // ESPECIAL - Rojo oscuro (Derivado)
     } as const;
 
-    return variants[status] || 'default';
+    return variants[status] || 'step-1';
 };
 
 /**

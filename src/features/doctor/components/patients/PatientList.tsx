@@ -286,10 +286,10 @@ const PatientsTable = ({
 }) => {
     const getStatusBadge = (status: Patient['status']) => {
         const variants = {
-            'ATENCION': 'default',
-            'INGRESO': 'secondary',
-            'ALTA_MEDICA': 'outline',
-            'CIRUGIA': 'destructive'
+            'ATENCION': 'step-2',       // PASO 2 - Amarillo (En proceso)
+            'INGRESO': 'step-1',        // PASO 1 - Azul (Inicio)
+            'ALTA_MEDICA': 'step-4',    // PASO 4 - Verde (Completado)
+            'CIRUGIA': 'surgery'        // ESPECIAL - Púrpura (Cirugía)
         } as const;
 
         const labels = {

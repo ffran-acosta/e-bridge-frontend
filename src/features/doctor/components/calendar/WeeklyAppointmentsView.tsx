@@ -114,14 +114,16 @@ export const WeeklyAppointmentsView = ({
 
     const getStatusBadgeVariant = (status: string) => {
         switch (status) {
+            case 'SCHEDULED':
+                return 'step-1';        // PASO 1 - Azul (Programada)
             case 'COMPLETED':
-                return 'secondary';
+                return 'step-4';        // PASO 4 - Verde (Completada)
             case 'CANCELLED':
-                return 'destructive';
+                return 'cancelled';     // ESPECIAL - Rojo (Cancelada)
             case 'NO_SHOW':
-                return 'outline';
+                return 'no-show';       // ESPECIAL - Gris (No asistió)
             default:
-                return 'default';
+                return 'step-1';
         }
     };
 

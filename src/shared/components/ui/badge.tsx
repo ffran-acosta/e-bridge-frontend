@@ -17,6 +17,24 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
+        // ========== SISTEMA DE 4 PASOS ==========
+        "step-1":
+          "border-transparent bg-[var(--status-step-1)] text-[var(--status-step-1-foreground)] [a&]:hover:bg-[var(--status-step-1)]/90",
+        "step-2":
+          "border-transparent bg-[var(--status-step-2)] text-[var(--status-step-2-foreground)] [a&]:hover:bg-[var(--status-step-2)]/90",
+        "step-3":
+          "border-transparent bg-[var(--status-step-3)] text-[var(--status-step-3-foreground)] [a&]:hover:bg-[var(--status-step-3)]/90",
+        "step-4":
+          "border-transparent bg-[var(--status-step-4)] text-[var(--status-step-4-foreground)] [a&]:hover:bg-[var(--status-step-4)]/90",
+        // ========== ESTADOS ESPECIALES ==========
+        cancelled:
+          "border-transparent bg-[var(--status-cancelled)] text-[var(--status-cancelled-foreground)] [a&]:hover:bg-[var(--status-cancelled)]/90",
+        "no-show":
+          "border-transparent bg-[var(--status-no-show)] text-[var(--status-no-show-foreground)] [a&]:hover:bg-[var(--status-no-show)]/90",
+        surgery:
+          "border-transparent bg-[var(--status-surgery)] text-[var(--status-surgery-foreground)] [a&]:hover:bg-[var(--status-surgery)]/90",
+        referred:
+          "border-transparent bg-[var(--status-referred)] text-[var(--status-referred-foreground)] [a&]:hover:bg-[var(--status-referred)]/90",
       },
     },
     defaultVariants: {

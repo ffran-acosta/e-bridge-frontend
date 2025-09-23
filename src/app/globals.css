@@ -75,6 +75,37 @@
 
   --ring: #0596691;
 
+  /* ========== SISTEMA DE ESTADOS - SEMÁFORO DE 4 PASOS ========== */
+  
+  /* PASO 1 - INICIO/PENDIENTE - Azul */
+  --status-step-1: #3b82f6;
+  --status-step-1-foreground: #ffffff;
+  
+  /* PASO 2 - EN PROCESO - Amarillo */
+  --status-step-2: #f59e0b;
+  --status-step-2-foreground: #ffffff;
+  
+  /* PASO 3 - CASI LISTO - Naranja */
+  --status-step-3: #f97316;
+  --status-step-3-foreground: #ffffff;
+  
+  /* PASO 4 - COMPLETADO - Verde */
+  --status-step-4: #10b981;
+  --status-step-4-foreground: #ffffff;
+  
+  /* ESTADOS ESPECIALES */
+  --status-cancelled: #ef4444;        /* Rojo - Cancelado */
+  --status-cancelled-foreground: #ffffff;
+  
+  --status-no-show: #6b7280;          /* Gris - No asistió */
+  --status-no-show-foreground: #ffffff;
+  
+  --status-surgery: #8b5cf6;          /* Púrpura - Cirugía */
+  --status-surgery-foreground: #ffffff;
+  
+  --status-referred: #dc2626;         /* Rojo oscuro - Derivado */
+  --status-referred-foreground: #ffffff;
+
   /* radios/sombras por defecto */
   --radius: 0.75rem;
 }
