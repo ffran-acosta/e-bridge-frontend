@@ -3,7 +3,6 @@
 import React from "react";
 import {
     Edit,
-    Download,
     Phone,
     Mail,
     MapPin,
@@ -26,11 +25,10 @@ import { formatLastConsultation } from "../../../utils/dateFormatters";
 interface PatientHeaderProps {
     patient: PatientProfile;
     onEdit?: () => void;
-    onExport?: () => void;
     onContinueSiniestro?: () => void;
 }
 
-export function PatientHeader({ patient, onEdit, onExport, onContinueSiniestro }: PatientHeaderProps) {
+export function PatientHeader({ patient, onEdit, onContinueSiniestro }: PatientHeaderProps) {
     return (
         <div className="space-y-6">
             {/* Actions */}
@@ -45,28 +43,25 @@ export function PatientHeader({ patient, onEdit, onExport, onContinueSiniestro }
                     <Edit className="h-4 w-4 mr-2" />
                     Editar
                 </Button>
-                <Button variant="outline" onClick={onExport}>
-                    <Download className="h-4 w-4 mr-2" />
-                    Exportar
-                </Button>
             </div>
 
             {/* Patient Header Card */}
             <Card>
                 <CardHeader>
-                    <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+                    <div className="space-y-6">
+                        {/* Patient Info */}
                         <div className="flex items-center space-x-4">
                             <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
                                 <User className="h-8 w-8 text-white" />
                             </div>
-                            <div>
-                                <CardTitle className="text-2xl">
+                            <div className="flex-1 min-w-0">
+                                <CardTitle className="text-xl md:text-2xl">
                                     {getFullName(patient)}
                                 </CardTitle>
-                                <p className="text-muted-foreground">
+                                <p className="text-muted-foreground text-sm md:text-base">
                                     DNI: {patient.dni} • {calculateAge(patient.birthdate)} años
                                 </p>
-                                <div className="flex items-center space-x-2 mt-1">
+                                <div className="flex flex-wrap items-center gap-2 mt-1">
                                     <Badge variant={getStatusBadgeVariant(patient.currentStatus)}>
                                         {formatStatus(patient.currentStatus)}
                                     </Badge>
@@ -75,8 +70,7 @@ export function PatientHeader({ patient, onEdit, onExport, onContinueSiniestro }
                                             ART
                                         </Badge>
                                     )}
-                                    <span className="text-sm text-muted-foreground">•</span>
-                                    <span className="text-sm text-muted-foreground">
+                                    <span className="text-xs md:text-sm text-muted-foreground">
                                         Última consulta: {formatLastConsultation(patient.stats.lastConsultationDate)}
                                     </span>
                                 </div>
@@ -84,18 +78,18 @@ export function PatientHeader({ patient, onEdit, onExport, onContinueSiniestro }
                         </div>
 
                         {/* Contact Info */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                        <div className="space-y-2 text-sm">
                             <div className="flex items-center space-x-2">
-                                <Phone className="h-4 w-4 text-muted-foreground" />
-                                <span>{formatPhone(patient)}</span>
+                                <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                <span className="break-all">{formatPhone(patient)}</span>
+                            </div>
+                            <div className="flex items-start space-x-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                                <span className="break-words">{formatAddress(patient)}</span>
                             </div>
                             <div className="flex items-center space-x-2">
-                                <Mail className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{patient.email}</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <MapPin className="h-4 w-4 text-muted-foreground" />
-                                <span className="truncate">{formatAddress(patient)}</span>
+                                <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                                <span className="break-all">{patient.email}</span>
                             </div>
                         </div>
                     </div>

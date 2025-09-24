@@ -4,3 +4,5 @@ export { CreatePatientForm } from './CreatePatientForm';
 export { CreateSiniestroModal } from './CreateSiniestroModal';
 export { CreateSiniestroForm } from './CreateSiniestroForm';
 export { ConsultationTypeModal } from './ConsultationTypeModal';
+export { EditPatientModal } from './EditPatientModal';
+export { EditPatientForm } from './EditPatientForm';
