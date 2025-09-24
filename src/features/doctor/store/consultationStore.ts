@@ -72,10 +72,13 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                     console.log('🔍 Patient IDs en las consultas:', patientIdsInConsultations);
                     console.log('🔍 Patient IDs únicos:', uniquePatientIds);
                     
-                    if (uniquePatientIds.length > 1 || !uniquePatientIds.includes(patientId)) {
-                        console.error('❌ PROBLEMA DETECTADO: Las consultas no pertenecen al paciente correcto!');
-                        console.error('❌ Patient ID esperado:', patientId);
-                        console.error('❌ Patient IDs en consultas:', uniquePatientIds);
+                    // Solo validar si hay consultas
+                    if (mappedConsultations.length > 0) {
+                        if (uniquePatientIds.length > 1 || !uniquePatientIds.includes(patientId)) {
+                            console.error('❌ PROBLEMA DETECTADO: Las consultas no pertenecen al paciente correcto!');
+                            console.error('❌ Patient ID esperado:', patientId);
+                            console.error('❌ Patient IDs en consultas:', uniquePatientIds);
+                        }
                     }
 
                     // Crear paginación simulada (el backend no devuelve paginación en este endpoint)

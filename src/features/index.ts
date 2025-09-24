@@ -25,7 +25,7 @@ export * from './dashboard/store/dashboard';
 export * from './dashboard/types/dashboard';
 export * from './doctor/components/dashboard/DoctorLayout';
 export * from './doctor/components/dashboard/Sidebar';
-export * from './doctor/components/patients/PatientList';
+export * from './doctor/components/patients';
 export * from './doctor/components/patients/PatientProfile';
 export * from './doctor/constants/endpoints';
 export * from './doctor/hooks/useDoctorPatients';

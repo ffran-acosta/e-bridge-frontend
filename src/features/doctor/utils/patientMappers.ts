@@ -32,6 +32,7 @@ export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatien
         dni: backendProfile.dni,
         gender: backendProfile.gender,
         birthdate: backendProfile.birthdate,
+        type: backendProfile.type,
         currentStatus: backendProfile.currentStatus as 'INGRESO' | 'EN_TRATAMIENTO' | 'ALTA' | 'DERIVADO',
         street: backendProfile.street,
         streetNumber: backendProfile.streetNumber,
@@ -57,7 +58,7 @@ export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatien
             contactInfo: null, // No viene en la respuesta del backend
             isActive: backendProfile.insurance.isActive
         },
-        siniestro: null, // No viene en la respuesta del backend, se manejará por separado
+        siniestro: backendProfile.siniestro, // Mapear el siniestro del backend
         assignedDoctors: backendProfile.assignedDoctors.map(assignment => ({
             id: assignment.id,
             assignedAt: assignment.assignedAt,

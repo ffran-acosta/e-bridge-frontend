@@ -19,8 +19,9 @@ import { isARTPatient } from "../../utils/patientFormatters";
 import { SiniestroTab } from "./sections/SiniestroTab";
 import { ConsultationsTab } from "./sections/ConsultationsTab";
 import { AppointmentsTab } from "./sections/AppoinmentTab";
-import { ConsultationTypeModal } from "../modals/ConsultationTypeModal";
-import { CreateConsultationModal } from "../modals/CreateConsultationModal";
+// TODO: Reemplazar con nuevo sistema de consultas
+// import { ConsultationTypeModal } from "../modals/ConsultationTypeModal";
+// import { CreateConsultationModal } from "../modals/CreateConsultationModal";
 
 interface PatientProfileProps {
     patientId?: string;
@@ -107,7 +108,6 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
             <PatientHeader
                 patient={patient}
                 onEdit={handleEdit}
-                onExport={handleExport}
                 onContinueSiniestro={handleContinueSiniestro}
             />
 
@@ -168,7 +168,8 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
                 </DialogContent>
             </Dialog>
 
-            {/* Modal para seleccionar tipo de consulta */}
+            {/* TODO: Modales de consultas - serán reemplazados con nuevo sistema */}
+            {/*
             <ConsultationTypeModal
                 isOpen={isConsultationTypeModalOpen}
                 onClose={() => setIsConsultationTypeModalOpen(false)}
@@ -176,7 +177,6 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
                 patientName={`${patient.firstName} ${patient.lastName}`}
             />
 
-            {/* Modal para crear consulta */}
             {selectedConsultationType && (
                 <CreateConsultationModal
                     isOpen={isCreateConsultationModalOpen}
@@ -192,6 +192,7 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
                     onError={handleConsultationError}
                 />
             )}
+            */}
         </div>
     );
 });

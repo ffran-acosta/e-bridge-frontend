@@ -79,6 +79,7 @@ export interface PatientProfile {
     dni: string;
     gender: 'FEMENINO' | 'MASCULINO' | 'NO_BINARIO';
     birthdate: string;
+    type: 'NORMAL' | 'ART';
     currentStatus: 'INGRESO' | 'EN_TRATAMIENTO' | 'ALTA' | 'DERIVADO';
     street: string;
     streetNumber: string;

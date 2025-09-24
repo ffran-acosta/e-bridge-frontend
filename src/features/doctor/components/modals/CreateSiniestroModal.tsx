@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useCreateSiniestro, useARTs, useMedicalEstablishments, useEmployers } from '../../hooks/useCreateSiniestro';
 import { CONTINGENCY_TYPE_OPTIONS } from '../../types/siniestro-form.types';
 import { CreateSiniestroForm } from './CreateSiniestroForm';
-import { CreateConsultationModal } from './CreateConsultationModal';
+import { ConsultationTypeSelectorModal } from './ConsultationTypeSelectorModal';
 import { cn } from '@/lib/utils';
 
 interface CreateSiniestroModalProps {
@@ -157,18 +157,19 @@ export function CreateSiniestroModal({
       </DialogContent>
     </Dialog>
 
-    {/* Modal de consulta de INGRESO automático - renderizado fuera del Dialog del siniestro */}
+    {/* Modal de consulta de INGRESO automático - usando nuevo sistema */}
     {createdSiniestro && (
-      <CreateConsultationModal
+      <ConsultationTypeSelectorModal
         isOpen={isConsultationModalOpen}
         onClose={handleConsultationClose}
-        patientId={patientId}
         patientName={patientName}
-        isArtCase={true}
-        onSuccess={handleConsultationSuccess}
-        onError={handleConsultationError}
-        defaultConsultationType="INGRESO"
-        siniestroData={createdSiniestro}
+        hasConsultations={false}
+        onSelectType={(type) => {
+          console.log('🎯 Tipo de consulta seleccionado automáticamente:', type);
+          // Por ahora solo mostramos un alert, luego implementaremos el formulario
+          alert(`Consulta de ${type} seleccionada. Próximamente se abrirá el formulario correspondiente.`);
+          handleConsultationClose();
+        }}
       />
     )}
   </>

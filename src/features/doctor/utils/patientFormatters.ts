@@ -82,7 +82,7 @@ export const formatStatus = (status: PatientProfile['currentStatus']): string =>
 
 // Determina si el paciente es ART
 export const isARTPatient = (patient: PatientProfile): boolean => {
-    return patient.siniestro !== null;
+    return patient.type === 'ART';
 };
 
 // Formatear tipo de contingencia

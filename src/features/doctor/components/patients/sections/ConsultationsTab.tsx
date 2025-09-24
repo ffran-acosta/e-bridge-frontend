@@ -15,8 +15,9 @@ import type { PatientProfile, Consultation } from '@/shared/types/patients.types
 import { usePatientConsultations } from '@/features/doctor/hooks/usePatientConsultations';
 import { formatConsultationDate, formatNextAppointmentDate } from '@/features/doctor/utils/dateFormatters';
 import { getConsultationStatus, formatDoctorInfo, getArtCaseLabel } from '@/features/doctor/utils/consultationFormatters';
-import { truncateText } from '@/features/doctor/utils/patientFormatters';
-import { CreateConsultationModal, ConsultationDetailsModal, DeleteConsultationModal, ConsultationTypeSelectorModal } from '../../modals';
+import { truncateText, isARTPatient } from '@/features/doctor/utils/patientFormatters';
+// Nuevo sistema de consultas
+import { CreateConsultationButton } from '../../modals';
 
 interface ConsultationsTabProps {
     patient: PatientProfile;
@@ -48,15 +49,32 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
         return labels[type as keyof typeof labels] || type;
     };
 
-    const getConsultationTypeVariant = (type: string) => {
+    const getConsultationTypeVariant = (type: string): "default" | "destructive" | "outline" | "secondary" => {
         const variants = {
-            'INGRESO': 'default',
-            'ATENCION': 'secondary',
-            'ALTA': 'destructive',
-            'REINGRESO': 'outline'
+            'INGRESO': 'default' as const,
+            'ATENCION': 'secondary' as const,
+            'ALTA': 'destructive' as const,
+            'REINGRESO': 'outline' as const
         };
         return variants[type as keyof typeof variants] || 'default';
     };
+
+    // Función para manejar la selección del tipo de consulta
+    const handleConsultationTypeSelected = (type: 'INGRESO' | 'ATENCION' | 'ALTA') => {
+        console.log('🎯 Tipo de consulta seleccionado:', type);
+        // TODO: Aquí se abrirá el formulario específico para cada tipo
+        // Por ahora solo mostramos un alert
+        alert(`Seleccionaste: ${type}. Próximamente se abrirá el formulario correspondiente.`);
+    };
+
+    // Debug: Verificar si el paciente es ART
+    console.log('🎯 ConsultationsTab: Verificando paciente ART:', {
+        patientId: patient.id,
+        patientName: `${patient.firstName} ${patient.lastName}`,
+        isARTPatient: isARTPatient(patient),
+        hasSiniestro: !!patient.siniestro,
+        consultationsCount: consultations.length
+    });
 
     if (loading && consultations.length === 0) {
         return <ConsultationsLoading />;
@@ -91,15 +109,31 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                             <Stethoscope className="h-12 w-12 mx-auto mb-4 opacity-50" />
                             <p className="text-lg font-medium">No hay consultas registradas</p>
                             <p className="text-sm mb-4">Este paciente aún no tiene consultas médicas.</p>
-                            <Button onClick={() => setIsCreateModalOpen(true)}>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Crear Primera Consulta
-                            </Button>
+                            {/* Botón para crear primera consulta - solo para pacientes ART */}
+                            <div className="flex justify-center">
+                                {isARTPatient(patient) ? (
+                                    <CreateConsultationButton
+                                        patientId={patient.id}
+                                        patientName={`${patient.firstName} ${patient.lastName}`}
+                                        hasConsultations={false}
+                                        onConsultationTypeSelected={handleConsultationTypeSelected}
+                                    />
+                                ) : (
+                                    <Button onClick={() => {
+                                        console.log('🎯 Botón normal clickeado - paciente no ART');
+                                        alert('Este paciente no es ART. Funcionalidad para pacientes normales próximamente.');
+                                    }}>
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Crear Primera Consulta
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     </CardContent>
                 </Card>
 
-                {/* Modal para crear consulta */}
+                {/* TODO: Modal para crear consulta - será reemplazado con nuevo sistema */}
+                {/*
                 <CreateConsultationModal
                     isOpen={isCreateModalOpen}
                     onClose={() => setIsCreateModalOpen(false)}
@@ -116,6 +150,7 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                         setIsCreateModalOpen(false);
                     }}
                 />
+                */}
             </>
         );
     }
@@ -135,12 +170,29 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                                 {pagination?.total || consultations.length} total
                             </Badge>
                         </div>
-                        <Button onClick={() => setIsTypeSelectorOpen(true)}>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Nueva Consulta
-                        </Button>
                     </CardTitle>
                 </CardHeader>
+                <CardContent className="pt-0">
+                    {/* Botón para crear consulta - solo para pacientes ART */}
+                    <div className="flex justify-center">
+                        {isARTPatient(patient) ? (
+                            <CreateConsultationButton
+                                patientId={patient.id}
+                                patientName={`${patient.firstName} ${patient.lastName}`}
+                                hasConsultations={consultations.length > 0}
+                                onConsultationTypeSelected={handleConsultationTypeSelected}
+                            />
+                        ) : (
+                            <Button onClick={() => {
+                                console.log('🎯 Botón normal clickeado - paciente no ART');
+                                alert('Este paciente no es ART. Funcionalidad para pacientes normales próximamente.');
+                            }}>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Nueva Consulta
+                            </Button>
+                        )}
+                    </div>
+                </CardContent>
             </Card>
 
             {/* Lista de consultas */}
@@ -311,7 +363,8 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                 </div>
             )}
 
-            {/* Modal selector de tipo de consulta */}
+            {/* TODO: Modal selector de tipo de consulta - será reemplazado con nuevo sistema */}
+            {/*
             <ConsultationTypeSelectorModal
                 isOpen={isTypeSelectorOpen}
                 onClose={() => {
@@ -327,8 +380,10 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                     setIsCreateModalOpen(true);
                 }}
             />
+            */}
 
-            {/* Modal para crear consulta */}
+            {/* TODO: Modal para crear consulta - será reemplazado con nuevo sistema */}
+            {/*
             <CreateConsultationModal
                 isOpen={isCreateModalOpen}
                 onClose={() => {
@@ -356,7 +411,10 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                     setSelectedConsultationType(null);
                 }}
             />
+            */}
 
+            {/* TODO: Modales de detalles y eliminación - serán reemplazados con nuevo sistema */}
+            {/*
             <ConsultationDetailsModal
                 isOpen={selectedConsultationId !== null}
                 onClose={() => setSelectedConsultationId(null)}
@@ -373,6 +431,7 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                     setConsultationToDelete(null);
                 }}
             />
+            */}
 
 
         </div>

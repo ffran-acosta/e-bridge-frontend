@@ -5,6 +5,7 @@ export const DOCTOR_ENDPOINTS = {
     consultationById: (consultationId: string) => `/doctor/consultations/${consultationId}`,
     deleteConsultation: (consultationId: string) => `/doctor/consultations/${consultationId}`,
     patientConsultations: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations`,
+    siniestro: (siniestroId: string) => `/siniestros/${siniestroId}`,
     // Endpoints específicos para consultas ART
     patientConsultationIngreso: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations/ingreso`,
     patientConsultationAtencion: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations/atencion`,
