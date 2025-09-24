@@ -488,16 +488,41 @@ export interface CreateConsultationFormData {
     employerId?: string;
     nextAppointmentDate?: string;
     fromAppointmentId?: string;
+    consultationType?: string;
+    medicalAssistancePlace?: string;
+    medicalAssistanceDate?: string;
+    patientSignature?: string;
+    doctorSignature?: string;
 }
 
 export interface CreateConsultationDto {
+    patientId: string;
+    medicalEstablishmentId: string;
+    type: string;
     consultationReason: string;
     diagnosis: string;
     medicalIndications: string;
-    medicalEstablishmentId: string;
-    employerId?: string;
     nextAppointmentDate?: string;
-    fromAppointmentId?: string;
+    medicalAssistancePlace?: string;
+    medicalAssistanceDate?: string;
+    patientSignature?: string;
+    doctorSignature?: string;
+    artDetails?: {
+        employerId: string;
+        accidentDateTime?: string;
+        workAbsenceStartDateTime?: string;
+        firstMedicalAttentionDateTime?: string;
+        workSickLeave?: boolean;
+        probableDischargeDate?: string;
+        nextRevisionDate?: string;
+        workReturnDate?: string;
+        accidentEstablishmentName?: string;
+        accidentEstablishmentAddress?: string;
+        accidentEstablishmentPhone?: string;
+        accidentContactName?: string;
+        accidentContactCellphone?: string;
+        accidentContactEmail?: string;
+    };
 }
 
 export interface CreateConsultationResponse {

@@ -19,6 +19,8 @@ import { isARTPatient } from "../../utils/patientFormatters";
 import { SiniestroTab } from "./sections/SiniestroTab";
 import { ConsultationsTab } from "./sections/ConsultationsTab";
 import { AppointmentsTab } from "./sections/AppoinmentTab";
+import { ConsultationTypeModal } from "../modals/ConsultationTypeModal";
+import { CreateConsultationModal } from "../modals/CreateConsultationModal";
 
 interface PatientProfileProps {
     patientId?: string;
@@ -27,6 +29,9 @@ interface PatientProfileProps {
 export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) => {
     const [activeTab, setActiveTab] = useState("overview");
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isConsultationTypeModalOpen, setIsConsultationTypeModalOpen] = useState(false);
+    const [isCreateConsultationModalOpen, setIsCreateConsultationModalOpen] = useState(false);
+    const [selectedConsultationType, setSelectedConsultationType] = useState<'ATENCION' | 'ALTA' | null>(null);
 
     // Hook para obtener datos del paciente
     const { patient, loading, error, refetch, clearError } = usePatientProfile(patientId);
@@ -38,6 +43,27 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
 
     const handleExport = useCallback(() => {
         console.log("Exportar perfil del paciente");
+    }, []);
+
+    const handleContinueSiniestro = useCallback(() => {
+        setIsConsultationTypeModalOpen(true);
+    }, []);
+
+    const handleSelectConsultationType = useCallback((type: 'ATENCION' | 'ALTA') => {
+        setSelectedConsultationType(type);
+        setIsConsultationTypeModalOpen(false);
+        setIsCreateConsultationModalOpen(true);
+    }, []);
+
+    const handleConsultationSuccess = useCallback(() => {
+        setIsCreateConsultationModalOpen(false);
+        setSelectedConsultationType(null);
+        refetch(); // Recargar datos del paciente
+    }, [refetch]);
+
+    const handleConsultationError = useCallback((error: string) => {
+        console.error('Error al crear consulta:', error);
+        // TODO: Mostrar error al usuario
     }, []);
 
     // Estados de carga y error
@@ -82,6 +108,7 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
                 patient={patient}
                 onEdit={handleEdit}
                 onExport={handleExport}
+                onContinueSiniestro={handleContinueSiniestro}
             />
 
             {/* Tabs para diferentes secciones */}
@@ -139,7 +166,32 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
                         </Button>
                     </div>
                 </DialogContent>
-        </Dialog>
-    </div>
-);
+            </Dialog>
+
+            {/* Modal para seleccionar tipo de consulta */}
+            <ConsultationTypeModal
+                isOpen={isConsultationTypeModalOpen}
+                onClose={() => setIsConsultationTypeModalOpen(false)}
+                onSelectType={handleSelectConsultationType}
+                patientName={`${patient.firstName} ${patient.lastName}`}
+            />
+
+            {/* Modal para crear consulta */}
+            {selectedConsultationType && (
+                <CreateConsultationModal
+                    isOpen={isCreateConsultationModalOpen}
+                    onClose={() => {
+                        setIsCreateConsultationModalOpen(false);
+                        setSelectedConsultationType(null);
+                    }}
+                    patientId={patient.id}
+                    patientName={`${patient.firstName} ${patient.lastName}`}
+                    isArtCase={isARTPatient(patient)}
+                    defaultConsultationType={selectedConsultationType}
+                    onSuccess={handleConsultationSuccess}
+                    onError={handleConsultationError}
+                />
+            )}
+        </div>
+    );
 });

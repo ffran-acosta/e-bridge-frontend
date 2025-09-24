@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { useCreateSiniestro, useARTs, useMedicalEstablishments, useEmployers } from '../../hooks/useCreateSiniestro';
 import { CONTINGENCY_TYPE_OPTIONS } from '../../types/siniestro-form.types';
 import { CreateSiniestroForm } from './CreateSiniestroForm';
+import { CreateConsultationModal } from './CreateConsultationModal';
 import { cn } from '@/lib/utils';
 
 interface CreateSiniestroModalProps {
@@ -24,6 +25,9 @@ export function CreateSiniestroModal({
   onSuccess,
   onError,
 }: CreateSiniestroModalProps) {
+  const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
+  const [createdSiniestro, setCreatedSiniestro] = useState<any>(null);
+
   const {
     form,
     handleSubmit,
@@ -33,8 +37,11 @@ export function CreateSiniestroModal({
   } = useCreateSiniestro({
     patientId,
     onSuccess: (siniestro) => {
-      onSuccess?.(siniestro);
-      onClose();
+      console.log('🎯 Siniestro creado exitosamente:', siniestro);
+      console.log('🔍 Abriendo modal de consulta...');
+      setCreatedSiniestro(siniestro);
+      setIsConsultationModalOpen(true);
+      console.log('✅ Modal de consulta debería estar abierto ahora');
     },
     onError,
   });
@@ -76,10 +83,39 @@ export function CreateSiniestroModal({
     }
   }, [isOpen, clearError]);
 
+  // Debug: Monitorear cambios en el estado del modal de consulta
+  useEffect(() => {
+    console.log('🔍 Estado del modal de consulta:', {
+      isConsultationModalOpen,
+      createdSiniestro: createdSiniestro ? 'Sí' : 'No',
+      patientId,
+      patientName
+    });
+  }, [isConsultationModalOpen, createdSiniestro, patientId, patientName]);
+
+  // Manejar el cierre del modal de consulta
+  const handleConsultationClose = () => {
+    setIsConsultationModalOpen(false);
+    setCreatedSiniestro(null);
+    onSuccess?.(createdSiniestro);
+    onClose();
+  };
+
+  const handleConsultationSuccess = () => {
+    console.log('✅ Consulta de INGRESO creada exitosamente');
+    handleConsultationClose();
+  };
+
+  const handleConsultationError = (error: string) => {
+    console.error('❌ Error al crear consulta de INGRESO:', error);
+    onError?.(error);
+  };
+
   const title = 'Crear Siniestro ART';
   const description = `Crear siniestro para el paciente ${patientName}`;
 
   return (
+    <>
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
         className={cn(
@@ -120,5 +156,21 @@ export function CreateSiniestroModal({
         </div>
       </DialogContent>
     </Dialog>
+
+    {/* Modal de consulta de INGRESO automático - renderizado fuera del Dialog del siniestro */}
+    {createdSiniestro && (
+      <CreateConsultationModal
+        isOpen={isConsultationModalOpen}
+        onClose={handleConsultationClose}
+        patientId={patientId}
+        patientName={patientName}
+        isArtCase={true}
+        onSuccess={handleConsultationSuccess}
+        onError={handleConsultationError}
+        defaultConsultationType="INGRESO"
+        siniestroData={createdSiniestro}
+      />
+    )}
+  </>
   );
 }

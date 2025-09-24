@@ -8,6 +8,7 @@ import {
     Mail,
     MapPin,
     User,
+    Plus,
 } from "lucide-react";
 import { Badge, Button, Card, CardHeader, CardTitle } from "@/shared";
 import { PatientProfile } from "@/shared/types/patients.types";
@@ -26,13 +27,20 @@ interface PatientHeaderProps {
     patient: PatientProfile;
     onEdit?: () => void;
     onExport?: () => void;
+    onContinueSiniestro?: () => void;
 }
 
-export function PatientHeader({ patient, onEdit, onExport }: PatientHeaderProps) {
+export function PatientHeader({ patient, onEdit, onExport, onContinueSiniestro }: PatientHeaderProps) {
     return (
         <div className="space-y-6">
             {/* Actions */}
             <div className="flex justify-end space-x-2">
+                {isARTPatient(patient) && (
+                    <Button variant="default" onClick={onContinueSiniestro}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Continuar Siniestro
+                    </Button>
+                )}
                 <Button variant="outline" onClick={onEdit}>
                     <Edit className="h-4 w-4 mr-2" />
                     Editar

@@ -113,7 +113,7 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                         `${DOCTOR_ENDPOINTS.consultations}`,
                         {
                             method: 'POST',
-                            body: JSON.stringify(data),
+                            body: data,
                         }
                     );
 

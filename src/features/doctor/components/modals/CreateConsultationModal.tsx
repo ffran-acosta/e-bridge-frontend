@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/shared';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
@@ -32,6 +32,12 @@ const createConsultationSchema = z.object({
   employerId: z.string().optional(),
   nextAppointmentDate: z.string().optional(),
   fromAppointmentId: z.string().optional(),
+  consultationType: z.string().optional(),
+  // Campos opcionales para ART
+  medicalAssistancePlace: z.string().optional(),
+  medicalAssistanceDate: z.string().optional(),
+  patientSignature: z.string().optional(),
+  doctorSignature: z.string().optional(),
 }).refine((data) => {
   // Si es caso ART, employerId es obligatorio
   if (data.isArtCase && !data.employerId) {
@@ -54,7 +60,10 @@ interface CreateConsultationModalProps {
   patientName: string;
   isArtCase: boolean;
   onSuccess?: () => void;
+  onError?: (error: string) => void;
   fromAppointmentId?: string;
+  defaultConsultationType?: string;
+  siniestroData?: any;
 }
 
 export function CreateConsultationModal({
@@ -64,7 +73,10 @@ export function CreateConsultationModal({
   patientName,
   isArtCase,
   onSuccess,
+  onError,
   fromAppointmentId,
+  defaultConsultationType,
+  siniestroData,
 }: CreateConsultationModalProps) {
   const [medicalEstablishments, setMedicalEstablishments] = useState<MedicalEstablishment[]>([]);
   const [employers, setEmployers] = useState<EmployerInfo[]>([]);
@@ -84,6 +96,7 @@ export function CreateConsultationModal({
       employerId: '',
       nextAppointmentDate: '',
       fromAppointmentId: fromAppointmentId || '',
+      consultationType: defaultConsultationType || 'INGRESO',
     },
   });
 
@@ -97,19 +110,56 @@ export function CreateConsultationModal({
   }, [isOpen]);
 
   const loadInitialData = async () => {
+    console.log('🔍 Cargando datos iniciales para modal de consulta...');
     setLoadingData(true);
     try {
       // Cargar establecimientos médicos
-      const establishmentsResponse = await api<{ data: MedicalEstablishment[] }>('/medical-establishments');
-      if (establishmentsResponse.data) {
-        setMedicalEstablishments(establishmentsResponse.data);
+      console.log('📡 Llamando a /catalogs/establecimientos');
+      const establishmentsResponse = await api<{ 
+        success: boolean;
+        statusCode: number;
+        timestamp: string;
+        path: string;
+        data: {
+          statusCode: number;
+          message: string;
+          data: MedicalEstablishment[];
+          meta: {
+            total: number;
+            page: number;
+            limit: number;
+            totalPages: number;
+          };
+        };
+      }>('/catalogs/establecimientos');
+      if (establishmentsResponse.data?.data) {
+        console.log('✅ Establecimientos cargados:', establishmentsResponse.data.data);
+        setMedicalEstablishments(establishmentsResponse.data.data);
       }
 
       // Cargar empleadores solo si es caso ART
       if (isArtCase) {
-        const employersResponse = await api<{ data: EmployerInfo[] }>('/employers');
-        if (employersResponse.data) {
-          setEmployers(employersResponse.data);
+        console.log('📡 Llamando a /catalogs/empleadores');
+        const employersResponse = await api<{ 
+          success: boolean;
+          statusCode: number;
+          timestamp: string;
+          path: string;
+          data: {
+            statusCode: number;
+            message: string;
+            data: EmployerInfo[];
+            meta: {
+              total: number;
+              page: number;
+              limit: number;
+              totalPages: number;
+            };
+          };
+        }>('/catalogs/empleadores');
+        if (employersResponse.data?.data) {
+          console.log('✅ Empleadores cargados:', employersResponse.data.data);
+          setEmployers(employersResponse.data.data);
         }
       }
 
@@ -129,16 +179,27 @@ export function CreateConsultationModal({
 
   const onSubmit = async (data: CreateConsultationFormData) => {
     try {
+      console.log('📦 Datos del formulario:', data);
+      
       const payload = {
+        patientId: patientId,
+        medicalEstablishmentId: data.medicalEstablishmentId,
+        type: data.consultationType || 'INGRESO',
         consultationReason: data.consultationReason,
         diagnosis: data.diagnosis,
         medicalIndications: data.medicalIndications,
-        medicalEstablishmentId: data.medicalEstablishmentId,
-        ...(data.employerId && { employerId: data.employerId }),
         ...(data.nextAppointmentDate && { nextAppointmentDate: data.nextAppointmentDate }),
         ...(data.fromAppointmentId && { fromAppointmentId: data.fromAppointmentId }),
+        // Para casos ART, incluir artDetails
+        ...(isArtCase && data.employerId && {
+          artDetails: {
+            employerId: data.employerId,
+            // TODO: Agregar otros campos de artDetails cuando estén disponibles en el formulario
+          }
+        }),
       };
 
+      console.log('📦 Payload enviado:', payload);
       await createConsultation(patientId, payload);
 
       onSuccess?.();
@@ -146,18 +207,25 @@ export function CreateConsultationModal({
       form.reset();
     } catch (error) {
       console.error('Error creating consultation:', error);
+      onError?.(error instanceof Error ? error.message : 'Error desconocido');
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {
+    console.log('🔍 CreateConsultationModal: Modal cerrado');
+    return null;
+  }
+  
+  console.log('🔍 CreateConsultationModal: Modal abierto, renderizando...');
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader>
-          <CardTitle>Nueva Consulta - {patientName}</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader>
+          <DialogTitle>Nueva Consulta - {patientName}</DialogTitle>
+        </DialogHeader>
+        <div className="flex-1 overflow-y-auto pr-2 -mr-2">
+          <div className="pr-2">
           {loadingData ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -297,7 +365,7 @@ export function CreateConsultationModal({
                 )}
 
                 {/* Turno origen (opcional) */}
-                {appointments.length > 0 && (
+                {appointments && appointments.length > 0 && (
                   <FormField
                     control={form.control}
                     name="fromAppointmentId"
@@ -312,7 +380,7 @@ export function CreateConsultationModal({
                           </FormControl>
                           <SelectContent>
                             <SelectItem value="">Sin turno origen</SelectItem>
-                            {appointments.map((appointment) => (
+                            {appointments?.map((appointment) => (
                               <SelectItem key={appointment.id} value={appointment.id}>
                                 {format(new Date(appointment.scheduledDateTime), 'dd/MM/yyyy HH:mm', { locale: es })} - {appointment.notes || 'Sin notas'}
                               </SelectItem>
@@ -383,8 +451,9 @@ export function CreateConsultationModal({
               </form>
             </Form>
           )}
-        </CardContent>
-      </Card>
-    </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
