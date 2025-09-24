@@ -17,7 +17,7 @@ import { formatConsultationDate, formatNextAppointmentDate } from '@/features/do
 import { getConsultationStatus, formatDoctorInfo, getArtCaseLabel } from '@/features/doctor/utils/consultationFormatters';
 import { truncateText, isARTPatient } from '@/features/doctor/utils/patientFormatters';
 // Nuevo sistema de consultas
-import { CreateConsultationButton } from '../../modals';
+import { CreateConsultationButton, DeleteConsultationModal } from '../../modals';
 
 interface ConsultationsTabProps {
     patient: PatientProfile;
@@ -423,25 +423,18 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
             />
             */}
 
-            {/* TODO: Modales de detalles y eliminación - serán reemplazados con nuevo sistema */}
-            {/*
-            <ConsultationDetailsModal
-                isOpen={selectedConsultationId !== null}
-                onClose={() => setSelectedConsultationId(null)}
-                consultationId={selectedConsultationId || ''}
-            />
-
+            {/* Modal de eliminación de consulta */}
             <DeleteConsultationModal
                 isOpen={consultationToDelete !== null}
                 onClose={() => setConsultationToDelete(null)}
-                consultation={consultationToDelete}
-                isArtCase={!!patient.siniestro}
+                consultationId={consultationToDelete?.id || ''}
+                consultationType={consultationToDelete?.consultationType || 'Consulta'}
+                consultationDate={consultationToDelete?.createdAt || ''}
                 onSuccess={() => {
                     refetch();
                     setConsultationToDelete(null);
                 }}
             />
-            */}
 
 
         </div>

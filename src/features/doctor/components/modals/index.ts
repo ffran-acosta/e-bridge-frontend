@@ -4,6 +4,7 @@ export { CreateConsultationButton } from './CreateConsultationButton';
 export { IngresoConsultationModal } from './IngresoConsultationModal';
 export { IngresoConsultationForm } from './IngresoConsultationForm';
 export { DateTimeInput } from './DateTimeInput';
+export { DeleteConsultationModal } from './DeleteConsultationModal';
 
 // Modales que funcionan correctamente - NO TOCAR
 export { CreatePatientModal } from './CreatePatientModal';
