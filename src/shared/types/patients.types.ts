@@ -184,6 +184,14 @@ export interface BackendPatientProfile {
         planName: string;
         isActive: boolean;
     };
+    siniestro: {
+        id: string;
+        contingencyType: 'ACCIDENTE_TRABAJO' | 'ENFERMEDAD_PROFESIONAL' | 'ACCIDENTE_IN_ITINERE' | 'INTERCURRENCIA';
+        accidentDateTime: string;
+        createdAt: string;
+        status: 'ABIERTO' | 'CERRADO';
+        dischargeReason: 'ALTA_MEDICA' | 'RECHAZO' | 'MUERTE' | 'FIN_TRATAMIENTO' | 'POR_DERIVACION' | null;
+    } | null;
     assignedDoctors: Array<{
         id: string;
         assignedAt: string;

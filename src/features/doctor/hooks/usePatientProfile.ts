@@ -32,6 +32,10 @@ export function usePatientProfile(patientId?: string) {
         };
     }, [patientId]); // Solo dependemos de patientId, las funciones son estables
 
+    // Console logs para debug
+    console.log('🔍 DEBUG - usePatientProfile:');
+    console.log('📋 selectedPatient:', selectedPatient);
+
     return {
         // Estado
         patient: selectedPatient,

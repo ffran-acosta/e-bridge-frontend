@@ -1,6 +1,7 @@
 export const DOCTOR_ENDPOINTS = {
     patients: '/doctor/patients',
     patientProfile: (patientId: string) => `/doctor/patients/${patientId}`,
+    siniestro: (siniestroId: string) => `/siniestros/${siniestroId}`,
     consultations: '/doctor/consultations',
     patientConsultations: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations`,
     patientAppointments: (patientId: string) => `/doctor/appointments/patients/${patientId}`,

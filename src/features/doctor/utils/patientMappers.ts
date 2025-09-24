@@ -57,7 +57,28 @@ export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatien
             contactInfo: null, // No viene en la respuesta del backend
             isActive: backendProfile.insurance.isActive
         },
-        siniestro: null, // No viene en la respuesta del backend, se manejará por separado
+        siniestro: backendProfile.siniestro ? {
+            id: backendProfile.siniestro.id,
+            contingencyType: backendProfile.siniestro.contingencyType,
+            accidentDateTime: backendProfile.siniestro.accidentDateTime,
+            art: {
+                id: '', // No viene en la respuesta del backend
+                name: '', // No viene en la respuesta del backend
+                code: '' // No viene en la respuesta del backend
+            },
+            medicalEstablishment: {
+                id: '', // No viene en la respuesta del backend
+                name: '', // No viene en la respuesta del backend
+                cuit: '' // No viene en la respuesta del backend
+            },
+            employer: {
+                id: '', // No viene en la respuesta del backend
+                name: '', // No viene en la respuesta del backend
+                cuit: '' // No viene en la respuesta del backend
+            },
+            createdAt: backendProfile.siniestro.createdAt,
+            updatedAt: backendProfile.siniestro.createdAt // Usar createdAt como updatedAt si no viene
+        } : null,
         assignedDoctors: backendProfile.assignedDoctors.map(assignment => ({
             id: assignment.id,
             assignedAt: assignment.assignedAt,

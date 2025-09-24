@@ -88,12 +88,12 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className={`grid w-full ${isARTPatient(patient) ? 'grid-cols-4' : 'grid-cols-3'}`}>
                     <TabsTrigger value="overview">Resumen</TabsTrigger>
-                    <TabsTrigger value="consultations">Consultas</TabsTrigger>
-                    <TabsTrigger value="appointments">Turnos</TabsTrigger>
-                    {/* <TabsTrigger value="documents">Documentos</TabsTrigger> */}
                     {isARTPatient(patient) && (
                         <TabsTrigger value="siniestro">Siniestro</TabsTrigger>
                     )}
+                    <TabsTrigger value="consultations">Consultas</TabsTrigger>
+                    <TabsTrigger value="appointments">Turnos</TabsTrigger>
+                    {/* <TabsTrigger value="documents">Documentos</TabsTrigger> */}
                 </TabsList>
 
                 {/* Tab: Resumen */}
@@ -101,13 +101,14 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
                     <OverviewTab patient={patient} />
                 </TabsContent>
 
+                {/* Tab: Siniestro (solo para pacientes ART) */}
                 {isARTPatient(patient) && (
                     <TabsContent value="siniestro" className="space-y-6">
                         <SiniestroTab patient={patient} />
                     </TabsContent>
                 )}
 
-                {/* Tab: Consultas (Placeholder) */}
+                {/* Tab: Consultas */}
                 <TabsContent value="consultations" className="space-y-6">
                     <ConsultationsTab patient={patient} />
                 </TabsContent>

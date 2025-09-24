@@ -1,7 +1,8 @@
 export { useDoctorPatients } from './useDoctorPatients';
-export { usePatientAppoinment } from './usePatientAppoinment';
+export { usePatientAppointments } from './usePatientAppoinment';
 export { usePatientConsultations } from './usePatientConsultations';
 export { usePatientProfile } from './usePatientProfile';
+export { useSiniestro } from './useSiniestro';
 export { useImpersonationCleanup } from './useImpersonationCleanup';
 export { useDoctorAppointments } from './useDoctorAppointments';
 export { useDailyAppointments } from './useDailyAppointments';

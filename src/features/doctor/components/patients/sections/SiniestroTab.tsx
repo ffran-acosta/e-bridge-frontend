@@ -7,18 +7,41 @@ import {
     Shield,
     Users,
     AlertTriangle,
-    Clock
+    Clock,
+    Loader2
 } from "lucide-react";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/shared";
 import { PatientProfile } from "@/shared/types/patients.types";
 import { formatDateTime } from "../../../utils/dateFormatters";
 import { formatContingencyType } from "../../../utils/patientFormatters";
+import { useSiniestro } from "../../../hooks/useSiniestro";
+
+// Función para formatear el motivo de cierre
+const formatDischargeReason = (reason: string): string => {
+    const reasons = {
+        'ALTA_MEDICA': 'Alta Médica',
+        'RECHAZO': 'Rechazo',
+        'MUERTE': 'Muerte',
+        'FIN_TRATAMIENTO': 'Fin de Tratamiento',
+        'POR_DERIVACION': 'Por Derivación'
+    };
+    return reasons[reason as keyof typeof reasons] || reason;
+};
 
 interface SiniestroTabProps {
     patient: PatientProfile;
 }
 
 export function SiniestroTab({ patient }: SiniestroTabProps) {
+    const { siniestro, loading, error } = useSiniestro(patient.siniestro?.id);
+
+    // Debug log
+    console.log('🔍 DEBUG - SiniestroTab:');
+    console.log('📋 patient.siniestro:', patient.siniestro);
+    console.log('📋 siniestro:', siniestro);
+    console.log('📋 loading:', loading);
+    console.log('📋 error:', error);
+
     if (!patient.siniestro) {
         return (
             <Card>
@@ -32,7 +55,45 @@ export function SiniestroTab({ patient }: SiniestroTabProps) {
         );
     }
 
-    const { siniestro } = patient;
+    if (loading) {
+        return (
+            <Card>
+                <CardContent className="pt-6">
+                    <div className="text-center text-muted-foreground py-12">
+                        <Loader2 className="h-12 w-12 mx-auto mb-4 animate-spin" />
+                        <p>Cargando información del siniestro...</p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (error) {
+        return (
+            <Card>
+                <CardContent className="pt-6">
+                    <div className="text-center text-red-500 py-12">
+                        <AlertTriangle className="h-12 w-12 mx-auto mb-4" />
+                        <p>Error al cargar información del siniestro</p>
+                        <p className="text-sm text-muted-foreground mt-2">{error}</p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    if (!siniestro) {
+        return (
+            <Card>
+                <CardContent className="pt-6">
+                    <div className="text-center text-muted-foreground py-12">
+                        <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No se pudo cargar la información del siniestro</p>
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -61,74 +122,95 @@ export function SiniestroTab({ patient }: SiniestroTabProps) {
                     </div>
 
                     <div>
-                        <h4 className="font-medium mb-2">Registro del Siniestro</h4>
-                        <div className="space-y-1 text-sm text-muted-foreground">
-                            <div className="flex items-center space-x-2">
-                                <Clock className="h-4 w-4" />
-                                <span>Creado: {formatDateTime(siniestro.createdAt)}</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Clock className="h-4 w-4" />
-                                <span>Actualizado: {formatDateTime(siniestro.updatedAt)}</span>
-                            </div>
+                        <h4 className="font-medium mb-2">Estado del Siniestro</h4>
+                        <div className="space-y-2">
+                            <Badge 
+                                variant={siniestro.status === 'ABIERTO' ? 'default' : 'secondary'} 
+                                className="text-sm"
+                            >
+                                {siniestro.status === 'ABIERTO' ? 'Siniestro Abierto' : 'Siniestro Cerrado'}
+                            </Badge>
+                            {siniestro.status === 'CERRADO' && siniestro.dischargeReason && (
+                                <div>
+                                    <p className="text-sm text-muted-foreground">
+                                        Motivo de cierre: {formatDischargeReason(siniestro.dischargeReason)}
+                                    </p>
+                                    {siniestro.closedAt && (
+                                        <p className="text-sm text-muted-foreground">
+                                            Cerrado el: {formatDateTime(siniestro.closedAt)}
+                                        </p>
+                                    )}
+                                    {siniestro.closedByDoctor && (
+                                        <p className="text-sm text-muted-foreground">
+                                            Por: Dr. {siniestro.closedByDoctor.user.firstName} {siniestro.closedByDoctor.user.lastName}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </CardContent>
             </Card>
 
             {/* ART (Aseguradora) */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center">
-                        <Shield className="h-5 w-5 mr-2 text-blue-500" />
-                        ART - Aseguradora
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    <div>
-                        <h4 className="font-medium">{siniestro.art.name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                            Código: {siniestro.art.code}
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
+            {siniestro.art && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <Shield className="h-5 w-5 mr-2 text-blue-500" />
+                            ART - Aseguradora
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <div>
+                            <h4 className="font-medium">{siniestro.art.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                                Código: {siniestro.art.code}
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Empleador */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center">
-                        <Building className="h-5 w-5 mr-2 text-green-500" />
-                        Empleador
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    <div>
-                        <h4 className="font-medium">{siniestro.employer.name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                            CUIT: {siniestro.employer.cuit}
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
+            {siniestro.employer && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <Building className="h-5 w-5 mr-2 text-green-500" />
+                            Empleador
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <div>
+                            <h4 className="font-medium">{siniestro.employer.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                                CUIT: {siniestro.employer.cuit}
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
 
             {/* Establecimiento Médico */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-center">
-                        <Users className="h-5 w-5 mr-2 text-purple-500" />
-                        Establecimiento Médico
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    <div>
-                        <h4 className="font-medium">{siniestro.medicalEstablishment.name}</h4>
-                        <p className="text-sm text-muted-foreground">
-                            CUIT: {siniestro.medicalEstablishment.cuit}
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
+            {siniestro.medicalEstablishment && (
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <Users className="h-5 w-5 mr-2 text-purple-500" />
+                            Establecimiento Médico
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                        <div>
+                            <h4 className="font-medium">{siniestro.medicalEstablishment.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                                CUIT: {siniestro.medicalEstablishment.cuit}
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }
