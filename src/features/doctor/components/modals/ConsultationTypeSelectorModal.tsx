@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
@@ -12,22 +13,30 @@ import {
   ArrowRight,
   Info
 } from 'lucide-react';
+import { IngresoConsultationModal } from './IngresoConsultationModal';
 
 interface ConsultationTypeSelectorModalProps {
   isOpen: boolean;
   onClose: () => void;
   patientName: string;
+  patientId: string;
   hasConsultations: boolean;
+  siniestroData?: any;
   onSelectType: (type: 'INGRESO' | 'ATENCION' | 'ALTA') => void;
+  onConsultationSuccess?: (consultation: any) => void;
 }
 
 export function ConsultationTypeSelectorModal({
   isOpen,
   onClose,
   patientName,
+  patientId,
   hasConsultations,
+  siniestroData,
   onSelectType,
+  onConsultationSuccess,
 }: ConsultationTypeSelectorModalProps) {
+  const [isIngresoModalOpen, setIsIngresoModalOpen] = useState(false);
 
   const getAvailableTypes = () => {
     if (!hasConsultations) {
@@ -70,8 +79,27 @@ export function ConsultationTypeSelectorModal({
 
   const handleSelectType = (type: 'INGRESO' | 'ATENCION' | 'ALTA') => {
     console.log('🎯 ConsultationTypeSelectorModal: Tipo seleccionado:', type);
-    onSelectType(type);
+    
+    if (type === 'INGRESO') {
+      // Abrir modal de INGRESO directamente
+      setIsIngresoModalOpen(true);
+    } else {
+      // Para ATENCION y ALTA, usar el callback original
+      onSelectType(type);
+      onClose();
+    }
+  };
+
+  const handleIngresoSuccess = (consultation: any) => {
+    console.log('✅ Consulta de INGRESO creada exitosamente:', consultation);
+    setIsIngresoModalOpen(false);
+    onConsultationSuccess?.(consultation);
     onClose();
+  };
+
+  const handleIngresoError = (error: string) => {
+    console.error('❌ Error al crear consulta de INGRESO:', error);
+    // El error se maneja dentro del modal de INGRESO
   };
 
   console.log('🎯 ConsultationTypeSelectorModal: Renderizando con props:', {
@@ -92,16 +120,16 @@ export function ConsultationTypeSelectorModal({
           </DialogTitle>
           <DialogDescription>
             Selecciona el tipo de consulta a crear para este paciente ART
-            <div className="mt-2 flex items-center gap-2 text-sm">
-              <Badge variant="outline">Caso ART</Badge>
-              {!hasConsultations && (
-                <div className="flex items-center gap-1 text-orange-600">
-                  <AlertTriangle className="h-3 w-3" />
-                  <span>Requiere consulta de ingreso</span>
-                </div>
-              )}
-            </div>
           </DialogDescription>
+          <div className="mt-2 flex items-center gap-2 text-sm">
+            <Badge variant="outline">Caso ART</Badge>
+            {!hasConsultations && (
+              <div className="flex items-center gap-1 text-orange-600">
+                <AlertTriangle className="h-3 w-3" />
+                <span>Requiere consulta de ingreso</span>
+              </div>
+            )}
+          </div>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -113,12 +141,12 @@ export function ConsultationTypeSelectorModal({
                 <p className="font-medium text-foreground">Flujo de Consultas ART</p>
                 <div className="mt-1 text-muted-foreground">
                   {!hasConsultations ? (
-                    <p>1. <strong>INGRESO</strong> → Primera consulta obligatoria</p>
+                    <span>1. <strong>INGRESO</strong> → Primera consulta obligatoria</span>
                   ) : (
                     <div className="space-y-1">
-                      <p>✓ INGRESO completado</p>
-                      <p>2. <strong>ATENCIÓN</strong> → Seguimiento del tratamiento</p>
-                      <p>3. <strong>ALTA</strong> → Finalización y alta médica</p>
+                      <div>✓ INGRESO completado</div>
+                      <div>2. <strong>ATENCIÓN</strong> → Seguimiento del tratamiento</div>
+                      <div>3. <strong>ALTA</strong> → Finalización y alta médica</div>
                     </div>
                   )}
                 </div>
@@ -189,6 +217,17 @@ export function ConsultationTypeSelectorModal({
           </div>
         </div>
       </DialogContent>
+
+      {/* Modal de consulta de INGRESO */}
+      <IngresoConsultationModal
+        isOpen={isIngresoModalOpen}
+        onClose={() => setIsIngresoModalOpen(false)}
+        patientId={patientId}
+        patientName={patientName}
+        siniestroData={siniestroData}
+        onSuccess={handleIngresoSuccess}
+        onError={handleIngresoError}
+      />
     </Dialog>
   );
 }

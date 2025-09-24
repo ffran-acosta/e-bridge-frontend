@@ -9,14 +9,18 @@ interface CreateConsultationButtonProps {
   patientId: string;
   patientName: string;
   hasConsultations: boolean;
+  siniestroData?: any;
   onConsultationTypeSelected: (type: 'INGRESO' | 'ATENCION' | 'ALTA') => void;
+  onConsultationSuccess?: (consultation: any) => void;
 }
 
 export function CreateConsultationButton({
   patientId,
   patientName,
   hasConsultations,
+  siniestroData,
   onConsultationTypeSelected,
+  onConsultationSuccess,
 }: CreateConsultationButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -52,8 +56,11 @@ export function CreateConsultationButton({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         patientName={patientName}
+        patientId={patientId}
         hasConsultations={hasConsultations}
+        siniestroData={siniestroData}
         onSelectType={handleSelectType}
+        onConsultationSuccess={onConsultationSuccess}
       />
     </>
   );

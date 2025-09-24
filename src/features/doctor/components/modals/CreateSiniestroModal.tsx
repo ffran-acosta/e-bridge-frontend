@@ -163,11 +163,17 @@ export function CreateSiniestroModal({
         isOpen={isConsultationModalOpen}
         onClose={handleConsultationClose}
         patientName={patientName}
+        patientId={patientId}
         hasConsultations={false}
+        siniestroData={createdSiniestro}
         onSelectType={(type) => {
           console.log('🎯 Tipo de consulta seleccionado automáticamente:', type);
-          // Por ahora solo mostramos un alert, luego implementaremos el formulario
+          // Para ATENCION y ALTA, mostrar alert por ahora
           alert(`Consulta de ${type} seleccionada. Próximamente se abrirá el formulario correspondiente.`);
+          handleConsultationClose();
+        }}
+        onConsultationSuccess={(consultation) => {
+          console.log('✅ Consulta creada exitosamente:', consultation);
           handleConsultationClose();
         }}
       />

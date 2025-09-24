@@ -112,12 +112,17 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                             {/* Botón para crear primera consulta - solo para pacientes ART */}
                             <div className="flex justify-center">
                                 {isARTPatient(patient) ? (
-                                    <CreateConsultationButton
-                                        patientId={patient.id}
-                                        patientName={`${patient.firstName} ${patient.lastName}`}
-                                        hasConsultations={false}
-                                        onConsultationTypeSelected={handleConsultationTypeSelected}
-                                    />
+                            <CreateConsultationButton
+                                patientId={patient.id}
+                                patientName={`${patient.firstName} ${patient.lastName}`}
+                                hasConsultations={false}
+                                siniestroData={patient.siniestro}
+                                onConsultationTypeSelected={handleConsultationTypeSelected}
+                                onConsultationSuccess={(consultation) => {
+                                    console.log('✅ Consulta creada exitosamente:', consultation);
+                                    refetch(); // Recargar las consultas
+                                }}
+                            />
                                 ) : (
                                     <Button onClick={() => {
                                         console.log('🎯 Botón normal clickeado - paciente no ART');
@@ -180,7 +185,12 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                                 patientId={patient.id}
                                 patientName={`${patient.firstName} ${patient.lastName}`}
                                 hasConsultations={consultations.length > 0}
+                                siniestroData={patient.siniestro}
                                 onConsultationTypeSelected={handleConsultationTypeSelected}
+                                onConsultationSuccess={(consultation) => {
+                                    console.log('✅ Consulta creada exitosamente:', consultation);
+                                    refetch(); // Recargar las consultas
+                                }}
                             />
                         ) : (
                             <Button onClick={() => {
