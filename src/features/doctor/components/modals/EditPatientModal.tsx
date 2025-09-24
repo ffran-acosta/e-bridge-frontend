@@ -72,8 +72,8 @@ export function EditPatientModal({
         <div className="flex-1 overflow-y-auto pr-2 -mr-2">
           <div className="pr-2">
             <EditPatientForm
-              form={form}
-              handleSubmit={handleSubmit}
+              form={form as any}
+              handleSubmit={form.handleSubmit as any}
               isSubmitting={isSubmitting}
               error={error}
               onClose={onClose}
@@ -84,4 +84,5 @@ export function EditPatientModal({
     </Dialog>
   );
 }
+
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertCircle, Calendar, FileText, MapPin, Plus, RefreshCw, Stethoscope, User } from 'lucide-react';
+import { AlertCircle, Calendar, FileText, MapPin, Plus, RefreshCw, Stethoscope, User, Info, Trash2 } from 'lucide-react';
 import {
     Alert,
     AlertDescription,
@@ -11,19 +11,23 @@ import {
     CardTitle,
     Skeleton
 } from '@/shared';
-import type { PatientProfile } from '@/shared/types/patients.types';
+import type { PatientProfile, Consultation } from '@/shared/types/patients.types';
 import { usePatientConsultations } from '@/features/doctor/hooks/usePatientConsultations';
 import { formatConsultationDate, formatNextAppointmentDate } from '@/features/doctor/utils/dateFormatters';
 import { getConsultationStatus, formatDoctorInfo, getArtCaseLabel } from '@/features/doctor/utils/consultationFormatters';
 import { truncateText } from '@/features/doctor/utils/patientFormatters';
-import { CreateConsultationModal } from '../../modals';
+import { CreateConsultationModal, ConsultationDetailsModal, DeleteConsultationModal, ConsultationTypeSelectorModal } from '../../modals';
 
 interface ConsultationsTabProps {
     patient: PatientProfile;
 }
 
 export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
+    const [isTypeSelectorOpen, setIsTypeSelectorOpen] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [selectedConsultationId, setSelectedConsultationId] = useState<string | null>(null);
+    const [consultationToDelete, setConsultationToDelete] = useState<Consultation | null>(null);
+    const [selectedConsultationType, setSelectedConsultationType] = useState<'INGRESO' | 'ATENCION' | 'ALTA' | null>(null);
     
     const {
         consultations,
@@ -33,6 +37,26 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
         refetch,
         loadPage
     } = usePatientConsultations(patient.id);
+
+    const getConsultationTypeLabel = (type: string) => {
+        const labels = {
+            'INGRESO': 'Ingreso',
+            'ATENCION': 'Atención',
+            'ALTA': 'Alta Médica',
+            'REINGRESO': 'Reingreso'
+        };
+        return labels[type as keyof typeof labels] || type;
+    };
+
+    const getConsultationTypeVariant = (type: string) => {
+        const variants = {
+            'INGRESO': 'default',
+            'ATENCION': 'secondary',
+            'ALTA': 'destructive',
+            'REINGRESO': 'outline'
+        };
+        return variants[type as keyof typeof variants] || 'default';
+    };
 
     if (loading && consultations.length === 0) {
         return <ConsultationsLoading />;
@@ -81,7 +105,12 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                     onClose={() => setIsCreateModalOpen(false)}
                     patientId={patient.id}
                     patientName={`${patient.firstName} ${patient.lastName}`}
-                    isArtCase={!!patient.siniestro}
+                    isArtCase={patient.type === 'ART'}
+                    defaultConsultationType={patient.type === 'ART' ? 'INGRESO' : undefined}
+                    siniestroData={patient.siniestro ? {
+                        employerId: patient.siniestro.employerId,
+                        accidentDateTime: patient.siniestro.accidentDateTime,
+                    } : undefined}
                     onSuccess={() => {
                         refetch();
                         setIsCreateModalOpen(false);
@@ -106,7 +135,7 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                                 {pagination?.total || consultations.length} total
                             </Badge>
                         </div>
-                        <Button onClick={() => setIsCreateModalOpen(true)}>
+                        <Button onClick={() => setIsTypeSelectorOpen(true)}>
                             <Plus className="h-4 w-4 mr-2" />
                             Nueva Consulta
                         </Button>
@@ -134,12 +163,20 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                                         </div>
                                     </div>
                                     <div className="flex flex-col gap-2">
-                                        <Badge variant={status.variant}>
-                                            {status.label}
-                                        </Badge>
+                                        {/* Solo mostrar badge de estado si NO es "Completada" */}
+                                        {status.label !== 'Completada' && (
+                                            <Badge variant={status.variant}>
+                                                {status.label}
+                                            </Badge>
+                                        )}
                                         <Badge variant={artCase.variant}>
                                             {artCase.label}
                                         </Badge>
+                                        {consultation.consultationType && (
+                                            <Badge variant={getConsultationTypeVariant(consultation.consultationType)}>
+                                                {getConsultationTypeLabel(consultation.consultationType)}
+                                            </Badge>
+                                        )}
                                     </div>
                                 </div>
                             </CardHeader>
@@ -203,6 +240,27 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                                         </p>
                                     </div>
                                 )}
+
+                                {/* Botones de acción */}
+                                <div className="flex justify-end gap-2 pt-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setSelectedConsultationId(consultation.id)}
+                                    >
+                                        <Info className="h-4 w-4 mr-2" />
+                                        Más información
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => setConsultationToDelete(consultation)}
+                                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                    >
+                                        <Trash2 className="h-4 w-4 mr-2" />
+                                        Eliminar
+                                    </Button>
+                                </div>
                             </CardContent>
                         </Card>
                     );
@@ -253,18 +311,69 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                 </div>
             )}
 
+            {/* Modal selector de tipo de consulta */}
+            <ConsultationTypeSelectorModal
+                isOpen={isTypeSelectorOpen}
+                onClose={() => {
+                    setIsTypeSelectorOpen(false);
+                    setSelectedConsultationType(null);
+                }}
+                patientName={`${patient.firstName} ${patient.lastName}`}
+                isArtCase={!!patient.siniestro}
+                hasConsultations={consultations.length > 0}
+                onSelectType={(type) => {
+                    setSelectedConsultationType(type);
+                    setIsTypeSelectorOpen(false);
+                    setIsCreateModalOpen(true);
+                }}
+            />
+
             {/* Modal para crear consulta */}
             <CreateConsultationModal
                 isOpen={isCreateModalOpen}
-                onClose={() => setIsCreateModalOpen(false)}
+                onClose={() => {
+                    setIsCreateModalOpen(false);
+                    setSelectedConsultationType(null);
+                }}
                 patientId={patient.id}
                 patientName={`${patient.firstName} ${patient.lastName}`}
-                isArtCase={!!patient.siniestro}
+                isArtCase={patient.type === 'ART'}
+                defaultConsultationType={selectedConsultationType || undefined}
+                siniestroData={patient.siniestro ? {
+                    employerId: patient.siniestro.employerId,
+                    accidentDateTime: patient.siniestro.accidentDateTime,
+                    // Estos campos podrían venir del siniestro si los tiene
+                    accidentEstablishmentName: '',
+                    accidentEstablishmentAddress: '',
+                    accidentEstablishmentPhone: '',
+                    accidentContactName: '',
+                    accidentContactCellphone: '',
+                    accidentContactEmail: '',
+                } : undefined}
                 onSuccess={() => {
                     refetch();
                     setIsCreateModalOpen(false);
+                    setSelectedConsultationType(null);
                 }}
             />
+
+            <ConsultationDetailsModal
+                isOpen={selectedConsultationId !== null}
+                onClose={() => setSelectedConsultationId(null)}
+                consultationId={selectedConsultationId || ''}
+            />
+
+            <DeleteConsultationModal
+                isOpen={consultationToDelete !== null}
+                onClose={() => setConsultationToDelete(null)}
+                consultation={consultationToDelete}
+                isArtCase={!!patient.siniestro}
+                onSuccess={() => {
+                    refetch();
+                    setConsultationToDelete(null);
+                }}
+            />
+
 
         </div>
     );

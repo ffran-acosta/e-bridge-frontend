@@ -38,6 +38,37 @@ const createConsultationSchema = z.object({
   medicalAssistanceDate: z.string().optional(),
   patientSignature: z.string().optional(),
   doctorSignature: z.string().optional(),
+  // Campos específicos para ART Details - INGRESO
+  accidentDateTime: z.string().optional(),
+  workAbsenceStartDateTime: z.string().optional(),
+  firstMedicalAttentionDateTime: z.string().optional(),
+  workSickLeave: z.boolean().optional(),
+  probableDischargeDate: z.string().optional(),
+  nextRevisionDate: z.string().optional(),
+  workReturnDate: z.string().optional(),
+  accidentEstablishmentName: z.string().optional(),
+  accidentEstablishmentAddress: z.string().optional(),
+  accidentEstablishmentPhone: z.string().optional(),
+  accidentContactName: z.string().optional(),
+  accidentContactCellphone: z.string().optional(),
+  accidentContactEmail: z.string().optional(),
+  // Campos específicos para ART Details - ATENCIÓN
+  nextRevisionDateTime: z.string().optional(),
+  // Campos específicos para ART Details - ALTA
+  pendingMedicalTreatment: z.boolean().optional(),
+  professionalRequalification: z.boolean().optional(),
+  treatmentEndDateTime: z.string().optional(),
+  inculpableAffection: z.boolean().optional(),
+  disablingSequelae: z.boolean().optional(),
+  maintenanceBenefits: z.boolean().optional(),
+  psychologicalTreatment: z.boolean().optional(),
+  sequelaeEstimationRequired: z.boolean().optional(),
+  finalTreatmentEndDateTime: z.string().optional(),
+  finalDisablingSequelae: z.boolean().optional(),
+  finalProfessionalRequalification: z.boolean().optional(),
+  finalMaintenanceBenefits: z.boolean().optional(),
+  finalPsychologicalTreatment: z.boolean().optional(),
+  finalSequelaeEstimationRequired: z.boolean().optional(),
 }).refine((data) => {
   // Si es caso ART, employerId es obligatorio
   if (data.isArtCase && !data.employerId) {
@@ -63,7 +94,16 @@ interface CreateConsultationModalProps {
   onError?: (error: string) => void;
   fromAppointmentId?: string;
   defaultConsultationType?: string;
-  siniestroData?: any;
+  siniestroData?: {
+    employerId?: string;
+    accidentDateTime?: string;
+    accidentEstablishmentName?: string;
+    accidentEstablishmentAddress?: string;
+    accidentEstablishmentPhone?: string;
+    accidentContactName?: string;
+    accidentContactCellphone?: string;
+    accidentContactEmail?: string;
+  };
 }
 
 export function CreateConsultationModal({
@@ -101,6 +141,53 @@ export function CreateConsultationModal({
   });
 
   const isArtCaseValue = form.watch('isArtCase');
+  
+  console.log('🔍 Debug modal:', {
+    isArtCase,
+    defaultConsultationType,
+    isArtCaseValue,
+    siniestroData: !!siniestroData
+  });
+
+  useEffect(() => {
+    if (isArtCase) {
+      form.setValue('isArtCase', true, { shouldValidate: true });
+      form.setValue('consultationType', defaultConsultationType || 'INGRESO', { shouldValidate: false });
+    }
+  }, [isArtCase, defaultConsultationType, form]);
+
+  // Pre-poblar campos con datos del siniestro
+  useEffect(() => {
+    if (isOpen && siniestroData && isArtCase) {
+      console.log('🔄 Pre-poblando formulario con datos del siniestro:', siniestroData);
+      
+      // Pre-poblar campos básicos del siniestro
+      if (siniestroData.employerId) {
+        form.setValue('employerId', siniestroData.employerId);
+      }
+      if (siniestroData.accidentDateTime) {
+        form.setValue('accidentDateTime', siniestroData.accidentDateTime);
+      }
+      if (siniestroData.accidentEstablishmentName) {
+        form.setValue('accidentEstablishmentName', siniestroData.accidentEstablishmentName);
+      }
+      if (siniestroData.accidentEstablishmentAddress) {
+        form.setValue('accidentEstablishmentAddress', siniestroData.accidentEstablishmentAddress);
+      }
+      if (siniestroData.accidentEstablishmentPhone) {
+        form.setValue('accidentEstablishmentPhone', siniestroData.accidentEstablishmentPhone);
+      }
+      if (siniestroData.accidentContactName) {
+        form.setValue('accidentContactName', siniestroData.accidentContactName);
+      }
+      if (siniestroData.accidentContactCellphone) {
+        form.setValue('accidentContactCellphone', siniestroData.accidentContactCellphone);
+      }
+      if (siniestroData.accidentContactEmail) {
+        form.setValue('accidentContactEmail', siniestroData.accidentContactEmail);
+      }
+    }
+  }, [isOpen, siniestroData, isArtCase, form]);
 
   // Cargar datos iniciales
   useEffect(() => {
@@ -181,7 +268,58 @@ export function CreateConsultationModal({
     try {
       console.log('📦 Datos del formulario:', data);
       
-      const payload = {
+      const consultationType = (data.consultationType || 'INGRESO').toUpperCase();
+
+      // Body específico según tipo de consulta ART vs genérico
+      const payload = isArtCase ? {
+        // Para consultas ART, NO incluir patientId ni type (van en la URL)
+        medicalEstablishmentId: data.medicalEstablishmentId,
+        consultationReason: data.consultationReason,
+        diagnosis: data.diagnosis,
+        medicalIndications: data.medicalIndications,
+        ...(data.nextAppointmentDate && { nextAppointmentDate: data.nextAppointmentDate }),
+        ...(data.medicalAssistancePlace && { medicalAssistancePlace: data.medicalAssistancePlace }),
+        ...(data.medicalAssistanceDate && { medicalAssistanceDate: data.medicalAssistanceDate }),
+        artDetails: {
+          ...(data.employerId && { employerId: data.employerId }),
+          // Campos específicos según tipo de consulta
+          ...(data.consultationType === 'INGRESO' && {
+            ...(data.accidentDateTime && { accidentDateTime: data.accidentDateTime }),
+            ...(data.workAbsenceStartDateTime && { workAbsenceStartDateTime: data.workAbsenceStartDateTime }),
+            ...(data.firstMedicalAttentionDateTime && { firstMedicalAttentionDateTime: data.firstMedicalAttentionDateTime }),
+            ...(data.workSickLeave !== undefined && { workSickLeave: data.workSickLeave }),
+            ...(data.probableDischargeDate && { probableDischargeDate: data.probableDischargeDate }),
+            ...(data.nextRevisionDate && { nextRevisionDate: data.nextRevisionDate }),
+            ...(data.workReturnDate && { workReturnDate: data.workReturnDate }),
+            ...(data.accidentEstablishmentName && { accidentEstablishmentName: data.accidentEstablishmentName }),
+            ...(data.accidentEstablishmentAddress && { accidentEstablishmentAddress: data.accidentEstablishmentAddress }),
+            ...(data.accidentEstablishmentPhone && { accidentEstablishmentPhone: data.accidentEstablishmentPhone }),
+            ...(data.accidentContactName && { accidentContactName: data.accidentContactName }),
+            ...(data.accidentContactCellphone && { accidentContactCellphone: data.accidentContactCellphone }),
+            ...(data.accidentContactEmail && { accidentContactEmail: data.accidentContactEmail }),
+          }),
+          ...(data.consultationType === 'ATENCION' && {
+            ...(data.nextRevisionDateTime && { nextRevisionDateTime: data.nextRevisionDateTime }),
+          }),
+          ...(data.consultationType === 'ALTA' && {
+            ...(data.pendingMedicalTreatment !== undefined && { pendingMedicalTreatment: data.pendingMedicalTreatment }),
+            ...(data.professionalRequalification !== undefined && { professionalRequalification: data.professionalRequalification }),
+            ...(data.treatmentEndDateTime && { treatmentEndDateTime: data.treatmentEndDateTime }),
+            ...(data.inculpableAffection !== undefined && { inculpableAffection: data.inculpableAffection }),
+            ...(data.disablingSequelae !== undefined && { disablingSequelae: data.disablingSequelae }),
+            ...(data.maintenanceBenefits !== undefined && { maintenanceBenefits: data.maintenanceBenefits }),
+            ...(data.psychologicalTreatment !== undefined && { psychologicalTreatment: data.psychologicalTreatment }),
+            ...(data.sequelaeEstimationRequired !== undefined && { sequelaeEstimationRequired: data.sequelaeEstimationRequired }),
+            ...(data.finalTreatmentEndDateTime && { finalTreatmentEndDateTime: data.finalTreatmentEndDateTime }),
+            ...(data.finalDisablingSequelae !== undefined && { finalDisablingSequelae: data.finalDisablingSequelae }),
+            ...(data.finalProfessionalRequalification !== undefined && { finalProfessionalRequalification: data.finalProfessionalRequalification }),
+            ...(data.finalMaintenanceBenefits !== undefined && { finalMaintenanceBenefits: data.finalMaintenanceBenefits }),
+            ...(data.finalPsychologicalTreatment !== undefined && { finalPsychologicalTreatment: data.finalPsychologicalTreatment }),
+            ...(data.finalSequelaeEstimationRequired !== undefined && { finalSequelaeEstimationRequired: data.finalSequelaeEstimationRequired }),
+          }),
+        }
+      } : {
+        // Para consultas genéricas, incluir patientId y type
         patientId: patientId,
         medicalEstablishmentId: data.medicalEstablishmentId,
         type: data.consultationType || 'INGRESO',
@@ -190,17 +328,15 @@ export function CreateConsultationModal({
         medicalIndications: data.medicalIndications,
         ...(data.nextAppointmentDate && { nextAppointmentDate: data.nextAppointmentDate }),
         ...(data.fromAppointmentId && { fromAppointmentId: data.fromAppointmentId }),
-        // Para casos ART, incluir artDetails
         ...(isArtCase && data.employerId && {
           artDetails: {
             employerId: data.employerId,
-            // TODO: Agregar otros campos de artDetails cuando estén disponibles en el formulario
           }
         }),
       };
 
       console.log('📦 Payload enviado:', payload);
-      await createConsultation(patientId, payload);
+      await createConsultation(patientId, payload as any);
 
       onSuccess?.();
       onClose();
@@ -222,7 +358,9 @@ export function CreateConsultationModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>Nueva Consulta - {patientName}</DialogTitle>
+          <DialogTitle>
+            Nueva Consulta de {defaultConsultationType || 'Ingreso'}{isArtCase ? ' (ART)' : ''} - {patientName}
+          </DialogTitle>
         </DialogHeader>
         <div className="flex-1 overflow-y-auto pr-2 -mr-2">
           <div className="pr-2">
@@ -234,21 +372,27 @@ export function CreateConsultationModal({
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 {/* Información del caso ART */}
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="isArtCase"
-                    checked={isArtCaseValue}
-                    onCheckedChange={(checked: boolean) => {
-                      form.setValue('isArtCase', checked);
-                      if (!checked) {
-                        form.setValue('employerId', '');
-                      }
-                    }}
-                  />
-                  <label htmlFor="isArtCase" className="text-sm font-medium">
-                    Es un caso ART (Accidente de Trabajo)
-                  </label>
-                </div>
+                {isArtCase ? (
+                  <div className="text-sm text-muted-foreground">
+                    Esta consulta es para un caso ART. El tipo y condición ART están fijos.
+                  </div>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="isArtCase"
+                      checked={isArtCaseValue}
+                      onCheckedChange={(checked: boolean) => {
+                        form.setValue('isArtCase', checked);
+                        if (!checked) {
+                          form.setValue('employerId', '');
+                        }
+                      }}
+                    />
+                    <label htmlFor="isArtCase" className="text-sm font-medium">
+                      Es un caso ART (Accidente de Trabajo)
+                    </label>
+                  </div>
+                )}
 
                 {/* Motivo de consulta */}
                 <FormField
@@ -362,6 +506,347 @@ export function CreateConsultationModal({
                       </FormItem>
                     )}
                   />
+                )}
+
+                {/* Campos específicos para ART - Solo mostrar si es caso ART */}
+                {isArtCase && (
+                  <>
+                    {/* Fechas del accidente */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Detalles del Accidente</h3>
+                      
+                      <FormField
+                        control={form.control}
+                        name="accidentDateTime"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Fecha y Hora del Accidente</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      'w-full pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground'
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(new Date(field.value), 'dd/MM/yyyy HH:mm', { locale: es })
+                                    ) : (
+                                      'Seleccionar fecha y hora'
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value ? new Date(field.value) : undefined}
+                                  onSelect={(date: Date | undefined) => {
+                                    if (date) {
+                                      field.onChange(date.toISOString());
+                                    }
+                                  }}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="workAbsenceStartDateTime"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Inicio de Ausencia Laboral</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      'w-full pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground'
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(new Date(field.value), 'dd/MM/yyyy HH:mm', { locale: es })
+                                    ) : (
+                                      'Seleccionar fecha y hora'
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value ? new Date(field.value) : undefined}
+                                  onSelect={(date: Date | undefined) => {
+                                    if (date) {
+                                      field.onChange(date.toISOString());
+                                    }
+                                  }}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="firstMedicalAttentionDateTime"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Primera Atención Médica</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      'w-full pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground'
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(new Date(field.value), 'dd/MM/yyyy HH:mm', { locale: es })
+                                    ) : (
+                                      'Seleccionar fecha y hora'
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value ? new Date(field.value) : undefined}
+                                  onSelect={(date: Date | undefined) => {
+                                    if (date) {
+                                      field.onChange(date.toISOString());
+                                    }
+                                  }}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="workSickLeave"
+                        render={({ field }) => (
+                          <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel>
+                                Licencia Médica Laboral
+                              </FormLabel>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="probableDischargeDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Fecha Probable de Alta</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      'w-full pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground'
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(new Date(field.value), 'dd/MM/yyyy', { locale: es })
+                                    ) : (
+                                      'Seleccionar fecha'
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value ? new Date(field.value) : undefined}
+                                  onSelect={(date: Date | undefined) => {
+                                    if (date) {
+                                      field.onChange(date.toISOString());
+                                    }
+                                  }}
+                                  disabled={(date: Date) => date < new Date()}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="workReturnDate"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Fecha de Retorno al Trabajo</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant="outline"
+                                    className={cn(
+                                      'w-full pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground'
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      format(new Date(field.value), 'dd/MM/yyyy HH:mm', { locale: es })
+                                    ) : (
+                                      'Seleccionar fecha y hora'
+                                    )}
+                                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent className="w-auto p-0" align="start">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value ? new Date(field.value) : undefined}
+                                  onSelect={(date: Date | undefined) => {
+                                    if (date) {
+                                      field.onChange(date.toISOString());
+                                    }
+                                  }}
+                                  disabled={(date: Date) => date < new Date()}
+                                  initialFocus
+                                />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Información del establecimiento del accidente */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Establecimiento del Accidente</h3>
+                      
+                      <FormField
+                        control={form.control}
+                        name="accidentEstablishmentName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nombre del Establecimiento</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Nombre de la empresa donde ocurrió el accidente" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="accidentEstablishmentAddress"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Dirección del Establecimiento</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Dirección completa del establecimiento" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="accidentEstablishmentPhone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Teléfono del Establecimiento</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Teléfono del establecimiento" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+
+                    {/* Contacto del accidente */}
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-medium">Contacto del Accidente</h3>
+                      
+                      <FormField
+                        control={form.control}
+                        name="accidentContactName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Nombre del Contacto</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Nombre de la persona de contacto" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="accidentContactCellphone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Celular del Contacto</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Número de celular del contacto" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="accidentContactEmail"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Email del Contacto</FormLabel>
+                            <FormControl>
+                              <Input placeholder="Email del contacto" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </>
                 )}
 
                 {/* Turno origen (opcional) */}

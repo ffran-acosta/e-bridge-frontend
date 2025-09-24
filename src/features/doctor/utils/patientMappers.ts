@@ -57,28 +57,7 @@ export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatien
             contactInfo: null, // No viene en la respuesta del backend
             isActive: backendProfile.insurance.isActive
         },
-        siniestro: backendProfile.siniestro ? {
-            id: backendProfile.siniestro.id,
-            contingencyType: backendProfile.siniestro.contingencyType,
-            accidentDateTime: backendProfile.siniestro.accidentDateTime,
-            art: {
-                id: '', // No viene en la respuesta del backend
-                name: '', // No viene en la respuesta del backend
-                code: '' // No viene en la respuesta del backend
-            },
-            medicalEstablishment: {
-                id: '', // No viene en la respuesta del backend
-                name: '', // No viene en la respuesta del backend
-                cuit: '' // No viene en la respuesta del backend
-            },
-            employer: {
-                id: '', // No viene en la respuesta del backend
-                name: '', // No viene en la respuesta del backend
-                cuit: '' // No viene en la respuesta del backend
-            },
-            createdAt: backendProfile.siniestro.createdAt,
-            updatedAt: backendProfile.siniestro.createdAt // Usar createdAt como updatedAt si no viene
-        } : null,
+        siniestro: null, // No viene en la respuesta del backend, se manejará por separado
         assignedDoctors: backendProfile.assignedDoctors.map(assignment => ({
             id: assignment.id,
             assignedAt: assignment.assignedAt,
@@ -110,30 +89,39 @@ export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatien
 // ========== MAPPER PARA CONSULTAS ==========
 
 // Transforma una consulta del backend al formato esperado por el frontend
-export const mapBackendConsultationToFrontend = (backendConsultation: BackendConsultation): Consultation => {
+export const mapBackendConsultationToFrontend = (backendConsultation: any): Consultation => {
+    console.log('🔍 Mapeando consulta del backend:', backendConsultation);
+    
+    // Manejar diferentes estructuras de respuesta del backend
+    const consultation = backendConsultation.data || backendConsultation;
+    
     return {
-        id: backendConsultation.id,
-        consultationReason: backendConsultation.consultationReason,
-        diagnosis: backendConsultation.diagnosis,
-        nextAppointmentDate: backendConsultation.nextAppointmentDate,
-        isArtCase: backendConsultation.type === 'INGRESO' || backendConsultation.type === 'ATENCION',
+        patientId: consultation.patientId,
+        id: consultation.id,
+        consultationReason: consultation.consultationReason,
+        diagnosis: consultation.diagnosis,
+        nextAppointmentDate: consultation.nextAppointmentDate,
+        isArtCase: consultation.type === 'INGRESO' || consultation.type === 'ATENCION',
+        consultationType: consultation.type, // Agregar el tipo de consulta
         medicalEstablishment: {
-            id: backendConsultation.medicalEstablishment.id,
-            name: backendConsultation.medicalEstablishment.name
+            id: consultation.medicalEstablishment?.id || '',
+            name: consultation.medicalEstablishment?.name || 'Establecimiento no especificado'
         },
         employer: null, // No viene en la respuesta del backend
         doctor: {
-            id: backendConsultation.doctor.id,
-            licenseNumber: backendConsultation.doctor.licenseNumber,
-            fullName: `${backendConsultation.doctor.user.firstName} ${backendConsultation.doctor.user.lastName}`,
-            specialtyName: backendConsultation.doctor.specialty.name
+            id: consultation.doctor?.id || '',
+            licenseNumber: consultation.doctor?.licenseNumber || '',
+            fullName: consultation.doctor?.user 
+                ? `${consultation.doctor.user.firstName} ${consultation.doctor.user.lastName}`
+                : 'Doctor no especificado',
+            specialtyName: consultation.doctor?.specialty?.name || 'Especialidad no especificada'
         },
         appointmentInfo: {
             hasOriginAppointment: false, // No viene en la respuesta del backend
-            hasNextAppointment: !!backendConsultation.nextAppointmentDate,
+            hasNextAppointment: !!consultation.nextAppointmentDate,
             nextAppointmentId: null // No viene en la respuesta del backend
         },
-        createdAt: backendConsultation.createdAt,
-        updatedAt: backendConsultation.updatedAt
+        createdAt: consultation.createdAt,
+        updatedAt: consultation.updatedAt
     };
 };

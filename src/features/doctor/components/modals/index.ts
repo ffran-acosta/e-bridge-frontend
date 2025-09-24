@@ -1,4 +1,7 @@
 export { CreateConsultationModal } from './CreateConsultationModal';
+export { ConsultationDetailsModal } from './ConsultationDetailsModal';
+export { DeleteConsultationModal } from './DeleteConsultationModal';
+export { ConsultationTypeSelectorModal } from './ConsultationTypeSelectorModal';
 export { CreatePatientModal } from './CreatePatientModal';
 export { CreatePatientForm } from './CreatePatientForm';
 export { CreateSiniestroModal } from './CreateSiniestroModal';

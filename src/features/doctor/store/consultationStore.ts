@@ -25,6 +25,7 @@ interface ConsultationsState {
 interface ConsultationsActions {
     fetchConsultations: (patientId: string, page?: number, limit?: number) => Promise<void>;
     createConsultation: (patientId: string, data: CreateConsultationDto) => Promise<Consultation>;
+    deleteConsultation: (consultationId: string) => Promise<void>;
     clearConsultations: () => void;
     setError: (error: string | null) => void;
     reset: () => void;
@@ -109,16 +110,44 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                 set({ loading: true, error: null });
 
                 try {
-                    const response = await api<CreateConsultationResponse>(
-                        `${DOCTOR_ENDPOINTS.consultations}`,
-                        {
-                            method: 'POST',
-                            body: data,
-                        }
-                    );
+                    // Determinar el endpoint basado en el tipo de consulta ART
+                    const consultationType = data.type || 'INGRESO';
+                    let targetPath: string;
 
-                    if (response.data) {
-                        const newConsultation = response.data;
+                    if (!data.patientId && data.medicalEstablishmentId && data.artDetails) {
+                        // Es una consulta ART específica
+                        switch (consultationType.toUpperCase()) {
+                            case 'INGRESO':
+                                targetPath = DOCTOR_ENDPOINTS.patientConsultationIngreso(patientId);
+                                break;
+                            case 'ATENCION':
+                                targetPath = DOCTOR_ENDPOINTS.patientConsultationAtencion(patientId);
+                                break;
+                            case 'ALTA':
+                                targetPath = DOCTOR_ENDPOINTS.patientConsultationAlta(patientId);
+                                break;
+                            default:
+                                targetPath = `${DOCTOR_ENDPOINTS.consultations}`;
+                        }
+                    } else {
+                        // Consulta genérica
+                        targetPath = `${DOCTOR_ENDPOINTS.consultations}`;
+                    }
+
+                    console.log('🔍 Endpoint seleccionado:', targetPath);
+                    console.log('🔍 Tipo de consulta:', consultationType);
+
+                    const response = await api<any>(targetPath, {
+                        method: 'POST',
+                        body: data,
+                    });
+
+                    if (response?.data) {
+                        console.log('📦 Respuesta completa del backend al crear consulta:', response);
+                        console.log('📦 response.data:', response.data);
+                        
+                        // Normalizar al formato frontend por si el backend devuelve forma cruda
+                        const newConsultation = mapBackendConsultationToFrontend(response.data);
                         
                         // Agregar la nueva consulta al estado
                         set((state) => ({
@@ -141,6 +170,39 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                         error: errorMessage,
                     });
 
+                    throw error;
+                }
+            },
+
+            deleteConsultation: async (consultationId: string) => {
+                set({ loading: true, error: null });
+
+                try {
+                    console.log('🗑️ Eliminando consulta:', consultationId);
+                    
+                    await api(DOCTOR_ENDPOINTS.deleteConsultation(consultationId), {
+                        method: 'DELETE',
+                    });
+
+                    // Remover la consulta del estado local
+                    set((state) => ({
+                        consultations: state.consultations.filter(c => c.id !== consultationId),
+                        loading: false,
+                        error: null,
+                    }));
+
+                    console.log('✅ Consulta eliminada exitosamente');
+                } catch (error) {
+                    const errorMessage = error instanceof Error
+                        ? error.message
+                        : 'Error desconocido al eliminar la consulta';
+
+                    set({
+                        loading: false,
+                        error: errorMessage,
+                    });
+
+                    console.error('❌ Error al eliminar consulta:', error);
                     throw error;
                 }
             },

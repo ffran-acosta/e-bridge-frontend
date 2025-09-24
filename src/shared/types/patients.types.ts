@@ -265,11 +265,13 @@ export interface AppointmentInfo {
 }
 
 export interface Consultation {
+    patientId?: string;
     id: string;
     consultationReason: string;
     diagnosis: string;
     nextAppointmentDate: string | null;
     isArtCase: boolean;
+    consultationType?: string; // INGRESO, ATENCION, ALTA, REINGRESO
     medicalEstablishment: MedicalEstablishment;
     employer: EmployerInfo | null;
     doctor: DoctorInfo;
