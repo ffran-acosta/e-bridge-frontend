@@ -28,6 +28,7 @@ export function FormField<
       label={label} 
       required={required} 
       error={fieldState.error?.message}
+      className="space-y-2"
     >
       {render({ field, fieldState })}
     </FormFieldWrapper>

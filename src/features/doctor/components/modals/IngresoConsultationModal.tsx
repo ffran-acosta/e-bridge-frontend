@@ -72,17 +72,13 @@ export function IngresoConsultationModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent 
         className={cn(
-          "max-w-4xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col",
-          "bg-background border rounded-lg shadow-lg"
+          "max-w-7xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col",
+          "bg-background border rounded-lg shadow-lg",
+          "sm:max-w-7xl" // Sobrescribir el sm:max-w-lg del componente base
         )}
       >
-        <DialogHeader className="flex-shrink-0 pb-4 border-b">
-          <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
-          {description && (
-            <DialogDescription className="text-muted-foreground">
-              {description}
-            </DialogDescription>
-          )}
+        <DialogHeader className="flex-shrink-0 pb-6 border-b">
+          {/* Título removido - se muestra en el formulario con icono */}
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto pr-2 -mr-2">

@@ -16,7 +16,7 @@ export const DateTimeInput = forwardRef<HTMLInputElement, DateTimeInputProps>(
         <Input
           type={type}
           className={cn(
-            "pl-10 pr-4 py-2 h-10 text-sm",
+            "pl-10 pr-4 py-3 h-12 text-sm",
             "bg-background border-border text-foreground",
             "focus:ring-2 focus:ring-primary focus:border-primary",
             "placeholder:text-muted-foreground",
@@ -25,7 +25,7 @@ export const DateTimeInput = forwardRef<HTMLInputElement, DateTimeInputProps>(
           ref={ref}
           {...props}
         />
-        <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+        <CalendarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-foreground/70 pointer-events-none" />
       </div>
     );
   }

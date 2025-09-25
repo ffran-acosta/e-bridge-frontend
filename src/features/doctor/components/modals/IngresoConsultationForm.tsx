@@ -50,15 +50,15 @@ export function IngresoConsultationForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
       {/* Header */}
-      <div className="text-center space-y-2">
-        <h2 className="text-2xl font-bold flex items-center justify-center gap-2">
-          <AlertTriangle className="h-6 w-6 text-orange-500" />
+      <div className="text-center space-y-3 pb-4">
+        <h2 className="text-3xl font-bold flex items-center justify-center gap-3">
+          <AlertTriangle className="h-8 w-8 text-orange-500" />
           Consulta de Ingreso ART
         </h2>
-        <p className="text-muted-foreground">
-          Paciente: <span className="font-medium">{patientName}</span>
+        <p className="text-lg text-muted-foreground">
+          Paciente: <span className="font-semibold text-foreground">{patientName}</span>
         </p>
       </div>
 
@@ -71,10 +71,10 @@ export function IngresoConsultationForm({
 
       {/* Información básica de la consulta */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Información de la Consulta</CardTitle>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold">Información de la Consulta</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <FormField
             control={control}
             name="medicalEstablishmentId"
@@ -83,7 +83,8 @@ export function IngresoConsultationForm({
             render={({ field }) => (
               <select
                 {...field}
-                className="w-full p-3 h-10 text-sm border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary"
+                className="w-full p-3 h-12 text-sm border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary appearance-none"
+                style={{ paddingTop: '12px', paddingBottom: '12px' }}
               >
                 <option value="">Seleccionar establecimiento...</option>
                 {medicalEstablishments.map((establishment) => (
@@ -104,7 +105,7 @@ export function IngresoConsultationForm({
               <Textarea
                 {...field}
                 placeholder="Describir el motivo de la consulta..."
-                className="min-h-[80px] text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="min-h-[100px] text-sm focus:ring-2 focus:ring-primary focus:border-primary"
               />
             )}
           />
@@ -118,7 +119,7 @@ export function IngresoConsultationForm({
               <Textarea
                 {...field}
                 placeholder="Diagnóstico médico..."
-                className="min-h-[80px] text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="min-h-[100px] text-sm focus:ring-2 focus:ring-primary focus:border-primary"
               />
             )}
           />
@@ -132,12 +133,12 @@ export function IngresoConsultationForm({
               <Textarea
                 {...field}
                 placeholder="Tratamiento e indicaciones médicas..."
-                className="min-h-[80px] text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="min-h-[100px] text-sm focus:ring-2 focus:ring-primary focus:border-primary"
               />
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FormField
               control={control}
               name="medicalAssistancePlace"
@@ -147,7 +148,7 @@ export function IngresoConsultationForm({
                 <Input
                   {...field}
                   placeholder="Ej: Consultorio de Traumatología"
-                  className="text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               )}
             />
@@ -164,32 +165,33 @@ export function IngresoConsultationForm({
                 />
               )}
             />
+
+            <FormField
+              control={control}
+              name="nextAppointmentDate"
+              label="Próxima Cita (Opcional)"
+              render={({ field }) => (
+                <DateTimeInput
+                  {...field}
+                  type="datetime-local"
+                />
+              )}
+            />
           </div>
 
-          <FormField
-            control={control}
-            name="nextAppointmentDate"
-            label="Próxima Cita (Opcional)"
-            render={({ field }) => (
-              <DateTimeInput
-                {...field}
-                type="datetime-local"
-              />
-            )}
-          />
         </CardContent>
       </Card>
 
       {/* Detalles específicos ART */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Building className="h-5 w-5 text-blue-500" />
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold flex items-center gap-3">
+            <Building className="h-6 w-6 text-blue-500" />
             Detalles del Accidente Laboral
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               control={control}
               name="artDetails.accidentDateTime"
@@ -236,7 +238,7 @@ export function IngresoConsultationForm({
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FormField
               control={control}
               name="artDetails.probableDischargeDate"
@@ -260,37 +262,40 @@ export function IngresoConsultationForm({
                 />
               )}
             />
+
+            <div className="flex items-center justify-center">
+              <FormField
+                control={control}
+                name="artDetails.workSickLeave"
+                label="Licencia médica laboral"
+                render={({ field }) => (
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="workSickLeave"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                    <label htmlFor="workSickLeave" className="text-sm font-medium">
+                      Licencia médica laboral
+                    </label>
+                  </div>
+                )}
+              />
+            </div>
           </div>
 
-          <FormField
-            control={control}
-            name="artDetails.workSickLeave"
-            label="Licencia médica laboral"
-            render={({ field }) => (
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="workSickLeave"
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                />
-                <label htmlFor="workSickLeave" className="text-sm font-medium">
-                  Licencia médica laboral
-                </label>
-              </div>
-            )}
-          />
         </CardContent>
       </Card>
 
       {/* Información del establecimiento del accidente */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <Building className="h-5 w-5 text-green-500" />
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold flex items-center gap-3">
+            <Building className="h-6 w-6 text-green-500" />
             Establecimiento del Accidente
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <FormField
             control={control}
             name="artDetails.accidentEstablishmentName"
@@ -337,13 +342,13 @@ export function IngresoConsultationForm({
 
       {/* Contacto del establecimiento */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg flex items-center gap-2">
-            <User className="h-5 w-5 text-purple-500" />
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold flex items-center gap-3">
+            <User className="h-6 w-6 text-purple-500" />
             Contacto del Establecimiento
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <FormField
             control={control}
             name="artDetails.accidentContactName"
@@ -358,7 +363,7 @@ export function IngresoConsultationForm({
             )}
           />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <FormField
               control={control}
               name="artDetails.accidentContactCellphone"
@@ -368,7 +373,7 @@ export function IngresoConsultationForm({
                 <Input
                   {...field}
                   placeholder="Número de celular"
-                  className="text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               )}
             />
@@ -382,7 +387,7 @@ export function IngresoConsultationForm({
                   {...field}
                   type="email"
                   placeholder="Email de contacto"
-                  className="text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
                 />
               )}
             />
@@ -391,19 +396,22 @@ export function IngresoConsultationForm({
       </Card>
 
       {/* Botones de acción */}
-      <div className="flex justify-end gap-3 pt-4">
+      <div className="flex justify-end gap-4 pt-6 border-t">
         <Button
           type="button"
           variant="outline"
           onClick={onClose}
           disabled={isSubmitting}
+          size="lg"
+          className="px-8"
         >
           Cancelar
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="bg-primary hover:bg-primary/90"
+          size="lg"
+          className="bg-primary hover:bg-primary/90 px-8"
         >
           {isSubmitting ? 'Creando Consulta...' : 'Crear Consulta de Ingreso'}
         </Button>
