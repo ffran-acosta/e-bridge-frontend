@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
-import { useEditPatient } from '../../hooks/useEditPatient';
+import { useEditPatient } from '../../../hooks/useEditPatient';
 import { EditPatientForm } from './EditPatientForm';
 import { cn } from '@/lib/utils';
 import { PatientProfile } from '@/shared/types/patients.types';

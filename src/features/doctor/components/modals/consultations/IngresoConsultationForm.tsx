@@ -10,7 +10,7 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 import { AlertTriangle, Building, User } from 'lucide-react';
 import { DateTimeInput } from '../shared/DateTimeInput';
 import { cn } from '@/lib/utils';
-import { IngresoConsultationFormData } from '../../lib/ingreso-consultation-form.schema';
+import { IngresoConsultationFormData } from '../../../lib/ingreso-consultation-form.schema';
 
 interface IngresoConsultationFormProps {
   form: UseFormReturn<IngresoConsultationFormData>;

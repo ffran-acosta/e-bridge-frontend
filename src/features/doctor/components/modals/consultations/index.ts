@@ -4,3 +4,4 @@ export { CreateConsultationButton } from './CreateConsultationButton';
 export { IngresoConsultationModal } from './IngresoConsultationModal';
 export { IngresoConsultationForm } from './IngresoConsultationForm';
 export { DeleteConsultationModal } from './DeleteConsultationModal';
+export { ConsultationDetailsModal } from './ConsultationDetailsModal';

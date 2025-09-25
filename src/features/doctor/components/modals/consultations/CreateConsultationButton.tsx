@@ -45,11 +45,11 @@ export function CreateConsultationButton({
     <>
       <Button 
         onClick={handleButtonClick}
-        className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground"
+        className="flex items-center gap-1 bg-primary hover:bg-primary/90 text-primary-foreground"
         size="sm"
       >
-        <Plus className="h-4 w-4" />
-        Nueva Consulta ART
+        <Plus className="h-3 w-3" />
+        {hasConsultations ? 'Nueva Consulta' : 'Nueva Consulta ART'}
       </Button>
 
       <ConsultationTypeSelectorModal

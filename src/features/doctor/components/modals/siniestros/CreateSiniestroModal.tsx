@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
-import { useCreateSiniestro, useARTs, useMedicalEstablishments, useEmployers } from '../../hooks/useCreateSiniestro';
-import { CONTINGENCY_TYPE_OPTIONS } from '../../types/siniestro-form.types';
+import { useCreateSiniestro, useARTs, useMedicalEstablishments, useEmployers } from '../../../hooks/useCreateSiniestro';
+import { CONTINGENCY_TYPE_OPTIONS } from '../../../types/siniestro-form.types';
 import { CreateSiniestroForm } from './CreateSiniestroForm';
 import { ConsultationTypeSelectorModal } from '../consultations/ConsultationTypeSelectorModal';
 import { cn } from '@/lib/utils';

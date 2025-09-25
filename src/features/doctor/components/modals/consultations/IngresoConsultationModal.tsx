@@ -2,8 +2,8 @@
 
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
-import { useCreateIngresoConsultation } from '../../hooks/useCreateIngresoConsultation';
-import { useMedicalEstablishments } from '../../hooks/useCreateSiniestro';
+import { useCreateIngresoConsultation } from '../../../hooks/useCreateIngresoConsultation';
+import { useMedicalEstablishments } from '../../../hooks/useCreateSiniestro';
 import { IngresoConsultationForm } from './IngresoConsultationForm';
 import { cn } from '@/lib/utils';
 

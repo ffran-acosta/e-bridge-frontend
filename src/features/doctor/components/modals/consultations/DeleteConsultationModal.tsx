@@ -4,7 +4,7 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { Button } from '@/shared/components/ui/button';
 import { AlertTriangle, Trash2 } from 'lucide-react';
-import { useDeleteConsultation } from '../../hooks/useDeleteConsultation';
+import { useDeleteConsultation } from '../../../hooks/useDeleteConsultation';
 
 interface DeleteConsultationModalProps {
   isOpen: boolean;

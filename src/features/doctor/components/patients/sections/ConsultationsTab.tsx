@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertCircle, Calendar, FileText, MapPin, Plus, RefreshCw, Stethoscope, User, Info, Trash2 } from 'lucide-react';
+import { AlertCircle, Calendar, FileText, MapPin, Plus, RefreshCw, Stethoscope, User, Info, Trash2, Eye } from 'lucide-react';
 import {
     Alert,
     AlertDescription,
@@ -17,7 +17,7 @@ import { formatConsultationDate, formatNextAppointmentDate } from '@/features/do
 import { getConsultationStatus, formatDoctorInfo, getArtCaseLabel } from '@/features/doctor/utils/consultationFormatters';
 import { truncateText, isARTPatient } from '@/features/doctor/utils/patientFormatters';
 // Nuevo sistema de consultas
-import { CreateConsultationButton, DeleteConsultationModal } from '../../modals';
+import { CreateConsultationButton, DeleteConsultationModal, ConsultationDetailsModal } from '../../modals';
 
 interface ConsultationsTabProps {
     patient: PatientProfile;
@@ -29,6 +29,7 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
     const [selectedConsultationId, setSelectedConsultationId] = useState<string | null>(null);
     const [consultationToDelete, setConsultationToDelete] = useState<Consultation | null>(null);
     const [selectedConsultationType, setSelectedConsultationType] = useState<'INGRESO' | 'ATENCION' | 'ALTA' | null>(null);
+    const [consultationToView, setConsultationToView] = useState<Consultation | null>(null);
     
     const {
         consultations,
@@ -162,48 +163,46 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
 
     return (
         <div className="space-y-4">
-            {/* Header con información de resumen */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-start justify-between">
-                        <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                                <Stethoscope className="h-5 w-5" />
-                                Historial de Consultas
-                            </div>
-                            <Badge variant="secondary" className="w-fit">
-                                {pagination?.total || consultations.length} total
-                            </Badge>
-                        </div>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-0">
-                    {/* Botón para crear consulta - solo para pacientes ART */}
-                    <div className="flex justify-center">
-                        {isARTPatient(patient) ? (
-                            <CreateConsultationButton
-                                patientId={patient.id}
-                                patientName={`${patient.firstName} ${patient.lastName}`}
-                                hasConsultations={consultations.length > 0}
-                                siniestroData={patient.siniestro}
-                                onConsultationTypeSelected={handleConsultationTypeSelected}
-                                onConsultationSuccess={(consultation) => {
-                                    console.log('✅ Consulta creada exitosamente:', consultation);
-                                    refetch(); // Recargar las consultas
-                                }}
-                            />
-                        ) : (
-                            <Button onClick={() => {
+            {/* Header compacto cuando hay consultas */}
+            <div className="flex items-center justify-between bg-muted/30 rounded-lg p-3 border">
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                        <Stethoscope className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Historial de Consultas</span>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                        {pagination?.total || consultations.length} total
+                    </Badge>
+                </div>
+                
+                {/* Botón compacto para crear consulta */}
+                <div className="flex items-center gap-2">
+                    {isARTPatient(patient) ? (
+                        <CreateConsultationButton
+                            patientId={patient.id}
+                            patientName={`${patient.firstName} ${patient.lastName}`}
+                            hasConsultations={consultations.length > 0}
+                            siniestroData={patient.siniestro}
+                            onConsultationTypeSelected={handleConsultationTypeSelected}
+                            onConsultationSuccess={(consultation) => {
+                                console.log('✅ Consulta creada exitosamente:', consultation);
+                                refetch(); // Recargar las consultas
+                            }}
+                        />
+                    ) : (
+                        <Button 
+                            size="sm"
+                            onClick={() => {
                                 console.log('🎯 Botón normal clickeado - paciente no ART');
                                 alert('Este paciente no es ART. Funcionalidad para pacientes normales próximamente.');
-                            }}>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Nueva Consulta
-                            </Button>
-                        )}
-                    </div>
-                </CardContent>
-            </Card>
+                            }}
+                        >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Nueva Consulta
+                        </Button>
+                    )}
+                </div>
+            </div>
 
             {/* Lista de consultas */}
             <div className="grid gap-4">
@@ -308,10 +307,10 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                                     <Button
                                         variant="outline"
                                         size="sm"
-                                        onClick={() => setSelectedConsultationId(consultation.id)}
+                                        onClick={() => setConsultationToView(consultation)}
                                     >
-                                        <Info className="h-4 w-4 mr-2" />
-                                        Más información
+                                        <Eye className="h-4 w-4 mr-2" />
+                                        Ver Detalles
                                     </Button>
                                     <Button
                                         variant="outline"
@@ -434,6 +433,13 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                     refetch();
                     setConsultationToDelete(null);
                 }}
+            />
+
+            {/* Modal de detalles de consulta */}
+            <ConsultationDetailsModal
+                isOpen={consultationToView !== null}
+                onClose={() => setConsultationToView(null)}
+                consultationId={consultationToView?.id || null}
             />
 
 

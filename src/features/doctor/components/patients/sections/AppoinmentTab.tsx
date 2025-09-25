@@ -71,26 +71,26 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
 
     return (
         <div className="space-y-4">
-            {/* Header con información de resumen */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="flex items-start justify-between">
-                        <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                                <Calendar className="h-5 w-5" />
-                                Turnos del Paciente
-                            </div>
-                            <Badge variant="secondary" className="w-fit">
-                                {pagination?.total || appointments.length} turnos total
-                            </Badge>
-                        </div>
-                        <Button>
-                            <Plus className="h-4 w-4 mr-2" />
-                            Nuevo Turno
-                        </Button>
-                    </CardTitle>
-                </CardHeader>
-            </Card>
+            {/* Header compacto cuando hay turnos */}
+            <div className="flex items-center justify-between bg-muted/30 rounded-lg p-3 border">
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">Turnos del Paciente</span>
+                    </div>
+                    <Badge variant="secondary" className="text-xs">
+                        {pagination?.total || appointments.length} turnos total
+                    </Badge>
+                </div>
+                
+                {/* Botón compacto para crear turno */}
+                <div className="flex items-center gap-2">
+                    <Button size="sm">
+                        <Plus className="h-3 w-3 mr-1" />
+                        Nuevo Turno
+                    </Button>
+                </div>
+            </div>
 
             {/* Lista de turnos */}
             <div className="grid gap-4">
