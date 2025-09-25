@@ -1,0 +1,118 @@
+"use client";
+
+import React from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
+import { useCreateAtencionConsultation } from '../../../hooks/useCreateAtencionConsultation';
+import { useMedicalEstablishments } from '../../../hooks/useCreateSiniestro'; // Reusing hook for establishments
+import { AtencionConsultationForm } from './AtencionConsultationForm';
+import { cn } from '@/lib/utils';
+import { AlertCircle } from 'lucide-react';
+
+interface AtencionConsultationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  patientId: string;
+  patientName: string;
+  siniestroData?: any;
+  onSuccess?: (consultation: any) => void;
+  onError?: (error: string) => void;
+}
+
+export function AtencionConsultationModal({
+  isOpen,
+  onClose,
+  patientId,
+  patientName,
+  siniestroData,
+  onSuccess,
+  onError,
+}: AtencionConsultationModalProps) {
+  const { form, handleSubmit, isSubmitting, error, clearError } = useCreateAtencionConsultation({
+    patientId,
+    patientName,
+    onSuccess: (consultation) => {
+      onSuccess?.(consultation);
+      onClose();
+    },
+    onError: (err) => {
+      onError?.(err);
+    },
+  });
+
+  const { establishments: medicalEstablishments, loading: establishmentsLoading, error: establishmentsError, fetchEstablishments } = useMedicalEstablishments();
+
+  // Cargar establecimientos cuando se abre el modal
+  React.useEffect(() => {
+    if (isOpen) {
+      fetchEstablishments();
+    }
+  }, [isOpen, fetchEstablishments]);
+
+  // Preseleccionar establecimiento médico del siniestro
+  React.useEffect(() => {
+    if (siniestroData?.medicalEstablishment?.id && medicalEstablishments.length > 0) {
+      console.log('🎯 Preseleccionando establecimiento del siniestro:', siniestroData.medicalEstablishment);
+      form.setValue('medicalEstablishmentId', siniestroData.medicalEstablishment.id);
+    }
+  }, [siniestroData, medicalEstablishments, form]);
+
+  const handleClose = () => {
+    form.reset();
+    clearError();
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  const title = 'Consulta de Atención ART';
+  const description = `Crear consulta de seguimiento para el paciente ${patientName}`;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent 
+        className={cn(
+          "max-w-5xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col",
+          "bg-background border rounded-lg shadow-lg",
+          "sm:max-w-5xl" // Sobrescribir el sm:max-w-lg del componente base
+        )}
+      >
+        <DialogHeader className="flex-shrink-0 pb-6 border-b">
+          {/* Título removido - se muestra en el formulario con icono */}
+        </DialogHeader>
+        
+        <div className="flex-1 overflow-y-auto pr-2 -mr-2">
+          <div className="pr-2">
+            {establishmentsLoading && (
+              <div className="flex items-center justify-center py-12">
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  <span className="text-muted-foreground">Cargando establecimientos médicos...</span>
+                </div>
+              </div>
+            )}
+
+            {establishmentsError && (
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-destructive" />
+                <p className="text-destructive text-sm">Error al cargar establecimientos médicos: {establishmentsError}</p>
+              </div>
+            )}
+
+            {!establishmentsLoading && !establishmentsError && medicalEstablishments && (
+              <AtencionConsultationForm
+                form={form}
+                handleSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                error={error}
+                patientName={patientName}
+                medicalEstablishments={medicalEstablishments}
+                siniestroData={siniestroData}
+                onClose={handleClose}
+              />
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}

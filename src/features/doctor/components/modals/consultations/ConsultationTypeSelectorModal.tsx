@@ -14,6 +14,8 @@ import {
   Info
 } from 'lucide-react';
 import { IngresoConsultationModal } from './IngresoConsultationModal';
+import { AtencionConsultationModal } from './AtencionConsultationModal';
+import { AltaConsultationModal } from './AltaConsultationModal';
 
 interface ConsultationTypeSelectorModalProps {
   isOpen: boolean;
@@ -37,6 +39,8 @@ export function ConsultationTypeSelectorModal({
   onConsultationSuccess,
 }: ConsultationTypeSelectorModalProps) {
   const [isIngresoModalOpen, setIsIngresoModalOpen] = useState(false);
+  const [isAtencionModalOpen, setIsAtencionModalOpen] = useState(false);
+  const [isAltaModalOpen, setIsAltaModalOpen] = useState(false);
 
   const getAvailableTypes = () => {
     if (!hasConsultations) {
@@ -83,8 +87,14 @@ export function ConsultationTypeSelectorModal({
     if (type === 'INGRESO') {
       // Abrir modal de INGRESO directamente
       setIsIngresoModalOpen(true);
+    } else if (type === 'ATENCION') {
+      // Abrir modal de ATENCION directamente
+      setIsAtencionModalOpen(true);
+    } else if (type === 'ALTA') {
+      // Abrir modal de ALTA directamente
+      setIsAltaModalOpen(true);
     } else {
-      // Para ATENCION y ALTA, usar el callback original
+      // Para otros tipos, usar el callback original
       onSelectType(type);
       onClose();
     }
@@ -100,6 +110,30 @@ export function ConsultationTypeSelectorModal({
   const handleIngresoError = (error: string) => {
     console.error('❌ Error al crear consulta de INGRESO:', error);
     // El error se maneja dentro del modal de INGRESO
+  };
+
+  const handleAtencionSuccess = (consultation: any) => {
+    console.log('✅ Consulta de ATENCION creada exitosamente:', consultation);
+    setIsAtencionModalOpen(false);
+    onConsultationSuccess?.(consultation);
+    onClose();
+  };
+
+  const handleAtencionError = (error: string) => {
+    console.error('❌ Error al crear consulta de ATENCION:', error);
+    // El error se maneja dentro del modal de ATENCION
+  };
+
+  const handleAltaSuccess = (consultation: any) => {
+    console.log('✅ Consulta de ALTA creada exitosamente:', consultation);
+    setIsAltaModalOpen(false);
+    onConsultationSuccess?.(consultation);
+    onClose();
+  };
+
+  const handleAltaError = (error: string) => {
+    console.error('❌ Error al crear consulta de ALTA:', error);
+    // El error se maneja dentro del modal de ALTA
   };
 
   console.log('🎯 ConsultationTypeSelectorModal: Renderizando con props:', {
@@ -227,6 +261,28 @@ export function ConsultationTypeSelectorModal({
         siniestroData={siniestroData}
         onSuccess={handleIngresoSuccess}
         onError={handleIngresoError}
+      />
+
+      {/* Modal de consulta de ATENCION */}
+      <AtencionConsultationModal
+        isOpen={isAtencionModalOpen}
+        onClose={() => setIsAtencionModalOpen(false)}
+        patientId={patientId}
+        patientName={patientName}
+        siniestroData={siniestroData}
+        onSuccess={handleAtencionSuccess}
+        onError={handleAtencionError}
+      />
+
+      {/* Modal de consulta de ALTA */}
+      <AltaConsultationModal
+        isOpen={isAltaModalOpen}
+        onClose={() => setIsAltaModalOpen(false)}
+        patientId={patientId}
+        patientName={patientName}
+        siniestroData={siniestroData}
+        onSuccess={handleAltaSuccess}
+        onError={handleAltaError}
       />
     </Dialog>
   );
