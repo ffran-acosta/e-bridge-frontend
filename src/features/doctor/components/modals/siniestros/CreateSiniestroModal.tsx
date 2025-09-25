@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useCreateSiniestro, useARTs, useMedicalEstablishments, useEmployers } from '../../hooks/useCreateSiniestro';
 import { CONTINGENCY_TYPE_OPTIONS } from '../../types/siniestro-form.types';
 import { CreateSiniestroForm } from './CreateSiniestroForm';
-import { ConsultationTypeSelectorModal } from './ConsultationTypeSelectorModal';
+import { ConsultationTypeSelectorModal } from '../consultations/ConsultationTypeSelectorModal';
 import { cn } from '@/lib/utils';
 
 interface CreateSiniestroModalProps {

@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { useCreatePatient, useInsurances } from '../../hooks/useCreatePatient';
 import { GENDER_OPTIONS, PATIENT_TYPE_OPTIONS } from '../../types/patient-form.types';
 import { CreatePatientForm } from './CreatePatientForm';
-import { CreateSiniestroModal } from './CreateSiniestroModal';
+import { CreateSiniestroModal } from '../siniestros/CreateSiniestroModal';
 import { cn } from '@/lib/utils';
 
 interface CreatePatientModalProps {

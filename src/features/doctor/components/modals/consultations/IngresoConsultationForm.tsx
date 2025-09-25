@@ -2,13 +2,13 @@
 
 import { UseFormReturn } from 'react-hook-form';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/shared';
-import { FormField } from './FormField';
+import { FormField } from '../shared/FormField';
 import { FormWrapper } from '@/shared/components/forms/FormWrapper';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { AlertTriangle, Building, User } from 'lucide-react';
-import { DateTimeInput } from './DateTimeInput';
+import { DateTimeInput } from '../shared/DateTimeInput';
 import { cn } from '@/lib/utils';
 import { IngresoConsultationFormData } from '../../lib/ingreso-consultation-form.schema';
 

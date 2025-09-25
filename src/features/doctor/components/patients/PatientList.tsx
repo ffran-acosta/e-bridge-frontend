@@ -5,7 +5,7 @@ import { Search, AlertCircle, Loader2, Plus } from 'lucide-react';
 import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, SelectItem, SelectContent, SelectTrigger, Select, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared';
 import { useDoctorPatients } from '../../hooks/useDoctorPatients';
 import { Patient } from '@/shared/types/patients.types';
-import { CreatePatientModal } from '../modals/CreatePatientModal';
+import { CreatePatientModal } from '../modals';
 import { CreatePatientResponse } from '../../types/patient-form.types';
 
 interface PatientsListProps {

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/shared';
 import { Plus } from 'lucide-react';
-import { CreatePatientModal } from '../modals/CreatePatientModal';
+import { CreatePatientModal } from '../modals';
 import { CreatePatientResponse } from '../../types/patient-form.types';
 
 interface CreatePatientButtonProps {

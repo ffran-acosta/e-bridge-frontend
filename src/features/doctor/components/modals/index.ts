@@ -1,15 +1,27 @@
-// Nuevo sistema de consultas
-export { ConsultationTypeSelectorModal } from './ConsultationTypeSelectorModal';
-export { CreateConsultationButton } from './CreateConsultationButton';
-export { IngresoConsultationModal } from './IngresoConsultationModal';
-export { IngresoConsultationForm } from './IngresoConsultationForm';
-export { DateTimeInput } from './DateTimeInput';
-export { DeleteConsultationModal } from './DeleteConsultationModal';
+// ============================================================================
+// MODALES ORGANIZADOS POR FUNCIONALIDAD
+// ============================================================================
 
-// Modales que funcionan correctamente - NO TOCAR
-export { CreatePatientModal } from './CreatePatientModal';
-export { CreatePatientForm } from './CreatePatientForm';
-export { CreateSiniestroModal } from './CreateSiniestroModal';
-export { CreateSiniestroForm } from './CreateSiniestroForm';
-export { EditPatientModal } from './EditPatientModal';
-export { EditPatientForm } from './EditPatientForm';
+// 📋 MODALES DE PACIENTES
+export * from './patients';
+
+// 🏥 MODALES DE SINIESTROS
+export * from './siniestros';
+
+// 🩺 MODALES DE CONSULTAS
+export * from './consultations';
+
+// 🔧 COMPONENTES COMPARTIDOS
+export * from './shared';
+
+// ============================================================================
+// NOTAS DE ORGANIZACIÓN:
+// ============================================================================
+// 
+// 📁 patients/     - Modales para crear y editar pacientes
+// 📁 siniestros/  - Modales para crear siniestros ART
+// 📁 consultations/ - Modales para crear y gestionar consultas médicas
+// 📁 shared/      - Componentes reutilizables entre modales
+// 📁 docs/        - Documentación y backups
+//
+// ============================================================================
