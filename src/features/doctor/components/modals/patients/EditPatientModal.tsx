@@ -1,18 +1,20 @@
 "use client";
 
-import { useEffect } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { useEditPatient } from '../../../hooks/useEditPatient';
+import { useInsurances } from '../../../hooks/useCreatePatient'; // Reusing hook for insurances
 import { EditPatientForm } from './EditPatientForm';
 import { cn } from '@/lib/utils';
-import { PatientProfile } from '@/shared/types/patients.types';
+import { AlertCircle, User } from 'lucide-react';
 
 interface EditPatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   patientId: string;
-  patientData?: PatientProfile;
-  onSuccess?: () => void;
+  patientName: string;
+  patientData?: any; // Datos del paciente para precargar
+  onSuccess?: (patient: any) => void;
   onError?: (error: string) => void;
 }
 
@@ -20,69 +22,94 @@ export function EditPatientModal({
   isOpen,
   onClose,
   patientId,
+  patientName,
   patientData,
   onSuccess,
   onError,
 }: EditPatientModalProps) {
-  const {
-    form,
-    handleSubmit,
-    isSubmitting,
-    error,
-    clearError,
-  } = useEditPatient({
+  const { form, handleSubmit, isSubmitting, error, clearError } = useEditPatient({
     patientId,
     patientData,
-    onSuccess: () => {
-      console.log('✅ Paciente editado exitosamente');
-      onSuccess?.();
+    onSuccess: (patient) => {
+      onSuccess?.(patient);
       onClose();
     },
-    onError,
+    onError: (err) => {
+      onError?.(err);
+    },
   });
 
-  // Limpiar errores cuando se cierra el modal
-  useEffect(() => {
-    if (!isOpen) {
-      clearError();
+  const { insurances, loading: insurancesLoading, error: insurancesError, fetchInsurances } = useInsurances();
+
+  // Cargar insurances cuando se abre el modal
+  React.useEffect(() => {
+    if (isOpen) {
+      fetchInsurances();
     }
-  }, [isOpen, clearError]);
+  }, [isOpen, fetchInsurances]);
+
+  const handleClose = () => {
+    form.reset();
+    clearError();
+    onClose();
+  };
+
+  if (!isOpen) return null;
 
   const title = 'Editar Paciente';
-  const description = 'Modificar los datos del paciente';
+  const description = `Modificar información del paciente ${patientName}`;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent 
         className={cn(
-          "max-w-4xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col",
+          "max-w-6xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col",
           "bg-background border rounded-lg shadow-lg",
-          "sm:max-w-4xl md:max-w-5xl lg:max-w-6xl"
+          "sm:max-w-6xl" // Sobrescribir el sm:max-w-lg del componente base
         )}
       >
-        <DialogHeader className="flex-shrink-0 pb-4 border-b">
-          <DialogTitle className="text-xl font-semibold">{title}</DialogTitle>
-          {description && (
-            <DialogDescription className="text-muted-foreground">
-              {description}
-            </DialogDescription>
-          )}
+        <DialogHeader className="flex-shrink-0 pb-6 border-b">
+          <DialogTitle className="text-2xl font-bold flex items-center gap-2">
+            <User className="h-6 w-6 text-primary" />
+            Editar Paciente
+          </DialogTitle>
+          <DialogDescription className="text-base text-muted-foreground mt-2">
+            Modifica la información del paciente <span className="font-medium">{patientName}</span>
+          </DialogDescription>
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto pr-2 -mr-2">
           <div className="pr-2">
-            <EditPatientForm
-              form={form as any}
-              handleSubmit={form.handleSubmit as any}
-              isSubmitting={isSubmitting}
-              error={error}
-              onClose={onClose}
-            />
+            {insurancesLoading && (
+              <div className="flex items-center justify-center py-12">
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  <span className="text-muted-foreground">Cargando obras sociales...</span>
+                </div>
+              </div>
+            )}
+
+            {insurancesError && (
+              <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-destructive" />
+                <p className="text-destructive text-sm">Error al cargar obras sociales: {insurancesError}</p>
+              </div>
+            )}
+
+            {!insurancesLoading && !insurancesError && insurances && (
+              <EditPatientForm
+                form={form}
+                handleSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                error={error}
+                patientName={patientName}
+                insurances={insurances}
+                onClose={handleClose}
+              />
+            )}
           </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
-
-

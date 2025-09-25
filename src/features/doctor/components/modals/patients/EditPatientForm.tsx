@@ -1,36 +1,25 @@
 "use client";
 
 import { UseFormReturn } from 'react-hook-form';
-import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared';
-import { FormFieldWrapper } from '@/shared/components/forms/FormField';
-import { EditPatientFormSchema } from '../../lib/edit-patient-form.schema';
-import { Plus, X, AlertCircle } from 'lucide-react';
-import { Alert } from '@/shared/components/ui/alert';
-
-// Opciones para los selects
-const GENDER_OPTIONS = [
-  { value: 'MASCULINO', label: 'Masculino' },
-  { value: 'FEMENINO', label: 'Femenino' },
-  { value: 'NO_BINARIO', label: 'No binario' }
-];
-
-const PATIENT_TYPE_OPTIONS = [
-  { value: 'NORMAL', label: 'Normal (Obra Social)' },
-  { value: 'ART', label: 'ART (Aseguradora de Riesgos del Trabajo)' }
-];
-
-const STATUS_OPTIONS = [
-  { value: 'INGRESO', label: 'Ingreso' },
-  { value: 'ATENCION', label: 'Atención' },
-  { value: 'CIRUGIA', label: 'Cirugía' },
-  { value: 'ALTA_MEDICA', label: 'Alta Médica' }
-];
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@/shared';
+import { FormField } from '../shared/FormField';
+import { Input } from '@/shared/components/ui/input';
+import { Textarea } from '@/shared/components/ui/textarea';
+import { User, MapPin, Phone, Mail, Heart, Pill, AlertTriangle } from 'lucide-react';
+import { DateTimeInput } from '../shared/DateTimeInput';
+import { cn } from '@/lib/utils';
+import { EditPatientFormData, GENDERS, PATIENT_TYPES, CURRENT_STATUS_OPTIONS } from '../../../lib/edit-patient-form.schema';
 
 interface EditPatientFormProps {
-  form: UseFormReturn<EditPatientFormSchema>;
-  handleSubmit: () => void;
+  form: UseFormReturn<EditPatientFormData>;
+  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
   error: string | null;
+  patientName: string;
+  insurances: Array<{
+    id: string;
+    name: string;
+  }>;
   onClose: () => void;
 }
 
@@ -39,363 +28,492 @@ export function EditPatientForm({
   handleSubmit,
   isSubmitting,
   error,
+  patientName,
+  insurances,
   onClose,
 }: EditPatientFormProps) {
-  const { register, watch, setValue, formState: { errors } } = form;
-
-  // Manejar arrays dinámicos
-  const addArrayItem = (field: 'medicalHistory' | 'currentMedications' | 'allergies') => {
-    const currentValues = form.getValues(field) || [];
-    form.setValue(field, [...currentValues, '']);
-  };
-
-  const removeArrayItem = (field: 'medicalHistory' | 'currentMedications' | 'allergies', index: number) => {
-    const currentValues = form.getValues(field) || [];
-    form.setValue(field, currentValues.filter((_, i) => i !== index));
-  };
-
-  const updateArrayItem = (field: 'medicalHistory' | 'currentMedications' | 'allergies', index: number, value: string) => {
-    const currentValues = form.getValues(field) || [];
-    const newValues = [...currentValues];
-    newValues[index] = value;
-    form.setValue(field, newValues);
-  };
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    console.log('🔄 Formulario de edición enviado, ejecutando handleSubmit...');
-    console.log('🔍 Valores actuales del formulario:', form.getValues());
-    e.preventDefault();
-    handleSubmit();
-  };
+  const { control, watch } = form;
 
   return (
-    <form onSubmit={handleFormSubmit} className="space-y-4 pb-6">
+    <form onSubmit={handleSubmit} className="space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-3 pb-4">
+        <h2 className="text-3xl font-bold flex items-center justify-center gap-3">
+          <User className="h-8 w-8 text-blue-500" />
+          Editar Paciente
+        </h2>
+        <p className="text-lg text-muted-foreground">
+          Paciente: <span className="font-semibold text-foreground">{patientName}</span>
+        </p>
+      </div>
+
+      {/* Error general */}
       {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <span>{error}</span>
-        </Alert>
+        <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4">
+          <p className="text-destructive text-sm">{error}</p>
+        </div>
       )}
 
-      {/* Sección: Datos Personales */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-medium text-foreground border-b pb-2">
-          Datos Personales
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <FormFieldWrapper
-            label="Nombre"
-            error={errors.firstName?.message}
-            required
-          >
-            <Input
-              {...register('firstName')}
-              placeholder="Ingrese el nombre"
-              aria-invalid={!!errors.firstName}
+      {/* Información personal */}
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold">Información Personal</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <FormField
+              control={control}
+              name="firstName"
+              label="Nombre"
+              required
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="Nombre del paciente"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
             />
-          </FormFieldWrapper>
 
-          <FormFieldWrapper
-            label="Apellido"
-            error={errors.lastName?.message}
-            required
-          >
-            <Input
-              {...register('lastName')}
-              placeholder="Ingrese el apellido"
-              aria-invalid={!!errors.lastName}
+            <FormField
+              control={control}
+              name="lastName"
+              label="Apellido"
+              required
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="Apellido del paciente"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
             />
-          </FormFieldWrapper>
 
-          <FormFieldWrapper
-            label="DNI"
-            error={errors.dni?.message}
-            required
-          >
-            <Input
-              {...register('dni')}
-              placeholder="12345678"
-              maxLength={8}
-              aria-invalid={!!errors.dni}
+            <FormField
+              control={control}
+              name="dni"
+              label="DNI"
+              required
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="12345678"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
             />
-          </FormFieldWrapper>
+          </div>
 
-          <FormFieldWrapper
-            label="Género"
-            error={errors.gender?.message}
-            required
-          >
-            <Select
-              value={watch('gender')}
-              onValueChange={(value) => setValue('gender', value as any)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccione género" />
-              </SelectTrigger>
-              <SelectContent>
-                {GENDER_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FormFieldWrapper>
-
-          <FormFieldWrapper
-            label="Fecha de Nacimiento"
-            error={errors.birthdate?.message}
-            required
-          >
-            <Input
-              type="date"
-              {...register('birthdate')}
-              aria-invalid={!!errors.birthdate}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <FormField
+              control={control}
+              name="gender"
+              label="Género"
+              required
+              render={({ field }) => (
+                <select
+                  {...field}
+                  className="w-full p-3 h-12 text-sm border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary appearance-none"
+                  style={{ paddingTop: '12px', paddingBottom: '12px' }}
+                >
+                  {GENDERS.map((gender) => (
+                    <option key={gender.value} value={gender.value}>
+                      {gender.label}
+                    </option>
+                  ))}
+                </select>
+              )}
             />
-          </FormFieldWrapper>
 
-          <FormFieldWrapper
-            label="Tipo de Paciente"
-            error={errors.type?.message}
-            required
-          >
-            <Select
-              value={watch('type')}
-              onValueChange={(value) => setValue('type', value as any)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccione tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                {PATIENT_TYPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FormFieldWrapper>
-
-          <FormFieldWrapper
-            label="Estado Actual"
-            error={errors.currentStatus?.message}
-            required
-          >
-            <Select
-              value={watch('currentStatus')}
-              onValueChange={(value) => setValue('currentStatus', value as any)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Seleccione estado" />
-              </SelectTrigger>
-              <SelectContent>
-                {STATUS_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FormFieldWrapper>
-        </div>
-      </div>
-
-      {/* Sección: Dirección */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-medium text-foreground border-b pb-2">
-          Dirección
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <FormFieldWrapper
-            label="Calle"
-            error={errors.street?.message}
-          >
-            <Input
-              {...register('street')}
-              placeholder="Nombre de la calle"
-              aria-invalid={!!errors.street}
+            <FormField
+              control={control}
+              name="birthdate"
+              label="Fecha de Nacimiento"
+              required
+              render={({ field }) => (
+                <DateTimeInput
+                  {...field}
+                  type="date"
+                />
+              )}
             />
-          </FormFieldWrapper>
 
-          <FormFieldWrapper
-            label="Número"
-            error={errors.streetNumber?.message}
-          >
-            <Input
-              {...register('streetNumber')}
-              placeholder="1234"
-              aria-invalid={!!errors.streetNumber}
+            <FormField
+              control={control}
+              name="insuranceId"
+              label="Obra Social"
+              required
+              render={({ field }) => (
+                <select
+                  {...field}
+                  className="w-full p-3 h-12 text-sm border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary appearance-none"
+                  style={{ paddingTop: '12px', paddingBottom: '12px' }}
+                >
+                  <option value="">Seleccionar obra social...</option>
+                  {insurances.map((insurance) => (
+                    <option key={insurance.id} value={insurance.id}>
+                      {insurance.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             />
-          </FormFieldWrapper>
+          </div>
 
-          <FormFieldWrapper
-            label="Ciudad"
-            error={errors.city?.message}
-          >
-            <Input
-              {...register('city')}
-              placeholder="Buenos Aires"
-              aria-invalid={!!errors.city}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={control}
+              name="type"
+              label="Tipo de Paciente"
+              required
+              render={({ field }) => (
+                <select
+                  {...field}
+                  className="w-full p-3 h-12 text-sm border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary appearance-none"
+                  style={{ paddingTop: '12px', paddingBottom: '12px' }}
+                >
+                  {PATIENT_TYPES.map((type) => (
+                    <option key={type.value} value={type.value}>
+                      {type.label}
+                    </option>
+                  ))}
+                </select>
+              )}
             />
-          </FormFieldWrapper>
-        </div>
-      </div>
 
-      {/* Sección: Contacto */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-medium text-foreground border-b pb-2">
-          Contacto
-        </h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <FormFieldWrapper
-            label="Teléfono Principal"
-            error={errors.phone1?.message}
-          >
-            <Input
-              {...register('phone1')}
-              placeholder="+54911234567"
-              aria-invalid={!!errors.phone1}
+            <FormField
+              control={control}
+              name="currentStatus"
+              label="Estado Actual"
+              required
+              render={({ field }) => (
+                <select
+                  {...field}
+                  className="w-full p-3 h-12 text-sm border border-border rounded-md bg-background text-foreground focus:ring-2 focus:ring-primary focus:border-primary appearance-none"
+                  style={{ paddingTop: '12px', paddingBottom: '12px' }}
+                >
+                  {CURRENT_STATUS_OPTIONS.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
+                  ))}
+                </select>
+              )}
             />
-          </FormFieldWrapper>
+          </div>
+        </CardContent>
+      </Card>
 
-          <FormFieldWrapper
+      {/* Información de contacto */}
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold flex items-center gap-3">
+            <Phone className="h-6 w-6 text-green-500" />
+            Información de Contacto
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <FormField
+              control={control}
+              name="phone1"
+              label="Teléfono Principal"
+              required
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="11-1234-5678"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="phone2"
+              label="Teléfono Secundario"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="11-9876-5432"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
+            />
+          </div>
+
+          <FormField
+            control={control}
+            name="email"
             label="Email"
-            error={errors.email?.message}
-          >
-            <Input
-              type="email"
-              {...register('email')}
-              placeholder="juan.perez@email.com"
-              aria-invalid={!!errors.email}
+            render={({ field }) => (
+              <div className="space-y-2">
+                <Input
+                  {...field}
+                  type="email"
+                  placeholder="juan.perez@email.com"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+                <p className="text-xs text-muted-foreground">
+                  📧 Campo opcional
+                </p>
+              </div>
+            )}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Dirección */}
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold flex items-center gap-3">
+            <MapPin className="h-6 w-6 text-orange-500" />
+            Dirección
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <FormField
+              control={control}
+              name="street"
+              label="Calle"
+              required
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="Av. Corrientes"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
             />
-          </FormFieldWrapper>
-        </div>
-      </div>
 
-      {/* Sección: Historia Médica */}
-      <div className="space-y-3">
-        <h3 className="text-lg font-medium text-foreground border-b pb-2">
-          Historia Médica
-        </h3>
-        
-        <div className="space-y-3">
-          {/* Historial Médico */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">Historial Médico</label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => addArrayItem('medicalHistory')}
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Agregar
-              </Button>
-            </div>
-            {watch('medicalHistory')?.map((item, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+            <FormField
+              control={control}
+              name="streetNumber"
+              label="Número"
+              required
+              render={({ field }) => (
                 <Input
-                  value={item}
-                  onChange={(e) => updateArrayItem('medicalHistory', index, e.target.value)}
-                  placeholder="Ej: Hipertensión"
+                  {...field}
+                  placeholder="1234"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => removeArrayItem('medicalHistory', index)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="floor"
+              label="Piso"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="5"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="apartment"
+              label="Departamento"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="A"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
+            />
           </div>
 
-          {/* Medicamentos Actuales */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">Medicamentos Actuales</label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => addArrayItem('currentMedications')}
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Agregar
-              </Button>
-            </div>
-            {watch('currentMedications')?.map((item, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FormField
+              control={control}
+              name="city"
+              label="Ciudad"
+              required
+              render={({ field }) => (
                 <Input
-                  value={item}
-                  onChange={(e) => updateArrayItem('currentMedications', index, e.target.value)}
-                  placeholder="Ej: Losartán 50mg"
+                  {...field}
+                  placeholder="Buenos Aires"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => removeArrayItem('currentMedications', index)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
+              )}
+            />
 
-          {/* Alergias */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-medium">Alergias</label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => addArrayItem('allergies')}
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Agregar
-              </Button>
-            </div>
-            {watch('allergies')?.map((item, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+            <FormField
+              control={control}
+              name="province"
+              label="Provincia"
+              required
+              render={({ field }) => (
                 <Input
-                  value={item}
-                  onChange={(e) => updateArrayItem('allergies', index, e.target.value)}
-                  placeholder="Ej: Penicilina"
+                  {...field}
+                  placeholder="CABA"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => removeArrayItem('allergies', index)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+              )}
+            />
 
-      {/* Botones de Acción */}
-      <div className="flex justify-end gap-3 pt-4 border-t">
+            <FormField
+              control={control}
+              name="postalCode"
+              label="Código Postal"
+              required
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="1043"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Contacto de emergencia */}
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold flex items-center gap-3">
+            <AlertTriangle className="h-6 w-6 text-red-500" />
+            Contacto de Emergencia
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <FormField
+              control={control}
+              name="emergencyContactName"
+              label="Nombre del Contacto"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="María Pérez"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="emergencyContactPhone"
+              label="Teléfono del Contacto"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="11-5555-1234"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
+            />
+
+            <FormField
+              control={control}
+              name="emergencyContactRelation"
+              label="Relación"
+              render={({ field }) => (
+                <Input
+                  {...field}
+                  placeholder="Esposa"
+                  className="text-sm h-12 focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+              )}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Información médica */}
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl font-semibold flex items-center gap-3">
+            <Heart className="h-6 w-6 text-purple-500" />
+            Información Médica
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <FormField
+            control={control}
+            name="medicalHistory"
+            label="Historial Médico"
+            render={({ field }) => (
+              <div className="space-y-2">
+                <Textarea
+                  {...field}
+                  value={field.value.join('\n')}
+                  onChange={(e) => field.onChange(e.target.value.split('\n').filter(item => item.trim() !== ''))}
+                  placeholder="Hipertensión arterial&#10;Diabetes tipo 2&#10;Alergia a la penicilina"
+                  className="min-h-[100px] text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+                <p className="text-xs text-muted-foreground">
+                  💡 Una condición por línea
+                </p>
+              </div>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="currentMedications"
+            label="Medicamentos Actuales"
+            render={({ field }) => (
+              <div className="space-y-2">
+                <Textarea
+                  {...field}
+                  value={field.value.join('\n')}
+                  onChange={(e) => field.onChange(e.target.value.split('\n').filter(item => item.trim() !== ''))}
+                  placeholder="Metformina 500mg&#10;Losartán 50mg&#10;Aspirina 100mg"
+                  className="min-h-[100px] text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+                <p className="text-xs text-muted-foreground">
+                  💊 Un medicamento por línea
+                </p>
+              </div>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="allergies"
+            label="Alergias"
+            render={({ field }) => (
+              <div className="space-y-2">
+                <Textarea
+                  {...field}
+                  value={field.value.join('\n')}
+                  onChange={(e) => field.onChange(e.target.value.split('\n').filter(item => item.trim() !== ''))}
+                  placeholder="Penicilina&#10;Polen&#10;Mariscos"
+                  className="min-h-[100px] text-sm focus:ring-2 focus:ring-primary focus:border-primary"
+                />
+                <p className="text-xs text-muted-foreground">
+                  ⚠️ Una alergia por línea
+                </p>
+              </div>
+            )}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Botones de acción */}
+      <div className="flex justify-end gap-4 pt-6 border-t">
         <Button
           type="button"
           variant="outline"
           onClick={onClose}
           disabled={isSubmitting}
+          size="lg"
+          className="px-8"
         >
           Cancelar
         </Button>
         <Button
           type="submit"
           disabled={isSubmitting}
+          size="lg"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-8"
         >
           {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
         </Button>

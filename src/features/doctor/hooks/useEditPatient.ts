@@ -1,161 +1,146 @@
-import { useState, useEffect, useCallback } from 'react';
+"use client";
+
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import { 
-  editPatientSchema, 
-  type EditPatientFormSchema,
-  type EditPatientRequest 
+  editPatientFormSchema, 
+  EditPatientFormData,
+  defaultEditPatientFormValues 
 } from '../lib/edit-patient-form.schema';
-import { PatientProfile } from '@/shared/types/patients.types';
 
-interface UseEditPatientOptions {
+// Función para mapear datos del paciente al formulario
+const mapPatientDataToForm = (patientData: any): Partial<EditPatientFormData> => {
+  if (!patientData) return defaultEditPatientFormValues;
+
+  // Convertir fecha ISO a formato date-local
+  const formatDateForInput = (isoDate: string) => {
+    if (!isoDate) return '';
+    return new Date(isoDate).toISOString().slice(0, 10);
+  };
+
+  return {
+    firstName: patientData.firstName || '',
+    lastName: patientData.lastName || '',
+    dni: patientData.dni || '',
+    gender: patientData.gender || 'MASCULINO',
+    birthdate: formatDateForInput(patientData.birthdate),
+    insuranceId: patientData.insurance?.id || '',
+    type: patientData.type || 'NORMAL',
+    currentStatus: patientData.currentStatus || 'INGRESO',
+    street: patientData.street || '',
+    streetNumber: patientData.streetNumber || '',
+    floor: patientData.floor || '',
+    apartment: patientData.apartment || '',
+    city: patientData.city || '',
+    province: patientData.province || '',
+    postalCode: patientData.postalCode || '',
+    phone1: patientData.phone1 || '',
+    phone2: patientData.phone2 || '',
+    email: patientData.email || '',
+    emergencyContactName: patientData.emergencyContactName || '',
+    emergencyContactPhone: patientData.emergencyContactPhone || '',
+    emergencyContactRelation: patientData.emergencyContactRelation || '',
+    medicalHistory: patientData.medicalHistory || [],
+    currentMedications: patientData.currentMedications || [],
+    allergies: patientData.allergies || [],
+  };
+};
+
+interface UseEditPatientProps {
   patientId: string;
-  patientData?: PatientProfile;
-  onSuccess?: () => void;
+  patientData?: any; // Datos del paciente para precargar el formulario
+  onSuccess?: (patient: any) => void;
   onError?: (error: string) => void;
 }
 
-export function useEditPatient(options: UseEditPatientOptions) {
-  const { patientId, patientData, onSuccess, onError } = options;
-  
+export function useEditPatient({
+  patientId,
+  patientData,
+  onSuccess,
+  onError,
+}: UseEditPatientProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Función para mapear los datos del paciente al formato del formulario
-  const mapPatientToFormData = (patient: PatientProfile): Partial<EditPatientFormSchema> => {
-    // Mapear el estado actual a los valores que espera el backend
-    const mapCurrentStatus = (status: string) => {
-      switch (status) {
-        case 'INGRESO':
-          return 'INGRESO';
-        case 'EN_TRATAMIENTO':
-          return 'ATENCION';
-        case 'ALTA':
-          return 'ALTA_MEDICA';
-        case 'DERIVADO':
-          return 'INGRESO'; // Mapear DERIVADO a INGRESO como fallback
-        default:
-          return 'INGRESO';
-      }
-    };
-
-    return {
-      firstName: patient.firstName,
-      lastName: patient.lastName,
-      dni: patient.dni,
-      gender: patient.gender, // Ya está en el formato correcto
-      birthdate: patient.birthdate,
-      type: patient.siniestro ? 'ART' : 'NORMAL',
-      currentStatus: mapCurrentStatus(patient.currentStatus),
-      street: patient.street || '',
-      streetNumber: patient.streetNumber || '',
-      city: patient.city || '',
-      phone1: patient.phone1 || '',
-      email: patient.email || '',
-      medicalHistory: patient.medicalHistory || [],
-      currentMedications: patient.currentMedications || [],
-      allergies: patient.allergies || [],
-    };
-  };
-
-  const form = useForm<EditPatientFormSchema>({
-    resolver: zodResolver(editPatientSchema),
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      dni: '',
-      gender: 'MASCULINO',
-      birthdate: '',
-      type: 'NORMAL',
-      currentStatus: 'INGRESO',
-      street: '',
-      streetNumber: '',
-      city: '',
-      phone1: '',
-      email: '',
-      medicalHistory: [],
-      currentMedications: [],
-      allergies: [],
-    },
-    mode: 'onChange',
+  const form = useForm<EditPatientFormData>({
+    resolver: zodResolver(editPatientFormSchema),
+    defaultValues: mapPatientDataToForm(patientData),
   });
 
-  // Cargar datos del paciente cuando estén disponibles
-  useEffect(() => {
-    if (patientData) {
-      const formData = mapPatientToFormData(patientData);
-      form.reset(formData);
-    }
-  }, [patientData, form]);
+  const clearError = () => {
+    setError(null);
+  };
 
-  const editPatient = async (data: EditPatientFormSchema) => {
-    console.log('🚀 editPatient ejecutado con datos:', data);
+  const handleSubmit = async (data: EditPatientFormData) => {
     setIsSubmitting(true);
     setError(null);
 
     try {
-      // Preparar el payload para el backend (basado en el body que proporcionaste)
-      const payload: EditPatientRequest = {
+      console.log('🎯 Editando paciente:', data);
+      
+            const endpoint = DOCTOR_ENDPOINTS.patientProfile(patientId);
+      
+      // Convertir fecha de date-local a ISO string
+      const convertToISO = (dateString: string) => {
+        if (!dateString) return null;
+        return new Date(dateString).toISOString();
+      };
+
+      const requestBody = {
         firstName: data.firstName,
         lastName: data.lastName,
         dni: data.dni,
         gender: data.gender,
-        birthdate: data.birthdate,
+        birthdate: convertToISO(data.birthdate),
+        insuranceId: data.insuranceId,
         type: data.type,
         currentStatus: data.currentStatus,
         street: data.street,
         streetNumber: data.streetNumber,
+        floor: data.floor || '',
+        apartment: data.apartment || '',
         city: data.city,
+        province: data.province,
+        postalCode: data.postalCode,
         phone1: data.phone1,
-        email: data.email,
+        phone2: data.phone2 || '',
+        email: data.email || '',
+        emergencyContactName: data.emergencyContactName || '',
+        emergencyContactPhone: data.emergencyContactPhone || '',
+        emergencyContactRelation: data.emergencyContactRelation || '',
         medicalHistory: data.medicalHistory,
         currentMedications: data.currentMedications,
         allergies: data.allergies,
       };
 
-      console.log('📡 Enviando petición PATCH a:', DOCTOR_ENDPOINTS.patientProfile(patientId));
-      console.log('📦 Payload completo:', payload);
-      
-      const response = await api(
-        DOCTOR_ENDPOINTS.patientProfile(patientId),
-        {
-          method: 'PATCH',
-          body: payload,
-        }
-      );
-      
-      console.log('✅ Respuesta del servidor:', response);
+      console.log('📡 Enviando request a:', endpoint);
+      console.log('📡 Request body:', requestBody);
 
-      onSuccess?.();
-      return response;
+      const response = await api(endpoint, {
+        method: 'PATCH',
+        body: requestBody,
+      });
+
+      console.log('✅ Paciente editado exitosamente:', response);
+      
+      onSuccess?.(response);
+      
     } catch (err) {
+      console.error('❌ Error al editar paciente:', err);
       const errorMessage = err instanceof Error ? err.message : 'Error al editar el paciente';
       setError(errorMessage);
       onError?.(errorMessage);
-      throw err;
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleSubmit = form.handleSubmit(
-    (data) => {
-      console.log('✅ Validación exitosa, datos:', data);
-      editPatient(data);
-    },
-    (errors) => {
-      console.log('❌ Errores de validación:', errors);
-    }
-  );
-
-  const clearError = () => setError(null);
-
   return {
     form,
-    handleSubmit,
-    editPatient,
+    handleSubmit: form.handleSubmit(handleSubmit),
     isSubmitting,
     error,
     clearError,

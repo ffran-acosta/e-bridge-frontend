@@ -21,6 +21,8 @@ import { ConsultationsTab } from "./sections/ConsultationsTab";
 import { AppointmentsTab } from "./sections/AppoinmentTab";
 // Nuevo sistema de consultas
 import { ConsultationTypeSelectorModal } from "../modals/consultations/ConsultationTypeSelectorModal";
+// Modal de edición de paciente
+import { EditPatientModal } from "../modals/patients/EditPatientModal";
 
 interface PatientProfileProps {
     patientId?: string;
@@ -37,8 +39,9 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
 
     // Handlers para acciones del header
     const handleEdit = useCallback(() => {
+        console.log('🎯 Editar paciente clickeado para:', patient?.firstName, patient?.lastName);
         setIsEditModalOpen(true);
-    }, []);
+    }, [patient]);
 
     const handleExport = useCallback(() => {
         console.log("Exportar perfil del paciente");
@@ -61,6 +64,16 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
 
     const handleConsultationError = useCallback((error: string) => {
         console.error('Error al crear consulta:', error);
+        // TODO: Mostrar error al usuario
+    }, []);
+
+    const handleEditSuccess = useCallback((updatedPatient: any) => {
+        console.log('✅ Paciente editado exitosamente:', updatedPatient);
+        refetch(); // Recargar datos del paciente
+    }, [refetch]);
+
+    const handleEditError = useCallback((error: string) => {
+        console.error('❌ Error al editar paciente:', error);
         // TODO: Mostrar error al usuario
     }, []);
 
@@ -143,27 +156,16 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
                 </TabsContent>
             </Tabs>
 
-            {/* Modal de edición (placeholder) */}
-            <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <DialogTitle>Editar Paciente</DialogTitle>
-                    </DialogHeader>
-                    <div className="py-4">
-                        <p className="text-muted-foreground">
-                            El formulario de edición se implementará en la siguiente fase.
-                        </p>
-                    </div>
-                    <div className="flex justify-end space-x-2">
-                        <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
-                            Cancelar
-                        </Button>
-                        <Button onClick={() => setIsEditModalOpen(false)}>
-                            Guardar
-                        </Button>
-                    </div>
-                </DialogContent>
-            </Dialog>
+            {/* Modal de edición de paciente */}
+            <EditPatientModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                patientId={patient.id}
+                patientName={`${patient.firstName} ${patient.lastName}`}
+                patientData={patient}
+                onSuccess={handleEditSuccess}
+                onError={handleEditError}
+            />
 
             {/* Modal de selector de tipo de consulta para Continuar Siniestro */}
             <ConsultationTypeSelectorModal
