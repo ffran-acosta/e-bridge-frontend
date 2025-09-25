@@ -11,11 +11,13 @@ import {
   CheckCircle, 
   AlertTriangle,
   ArrowRight,
-  Info
+  Info,
+  RotateCcw
 } from 'lucide-react';
 import { IngresoConsultationModal } from './IngresoConsultationModal';
 import { AtencionConsultationModal } from './AtencionConsultationModal';
 import { AltaConsultationModal } from './AltaConsultationModal';
+import { ReingresoConsultationModal } from './ReingresoConsultationModal';
 
 interface ConsultationTypeSelectorModalProps {
   isOpen: boolean;
@@ -24,7 +26,7 @@ interface ConsultationTypeSelectorModalProps {
   patientId: string;
   hasConsultations: boolean;
   siniestroData?: any;
-  onSelectType: (type: 'INGRESO' | 'ATENCION' | 'ALTA') => void;
+  onSelectType: (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => void;
   onConsultationSuccess?: (consultation: any) => void;
 }
 
@@ -41,6 +43,7 @@ export function ConsultationTypeSelectorModal({
   const [isIngresoModalOpen, setIsIngresoModalOpen] = useState(false);
   const [isAtencionModalOpen, setIsAtencionModalOpen] = useState(false);
   const [isAltaModalOpen, setIsAltaModalOpen] = useState(false);
+  const [isReingresoModalOpen, setIsReingresoModalOpen] = useState(false);
 
   const getAvailableTypes = () => {
     if (!hasConsultations) {
@@ -58,7 +61,7 @@ export function ConsultationTypeSelectorModal({
       ];
     }
 
-    // Paciente ART con consultas - puede hacer ATENCIÓN o ALTA
+    // Paciente ART con consultas - puede hacer ATENCIÓN, ALTA o REINGRESO
     return [
       {
         type: 'ATENCION' as const,
@@ -75,13 +78,21 @@ export function ConsultationTypeSelectorModal({
         icon: CheckCircle,
         variant: 'destructive' as const,
         available: true
+      },
+      {
+        type: 'REINGRESO' as const,
+        title: 'Consulta de Reingreso',
+        description: 'Reingreso para pacientes que fueron dados de alta',
+        icon: RotateCcw,
+        variant: 'outline' as const,
+        available: true
       }
     ];
   };
 
   const availableTypes = getAvailableTypes();
 
-  const handleSelectType = (type: 'INGRESO' | 'ATENCION' | 'ALTA') => {
+  const handleSelectType = (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => {
     console.log('🎯 ConsultationTypeSelectorModal: Tipo seleccionado:', type);
     
     if (type === 'INGRESO') {
@@ -93,6 +104,9 @@ export function ConsultationTypeSelectorModal({
     } else if (type === 'ALTA') {
       // Abrir modal de ALTA directamente
       setIsAltaModalOpen(true);
+    } else if (type === 'REINGRESO') {
+      // Abrir modal de REINGRESO directamente
+      setIsReingresoModalOpen(true);
     } else {
       // Para otros tipos, usar el callback original
       onSelectType(type);
@@ -134,6 +148,18 @@ export function ConsultationTypeSelectorModal({
   const handleAltaError = (error: string) => {
     console.error('❌ Error al crear consulta de ALTA:', error);
     // El error se maneja dentro del modal de ALTA
+  };
+
+  const handleReingresoSuccess = (consultation: any) => {
+    console.log('✅ Consulta de REINGRESO creada exitosamente:', consultation);
+    setIsReingresoModalOpen(false);
+    onConsultationSuccess?.(consultation);
+    onClose();
+  };
+
+  const handleReingresoError = (error: string) => {
+    console.error('❌ Error al crear consulta de REINGRESO:', error);
+    // El error se maneja dentro del modal de REINGRESO
   };
 
   console.log('🎯 ConsultationTypeSelectorModal: Renderizando con props:', {
@@ -283,6 +309,17 @@ export function ConsultationTypeSelectorModal({
         siniestroData={siniestroData}
         onSuccess={handleAltaSuccess}
         onError={handleAltaError}
+      />
+
+      {/* Modal de consulta de REINGRESO */}
+      <ReingresoConsultationModal
+        isOpen={isReingresoModalOpen}
+        onClose={() => setIsReingresoModalOpen(false)}
+        patientId={patientId}
+        patientName={patientName}
+        siniestroData={siniestroData}
+        onSuccess={handleReingresoSuccess}
+        onError={handleReingresoError}
       />
     </Dialog>
   );

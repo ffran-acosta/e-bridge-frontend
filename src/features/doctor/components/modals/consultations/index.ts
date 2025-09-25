@@ -7,5 +7,7 @@ export { AtencionConsultationModal } from './AtencionConsultationModal';
 export { AtencionConsultationForm } from './AtencionConsultationForm';
 export { AltaConsultationModal } from './AltaConsultationModal';
 export { AltaConsultationForm } from './AltaConsultationForm';
+export { ReingresoConsultationModal } from './ReingresoConsultationModal';
+export { ReingresoConsultationForm } from './ReingresoConsultationForm';
 export { DeleteConsultationModal } from './DeleteConsultationModal';
 export { ConsultationDetailsModal } from './ConsultationDetailsModal';

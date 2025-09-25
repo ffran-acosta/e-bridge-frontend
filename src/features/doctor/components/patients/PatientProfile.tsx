@@ -19,9 +19,8 @@ import { isARTPatient } from "../../utils/patientFormatters";
 import { SiniestroTab } from "./sections/SiniestroTab";
 import { ConsultationsTab } from "./sections/ConsultationsTab";
 import { AppointmentsTab } from "./sections/AppoinmentTab";
-// TODO: Reemplazar con nuevo sistema de consultas
-// import { ConsultationTypeModal } from "../modals/ConsultationTypeModal";
-// import { CreateConsultationModal } from "../modals/CreateConsultationModal";
+// Nuevo sistema de consultas
+import { ConsultationTypeSelectorModal } from "../modals/consultations/ConsultationTypeSelectorModal";
 
 interface PatientProfileProps {
     patientId?: string;
@@ -31,8 +30,7 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
     const [activeTab, setActiveTab] = useState("overview");
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isConsultationTypeModalOpen, setIsConsultationTypeModalOpen] = useState(false);
-    const [isCreateConsultationModalOpen, setIsCreateConsultationModalOpen] = useState(false);
-    const [selectedConsultationType, setSelectedConsultationType] = useState<'ATENCION' | 'ALTA' | null>(null);
+    // Estados para el modal de consultas (ahora manejado por ConsultationTypeSelectorModal)
 
     // Hook para obtener datos del paciente
     const { patient, loading, error, refetch, clearError } = usePatientProfile(patientId);
@@ -47,18 +45,17 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
     }, []);
 
     const handleContinueSiniestro = useCallback(() => {
+        console.log('🎯 Continuar Siniestro clickeado para paciente:', patient?.firstName, patient?.lastName);
         setIsConsultationTypeModalOpen(true);
+    }, [patient]);
+
+    const handleSelectConsultationType = useCallback((type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => {
+        console.log('🎯 Tipo de consulta seleccionado desde Continuar Siniestro:', type);
+        // El modal se maneja internamente, solo logueamos
     }, []);
 
-    const handleSelectConsultationType = useCallback((type: 'ATENCION' | 'ALTA') => {
-        setSelectedConsultationType(type);
-        setIsConsultationTypeModalOpen(false);
-        setIsCreateConsultationModalOpen(true);
-    }, []);
-
-    const handleConsultationSuccess = useCallback(() => {
-        setIsCreateConsultationModalOpen(false);
-        setSelectedConsultationType(null);
+    const handleConsultationSuccess = useCallback((consultation: any) => {
+        console.log('✅ Consulta creada exitosamente desde Continuar Siniestro:', consultation);
         refetch(); // Recargar datos del paciente
     }, [refetch]);
 
@@ -168,31 +165,17 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
                 </DialogContent>
             </Dialog>
 
-            {/* TODO: Modales de consultas - serán reemplazados con nuevo sistema */}
-            {/*
-            <ConsultationTypeModal
+            {/* Modal de selector de tipo de consulta para Continuar Siniestro */}
+            <ConsultationTypeSelectorModal
                 isOpen={isConsultationTypeModalOpen}
                 onClose={() => setIsConsultationTypeModalOpen(false)}
-                onSelectType={handleSelectConsultationType}
                 patientName={`${patient.firstName} ${patient.lastName}`}
+                patientId={patient.id}
+                hasConsultations={patient.stats.totalConsultations > 0}
+                siniestroData={patient.siniestro}
+                onSelectType={handleSelectConsultationType}
+                onConsultationSuccess={handleConsultationSuccess}
             />
-
-            {selectedConsultationType && (
-                <CreateConsultationModal
-                    isOpen={isCreateConsultationModalOpen}
-                    onClose={() => {
-                        setIsCreateConsultationModalOpen(false);
-                        setSelectedConsultationType(null);
-                    }}
-                    patientId={patient.id}
-                    patientName={`${patient.firstName} ${patient.lastName}`}
-                    isArtCase={isARTPatient(patient)}
-                    defaultConsultationType={selectedConsultationType}
-                    onSuccess={handleConsultationSuccess}
-                    onError={handleConsultationError}
-                />
-            )}
-            */}
         </div>
     );
 });
