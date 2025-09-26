@@ -1,6 +1,7 @@
 // 🩺 MODALES DE CONSULTAS
 export { ConsultationTypeSelectorModal } from './ConsultationTypeSelectorModal';
 export { CreateConsultationButton } from './CreateConsultationButton';
+export { CreateBasicConsultationButton } from './CreateBasicConsultationButton';
 export { IngresoConsultationModal } from './IngresoConsultationModal';
 export { IngresoConsultationForm } from './IngresoConsultationForm';
 export { AtencionConsultationModal } from './AtencionConsultationModal';
@@ -11,3 +12,4 @@ export { ReingresoConsultationModal } from './ReingresoConsultationModal';
 export { ReingresoConsultationForm } from './ReingresoConsultationForm';
 export { DeleteConsultationModal } from './DeleteConsultationModal';
 export { ConsultationDetailsModal } from './ConsultationDetailsModal';
+export { BasicConsultationModal, BasicConsultationForm } from './BasicConsultationModal';

@@ -1,4 +1,4 @@
-    import { AlertCircle, Calendar, Clock, MapPin, RefreshCw, Stethoscope, FileText, Plus } from 'lucide-react';
+    import { AlertCircle, Calendar, Clock, MapPin, RefreshCw, Stethoscope, FileText, Plus, Trash2, Settings } from 'lucide-react';
 import {
     Badge,
     Button,
@@ -13,6 +13,10 @@ import { getAppointmentStatus, isUpcomingAppointment, isOverdueAppointment, getA
 import { truncateText } from '../../../utils/patientFormatters';
 import type { PatientProfile } from '@/shared/types/patients.types';
 import { usePatientAppointments } from '@/features/doctor/hooks/usePatientAppoinment';
+import { DeleteAppointmentModal, CancelAppointmentModal, CompleteAppointmentModal } from '../../modals/appointments';
+import { useState } from 'react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
+import { appointmentStatuses, getAppointmentStatusLabel, getAppointmentStatusVariant } from '../../../constants/appointmentStatuses';
 
 interface AppointmentsTabProps {
     patient: PatientProfile;
@@ -27,6 +31,81 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
         refetch,
         loadPage
     } = usePatientAppointments(patient.id);
+
+    // Estado para los modales
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [appointmentToDelete, setAppointmentToDelete] = useState<any>(null);
+    const [cancelModalOpen, setCancelModalOpen] = useState(false);
+    const [appointmentToCancel, setAppointmentToCancel] = useState<any>(null);
+    const [completeModalOpen, setCompleteModalOpen] = useState(false);
+    const [appointmentToComplete, setAppointmentToComplete] = useState<any>(null);
+
+    // Función para abrir el modal de eliminar
+    const handleDeleteClick = (appointment: any) => {
+        setAppointmentToDelete(appointment);
+        setDeleteModalOpen(true);
+    };
+
+    // Función para cerrar el modal
+    const handleDeleteModalClose = () => {
+        setDeleteModalOpen(false);
+        setAppointmentToDelete(null);
+    };
+
+    // Función para manejar el éxito de la eliminación
+    const handleDeleteSuccess = () => {
+        refetch(); // Recargar la lista de turnos
+    };
+
+    // Funciones para cancelar turno
+    const handleCancelClick = (appointment: any) => {
+        setAppointmentToCancel(appointment);
+        setCancelModalOpen(true);
+    };
+
+    const handleCancelModalClose = () => {
+        setCancelModalOpen(false);
+        setAppointmentToCancel(null);
+    };
+
+    const handleCancelSuccess = () => {
+        refetch();
+    };
+
+    // Funciones para completar turno
+    const handleCompleteClick = (appointment: any) => {
+        setAppointmentToComplete(appointment);
+        setCompleteModalOpen(true);
+    };
+
+    const handleCompleteModalClose = () => {
+        setCompleteModalOpen(false);
+        setAppointmentToComplete(null);
+    };
+
+    const handleCompleteSuccess = () => {
+        refetch();
+    };
+
+    // Función para manejar cambios de estado
+    const handleStatusChange = (appointment: any, newStatus: string) => {
+        console.log('🎯 Cambiando estado del turno:', appointment.id, 'a:', newStatus);
+        
+        switch (newStatus) {
+            case 'CANCELLED':
+                handleCancelClick(appointment);
+                break;
+            case 'COMPLETED':
+                handleCompleteClick(appointment);
+                break;
+            case 'RESCHEDULED':
+                // TODO: Implementar modal de reagendamiento
+                alert('Funcionalidad de reagendamiento próximamente');
+                break;
+            default:
+                console.log('Estado no manejado:', newStatus);
+        }
+    };
 
     if (loading && appointments.length === 0) {
         return <AppointmentsLoading />;
@@ -138,6 +217,43 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                                         <Badge variant="outline" className="text-xs">
                                             {followUp.status}
                                         </Badge>
+                                        
+                                        {/* Selector de estado */}
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-medium text-muted-foreground">
+                                                Cambiar Estado
+                                            </label>
+                                            <Select
+                                                value={appointment.status || 'SCHEDULED'}
+                                                onValueChange={(newStatus) => handleStatusChange(appointment, newStatus)}
+                                                disabled={appointment.status === 'COMPLETED' || appointment.status === 'CANCELLED'}
+                                            >
+                                                <SelectTrigger className="w-full h-8 text-xs">
+                                                    <SelectValue />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {appointmentStatuses.map((statusOption) => (
+                                                        <SelectItem 
+                                                            key={statusOption.value} 
+                                                            value={statusOption.value}
+                                                            disabled={statusOption.value === appointment.status}
+                                                        >
+                                                            {statusOption.label}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={() => handleDeleteClick(appointment)}
+                                            className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                                        >
+                                            <Trash2 className="h-4 w-4 mr-2" />
+                                            Eliminar
+                                        </Button>
                                     </div>
                                 </div>
                             </CardHeader>
@@ -248,6 +364,40 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Modal de eliminar turno */}
+            {appointmentToDelete && (
+                <DeleteAppointmentModal
+                    isOpen={deleteModalOpen}
+                    onClose={handleDeleteModalClose}
+                    appointment={appointmentToDelete}
+                    patientName={`${patient.firstName} ${patient.lastName}`}
+                    onSuccess={handleDeleteSuccess}
+                />
+            )}
+
+            {/* Modal de cancelar turno */}
+            {appointmentToCancel && (
+                <CancelAppointmentModal
+                    isOpen={cancelModalOpen}
+                    onClose={handleCancelModalClose}
+                    appointment={appointmentToCancel}
+                    patientName={`${patient.firstName} ${patient.lastName}`}
+                    onSuccess={handleCancelSuccess}
+                />
+            )}
+
+            {/* Modal de completar turno */}
+            {appointmentToComplete && (
+                <CompleteAppointmentModal
+                    isOpen={completeModalOpen}
+                    onClose={handleCompleteModalClose}
+                    appointment={appointmentToComplete}
+                    patientName={`${patient.firstName} ${patient.lastName}`}
+                    consultations={patient.consultations || []}
+                    onSuccess={handleCompleteSuccess}
+                />
             )}
         </div>
     );

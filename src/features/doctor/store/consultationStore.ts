@@ -23,7 +23,7 @@ interface ConsultationsState {
 }
 
 interface ConsultationsActions {
-    fetchConsultations: (patientId: string, page?: number, limit?: number) => Promise<void>;
+    fetchConsultations: (patientId: string, patientType?: 'NORMAL' | 'ART', page?: number, limit?: number) => Promise<void>;
     createConsultation: (patientId: string, data: CreateConsultationDto) => Promise<Consultation>;
     deleteConsultation: (consultationId: string) => Promise<void>;
     clearConsultations: () => void;
@@ -46,7 +46,7 @@ export const useConsultationsStore = create<ConsultationsStore>()(
         (set, get) => ({
             ...initialState,
 
-            fetchConsultations: async (patientId: string, page = 1, limit = 5) => {
+            fetchConsultations: async (patientId: string, patientType?: 'NORMAL' | 'ART', page = 1, limit = 5) => {
                 const { currentPatientId, loading } = get();
 
                 // Evitar múltiples requests para el mismo paciente
@@ -56,6 +56,7 @@ export const useConsultationsStore = create<ConsultationsStore>()(
 
                 try {
                     console.log('🔍 Cargando consultas para paciente:', patientId);
+                    console.log('🔍 Tipo de paciente:', patientType);
                     const endpoint = DOCTOR_ENDPOINTS.patientConsultations(patientId);
                     console.log('📡 Llamando endpoint:', endpoint);
                     
@@ -63,7 +64,9 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                     console.log('📦 Respuesta del backend:', response);
 
                     // Mapear las consultas del backend al formato del frontend
-                    const mappedConsultations = response.data.data.map(mapBackendConsultationToFrontend);
+                    const mappedConsultations = response.data.data.map(consultation => 
+                        mapBackendConsultationToFrontend(consultation, patientType)
+                    );
                     console.log('✅ Consultas mapeadas:', mappedConsultations);
                     
                     // Verificar si las consultas pertenecen realmente al paciente
@@ -150,7 +153,7 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                         console.log('📦 response.data:', response.data);
                         
                         // Normalizar al formato frontend por si el backend devuelve forma cruda
-                        const newConsultation = mapBackendConsultationToFrontend(response.data);
+                        const newConsultation = mapBackendConsultationToFrontend(response.data, 'ART'); // Por defecto ART para consultas creadas
                         
                         // Agregar la nueva consulta al estado
                         set((state) => ({

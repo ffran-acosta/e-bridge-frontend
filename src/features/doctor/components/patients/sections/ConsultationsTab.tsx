@@ -17,7 +17,7 @@ import { formatConsultationDate, formatNextAppointmentDate } from '@/features/do
 import { getConsultationStatus, formatDoctorInfo, getArtCaseLabel } from '@/features/doctor/utils/consultationFormatters';
 import { truncateText, isARTPatient } from '@/features/doctor/utils/patientFormatters';
 // Nuevo sistema de consultas
-import { CreateConsultationButton, DeleteConsultationModal, ConsultationDetailsModal } from '../../modals';
+import { CreateConsultationButton, CreateBasicConsultationButton, DeleteConsultationModal, ConsultationDetailsModal } from '../../modals';
 
 interface ConsultationsTabProps {
     patient: PatientProfile;
@@ -38,7 +38,7 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
         error,
         refetch,
         loadPage
-    } = usePatientConsultations(patient.id);
+    } = usePatientConsultations(patient.id, patient.type);
 
     const getConsultationTypeLabel = (type: string) => {
         const labels = {
@@ -125,13 +125,15 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                                 }}
                             />
                                 ) : (
-                                    <Button onClick={() => {
-                                        console.log('🎯 Botón normal clickeado - paciente no ART');
-                                        alert('Este paciente no es ART. Funcionalidad para pacientes normales próximamente.');
-                                    }}>
-                                        <Plus className="h-4 w-4 mr-2" />
-                                        Crear Primera Consulta
-                                    </Button>
+                                    <CreateBasicConsultationButton
+                                        patientId={patient.id}
+                                        patientName={`${patient.firstName} ${patient.lastName}`}
+                                        hasConsultations={false}
+                                        onConsultationSuccess={() => {
+                                            console.log('✅ Consulta básica creada exitosamente');
+                                            refetch(); // Recargar las consultas
+                                        }}
+                                    />
                                 )}
                             </div>
                         </div>
@@ -190,16 +192,15 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                             }}
                         />
                     ) : (
-                        <Button 
-                            size="sm"
-                            onClick={() => {
-                                console.log('🎯 Botón normal clickeado - paciente no ART');
-                                alert('Este paciente no es ART. Funcionalidad para pacientes normales próximamente.');
+                        <CreateBasicConsultationButton
+                            patientId={patient.id}
+                            patientName={`${patient.firstName} ${patient.lastName}`}
+                            hasConsultations={consultations.length > 0}
+                            onConsultationSuccess={() => {
+                                console.log('✅ Consulta básica creada exitosamente');
+                                refetch(); // Recargar las consultas
                             }}
-                        >
-                            <Plus className="h-3 w-3 mr-1" />
-                            Nueva Consulta
-                        </Button>
+                        />
                     )}
                 </div>
             </div>

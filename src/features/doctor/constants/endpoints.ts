@@ -11,7 +11,14 @@ export const DOCTOR_ENDPOINTS = {
     patientConsultationAtencion: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations/atencion`,
     patientConsultationAlta: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations/alta`,
     patientNextAllowedConsultations: (patientId: string) => `/doctor/consultations/patients/${patientId}/next-allowed-consultations`,
+    
+    // Endpoints para consultas básicas (pacientes normales)
+    patientBasicConsultation: '/doctor/consultations',
     patientAppointments: (patientId: string) => `/doctor/appointments/patients/${patientId}`,
+    deleteAppointment: (appointmentId: string) => `/doctor/appointments/${appointmentId}`,
+    cancelAppointment: (appointmentId: string) => `/doctor/appointments/${appointmentId}/cancel`,
+    completeAppointment: (appointmentId: string) => `/doctor/appointments/${appointmentId}/complete`,
+    updateAppointment: (appointmentId: string) => `/doctor/appointments/${appointmentId}`,
     // Endpoints específicos para el calendario de turnos
     appointmentsToday: (date?: string) => 
         date ? `/doctor/appointments/today?date=${date}` : '/doctor/appointments/today',

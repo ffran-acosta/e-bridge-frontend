@@ -14,6 +14,7 @@ interface UsePatientConsultationsReturn {
 
 export const usePatientConsultations = (
     patientId: string | undefined,
+    patientType?: 'NORMAL' | 'ART',
     autoFetch = true
 ): UsePatientConsultationsReturn => {
     const {
@@ -32,7 +33,7 @@ export const usePatientConsultations = (
 
         // Solo fetch si es un paciente diferente o no hay datos
         if (currentPatientId !== patientId || consultations.length === 0) {
-            fetchConsultations(patientId);
+            fetchConsultations(patientId, patientType);
         }
     }, [patientId, autoFetch, fetchConsultations, currentPatientId, consultations.length]);
 
@@ -47,13 +48,13 @@ export const usePatientConsultations = (
 
     const refetch = () => {
         if (patientId) {
-            fetchConsultations(patientId);
+            fetchConsultations(patientId, patientType);
         }
     };
 
     const loadPage = (page: number) => {
         if (patientId) {
-            fetchConsultations(patientId, page);
+            fetchConsultations(patientId, patientType, page);
         }
     };
 

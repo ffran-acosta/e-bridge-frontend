@@ -90,8 +90,9 @@ export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatien
 // ========== MAPPER PARA CONSULTAS ==========
 
 // Transforma una consulta del backend al formato esperado por el frontend
-export const mapBackendConsultationToFrontend = (backendConsultation: any): Consultation => {
+export const mapBackendConsultationToFrontend = (backendConsultation: any, patientType?: 'NORMAL' | 'ART'): Consultation => {
     console.log('🔍 Mapeando consulta del backend:', backendConsultation);
+    console.log('🔍 Tipo de paciente:', patientType);
     
     // Manejar diferentes estructuras de respuesta del backend
     const consultation = backendConsultation.data || backendConsultation;
@@ -102,7 +103,7 @@ export const mapBackendConsultationToFrontend = (backendConsultation: any): Cons
         consultationReason: consultation.consultationReason,
         diagnosis: consultation.diagnosis,
         nextAppointmentDate: consultation.nextAppointmentDate,
-        isArtCase: consultation.type === 'INGRESO' || consultation.type === 'ATENCION',
+        isArtCase: patientType === 'ART', // Determinar si es ART basado en el tipo de paciente, no en el tipo de consulta
         consultationType: consultation.type, // Agregar el tipo de consulta
         medicalEstablishment: {
             id: consultation.medicalEstablishment?.id || '',
