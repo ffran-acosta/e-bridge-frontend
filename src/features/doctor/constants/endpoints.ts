@@ -14,6 +14,7 @@ export const DOCTOR_ENDPOINTS = {
     
     // Endpoints para consultas básicas (pacientes normales)
     patientBasicConsultation: '/doctor/consultations',
+    appointments: '/doctor/appointments',
     patientAppointments: (patientId: string) => `/doctor/appointments/patients/${patientId}`,
     deleteAppointment: (appointmentId: string) => `/doctor/appointments/${appointmentId}`,
     cancelAppointment: (appointmentId: string) => `/doctor/appointments/${appointmentId}/cancel`,

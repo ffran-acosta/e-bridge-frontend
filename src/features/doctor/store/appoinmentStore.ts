@@ -50,8 +50,8 @@ const mapBackendAppointmentToFrontend = (backendAppointment: BackendAppointment)
             age: 0, // No viene en la respuesta del backend
         },
         medicalEstablishment: {
-            id: backendAppointment.medicalEstablishment.id,
-            name: backendAppointment.medicalEstablishment.name,
+            id: backendAppointment.medicalEstablishment?.id || '',
+            name: backendAppointment.medicalEstablishment?.name || 'Establecimiento no especificado',
             cuit: '', // No viene en la respuesta del backend
         },
         hasOriginConsultation: !!backendAppointment.originMedicalEventId,

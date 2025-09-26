@@ -13,7 +13,8 @@ import { getAppointmentStatus, isUpcomingAppointment, isOverdueAppointment, getA
 import { truncateText } from '../../../utils/patientFormatters';
 import type { PatientProfile } from '@/shared/types/patients.types';
 import { usePatientAppointments } from '@/features/doctor/hooks/usePatientAppoinment';
-import { DeleteAppointmentModal, CancelAppointmentModal, CompleteAppointmentModal } from '../../modals/appointments';
+import { DeleteAppointmentModal, CancelAppointmentModal, CompleteAppointmentModal, CreateAppointmentButton } from '../../modals/appointments';
+import { useAuthStore } from '@/features/auth/store/auth';
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { appointmentStatuses, getAppointmentStatusLabel, getAppointmentStatusVariant } from '../../../constants/appointmentStatuses';
@@ -23,6 +24,7 @@ interface AppointmentsTabProps {
 }
 
 export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
+    const { user } = useAuthStore();
     const {
         appointments,
         pagination,
@@ -31,6 +33,9 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
         refetch,
         loadPage
     } = usePatientAppointments(patient.id);
+
+    // Obtener el doctorId del usuario autenticado
+    const doctorId = user?.doctor?.id || '';
 
     // Estado para los modales
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -141,7 +146,21 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                     <div className="text-center text-muted-foreground">
                         <Calendar className="h-12 w-12 mx-auto mb-4 opacity-50" />
                         <p className="text-lg font-medium">No hay turnos programados</p>
-                        <p className="text-sm">Este paciente aún no tiene turnos asignados.</p>
+                        <p className="text-sm mb-4">Este paciente aún no tiene turnos asignados.</p>
+                        
+                        {/* Botón para crear primer turno */}
+                        <div className="flex justify-center">
+                        <CreateAppointmentButton
+                            patientId={patient.id}
+                            patientName={`${patient.firstName} ${patient.lastName}`}
+                            doctorId={doctorId}
+                            hasAppointments={false}
+                            onAppointmentSuccess={() => {
+                                console.log('✅ Primer turno creado exitosamente');
+                                refetch(); // Recargar la lista de turnos
+                            }}
+                        />
+                        </div>
                     </div>
                 </CardContent>
             </Card>
@@ -164,10 +183,16 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                 
                 {/* Botón compacto para crear turno */}
                 <div className="flex items-center gap-2">
-                    <Button size="sm">
-                        <Plus className="h-3 w-3 mr-1" />
-                        Nuevo Turno
-                    </Button>
+                    <CreateAppointmentButton
+                        patientId={patient.id}
+                        patientName={`${patient.firstName} ${patient.lastName}`}
+                        doctorId={doctorId}
+                        hasAppointments={appointments.length > 0}
+                        onAppointmentSuccess={() => {
+                            console.log('✅ Turno creado exitosamente');
+                            refetch(); // Recargar la lista de turnos
+                        }}
+                    />
                 </div>
             </div>
 
@@ -182,9 +207,7 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                     return (
                         <Card
                             key={appointment.id}
-                            className={`hover:shadow-md transition-shadow ${isUpcoming ? 'ring-2 ring-blue-200 bg-blue-50/50' :
-                                    isOverdue ? 'ring-2 ring-red-200 bg-red-50/50' : ''
-                                }`}
+                            className="hover:shadow-md transition-shadow"
                         >
                             <CardHeader className="pb-3">
                                 <div className="flex items-start justify-between">
@@ -395,7 +418,7 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                     onClose={handleCompleteModalClose}
                     appointment={appointmentToComplete}
                     patientName={`${patient.firstName} ${patient.lastName}`}
-                    consultations={patient.consultations || []}
+                    consultations={[]}
                     onSuccess={handleCompleteSuccess}
                 />
             )}
