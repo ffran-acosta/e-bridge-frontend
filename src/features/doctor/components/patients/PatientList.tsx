@@ -3,6 +3,7 @@
 import React, { useMemo, useCallback, useState } from 'react';
 import { Search, AlertCircle, Loader2, Plus } from 'lucide-react';
 import { Button, Badge, Card, CardContent, CardHeader, CardTitle, Input, SelectItem, SelectContent, SelectTrigger, Select, SelectValue, Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared';
+import { StatusBadge } from '@/shared/components/ui/StatusBadge';
 import { useDoctorPatients } from '../../hooks/useDoctorPatients';
 import { Patient } from '@/shared/types/patients.types';
 import { CreatePatientModal } from '../modals';
@@ -312,21 +313,7 @@ const PatientsTable = React.memo(({
     loading: boolean
 }) => {
     const getStatusBadge = (status: Patient['status']) => {
-        const variants = {
-            'ATENCION': 'step-2',       // PASO 2 - Amarillo (En proceso)
-            'INGRESO': 'step-1',        // PASO 1 - Azul (Inicio)
-            'ALTA_MEDICA': 'step-4',    // PASO 4 - Verde (Completado)
-            'CIRUGIA': 'surgery'        // ESPECIAL - Púrpura (Cirugía)
-        } as const;
-
-        const labels = {
-            'ATENCION': 'Atención',
-            'INGRESO': 'Ingreso',
-            'ALTA_MEDICA': 'Alta Médica',
-            'CIRUGIA': 'Cirugía'
-        };
-
-        return <Badge variant={variants[status]}>{labels[status]}</Badge>;
+        return <StatusBadge status={status} />;
     };
 
     const formatDate = (dateString: string) => {

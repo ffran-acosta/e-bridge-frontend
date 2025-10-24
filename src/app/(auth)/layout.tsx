@@ -2,7 +2,7 @@ import { AuthProvider } from "@/providers/AuthProvider";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "E-Bridge",
+    title: "e-Bridge",
     description: "Login & Register",
 };
 

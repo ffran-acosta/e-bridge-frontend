@@ -70,7 +70,7 @@ export function CompleteAppointmentModal({
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold flex items-center gap-2 text-green-600">
+          <DialogTitle className="text-xl font-bold flex items-center gap-2 text-status-step-4">
             <CheckCircle className="h-5 w-5" />
             Completar Turno
           </DialogTitle>
@@ -112,7 +112,7 @@ export function CompleteAppointmentModal({
           {/* Selector de consulta */}
           <div className="space-y-2">
             <label className="text-sm font-medium">
-              Consulta Médica Asociada <span className="text-red-500">*</span>
+              Consulta Médica Asociada <span className="text-destructive">*</span>
             </label>
             <Select
               value={selectedConsultationId}

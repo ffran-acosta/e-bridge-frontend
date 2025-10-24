@@ -45,29 +45,29 @@
 
 :root {
   /* Fondos en grises/negros neutros */
-  --background: #0a0a0a;
+  --background: #0c0e12;
   --foreground: #e5e5e5;
 
-  --muted: #1a1a1a;
+  --muted: #1a1d24;
   --muted-foreground: #a3a3a3;
 
-  --popover: #111111;
+  --popover: #1a1d24;
   --popover-foreground: var(--foreground);
 
-  --card: #111111;
+  --card: #1a1d24;
   --card-foreground: var(--foreground);
 
   --border: #333333;
   --input: #2a2a2a;
 
-  /* Colores distintivos en verde */
-  --primary: #1a5444;
+  /* Colores distintivos en gris más oscuro */
+  --primary: #1a1d24;
   --primary-foreground: #ffffff;
 
-  --secondary: #1a1a1a;
+  --secondary: #1a1d24;
   --secondary-foreground: var(--foreground);
 
-  --accent: #459780;
+  --accent: #1a1d24;
   --accent-foreground: #ffffff;
 
   --destructive: #ef4444;
@@ -77,37 +77,37 @@
 
   /* ========== SISTEMA DE ESTADOS - SEMÁFORO DE 4 PASOS ========== */
   
-  /* PASO 1 - INICIO/PENDIENTE - Azul */
-  --status-step-1: #3b82f6;
+  /* PASO 1 - INICIO/PENDIENTE - Azul apastelado */
+  --status-step-1: #7c9eff;
   --status-step-1-foreground: #ffffff;
   
-  /* PASO 2 - EN PROCESO - Amarillo */
-  --status-step-2: #f59e0b;
+  /* PASO 2 - EN PROCESO - Amarillo apastelado */
+  --status-step-2: #fbbf24;
   --status-step-2-foreground: #ffffff;
   
-  /* PASO 3 - CASI LISTO - Naranja */
-  --status-step-3: #f97316;
+  /* PASO 3 - CASI LISTO - Naranja apastelado */
+  --status-step-3: #fb923c;
   --status-step-3-foreground: #ffffff;
   
-  /* PASO 4 - COMPLETADO - Verde */
-  --status-step-4: #10b981;
+  /* PASO 4 - COMPLETADO - Verde apastelado */
+  --status-step-4: #4ade80;
   --status-step-4-foreground: #ffffff;
   
   /* ESTADOS ESPECIALES */
-  --status-cancelled: #ef4444;        /* Rojo - Cancelado */
+  --status-cancelled: #f87171;        /* Rojo apastelado - Cancelado */
   --status-cancelled-foreground: #ffffff;
   
-  --status-no-show: #6b7280;          /* Gris - No asistió */
+  --status-no-show: #94a3b8;          /* Gris apastelado - No asistió */
   --status-no-show-foreground: #ffffff;
   
-  --status-surgery: #dc2626;          /* Rojo - Cirugía */
+  --status-surgery: #f87171;          /* Rojo apastelado - Cirugía */
   --status-surgery-foreground: #ffffff;
   
-  --status-referred: #dc2626;         /* Rojo oscuro - Derivado */
+  --status-referred: #f87171;         /* Rojo apastelado - Derivado */
   --status-referred-foreground: #ffffff;
 
-  /* radios/sombras por defecto - DISEÑO CUADRADO */
-  --radius: 0px;
+  /* radios/sombras por defecto - DISEÑO REDONDEADO */
+  --radius: 8px;
 }
 
 @layer base {

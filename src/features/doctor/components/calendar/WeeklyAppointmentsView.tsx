@@ -13,6 +13,7 @@ import {
     ChevronUp
 } from 'lucide-react';
 import { Button, Card, CardContent, Badge } from '@/shared';
+import { StatusBadge } from '@/shared/components/ui/StatusBadge';
 import { formatAppointmentTime, formatAppointmentDate } from '../../utils/dateFormatters';
 import { getPreviousWeek, getNextWeek, getStartOfWeek, getWeekDates, isToday } from '../../utils/dateUtils';
 import type { BackendCalendarApiResponse } from '@/shared/types/patients.types';
@@ -112,33 +113,6 @@ export const WeeklyAppointmentsView = React.memo(({
         });
     }, []);
 
-    const getStatusBadgeVariant = (status: string) => {
-        switch (status) {
-            case 'SCHEDULED':
-                return 'step-1';        // PASO 1 - Azul (Programada)
-            case 'COMPLETED':
-                return 'step-4';        // PASO 4 - Verde (Completada)
-            case 'CANCELLED':
-                return 'cancelled';     // ESPECIAL - Rojo (Cancelada)
-            case 'NO_SHOW':
-                return 'no-show';       // ESPECIAL - Gris (No asistió)
-            default:
-                return 'step-1';
-        }
-    };
-
-    const getStatusText = (status: string) => {
-        switch (status) {
-            case 'COMPLETED':
-                return 'Completado';
-            case 'CANCELLED':
-                return 'Cancelado';
-            case 'NO_SHOW':
-                return 'No asistió';
-            default:
-                return 'Programado';
-        }
-    };
 
     const getTypeBadgeVariant = (type: string) => {
         return type === 'ART' ? 'secondary' : 'outline';
@@ -356,9 +330,7 @@ export const WeeklyAppointmentsView = React.memo(({
                                                 <div className="flex-1 min-w-0">
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <span className="font-medium text-sm">{appointment.time}</span>
-                                                        <Badge variant={getStatusBadgeVariant(appointment.status)} className="text-xs">
-                                                            {getStatusText(appointment.status)}
-                                                        </Badge>
+                                                        <StatusBadge status={appointment.status} />
                                                         {appointment.type === 'ART' && (
                                                             <Badge variant={getTypeBadgeVariant(appointment.type)} className="text-xs">
                                                                 {appointment.type}

@@ -10,6 +10,7 @@ import {
     Plus,
 } from "lucide-react";
 import { Badge, Button, Card, CardHeader, CardTitle } from "@/shared";
+import { StatusBadge } from "@/shared/components/ui/StatusBadge";
 import { PatientProfile } from "@/shared/types/patients.types";
 import {
     getFullName, 
@@ -51,7 +52,7 @@ export function PatientHeader({ patient, onEdit, onContinueSiniestro }: PatientH
                     <div className="space-y-6">
                         {/* Patient Info */}
                         <div className="flex items-center space-x-4">
-                            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center">
+                            <div className="w-16 h-16 bg-accent rounded-full flex items-center justify-center">
                                 <User className="h-8 w-8 text-white" />
                             </div>
                             <div className="flex-1 min-w-0">
@@ -62,9 +63,7 @@ export function PatientHeader({ patient, onEdit, onContinueSiniestro }: PatientH
                                     DNI: {patient.dni} • {calculateAge(patient.birthdate)} años
                                 </p>
                                 <div className="flex flex-wrap items-center gap-2 mt-1">
-                                    <Badge variant={getStatusBadgeVariant(patient.currentStatus)}>
-                                        {formatStatus(patient.currentStatus)}
-                                    </Badge>
+                                    <StatusBadge status={patient.currentStatus} />
                                     {isARTPatient(patient) && (
                                         <Badge variant="destructive">
                                             ART

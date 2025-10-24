@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "E-Bridge",
+  title: "e-Bridge",
   description: "Auth",
 };
 

@@ -5,20 +5,20 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive rounded-md",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-white shadow-xs hover:bg-primary/90 hover:text-white hover:shadow-lg hover:shadow-primary/25 transition-all duration-200",
+          "bg-gradient-to-r from-[#2a2f3a] via-[#3a3f4a] to-[#2a2f3a] text-white shadow-lg shadow-[#2a2f3a]/30 border border-[#3a3f4a]/40 hover:from-[#3a3f4a] hover:via-[#4a4f5a] hover:to-[#3a3f4a] transition-all duration-200",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 hover:shadow-lg hover:shadow-destructive/25 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 transition-all duration-200",
         outline:
-          "border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground hover:shadow-lg hover:shadow-accent/25 dark:bg-input/30 dark:border-input dark:hover:bg-input/50 transition-all duration-200",
+          "border bg-background shadow-xs hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/25 dark:bg-input/30 dark:border-input dark:hover:bg-input/50 transition-all duration-200",
         secondary:
           "bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 hover:shadow-lg hover:shadow-secondary/25 transition-all duration-200",
         ghost:
-          "hover:bg-accent hover:text-gray-800 hover:shadow-lg hover:shadow-accent/25 dark:hover:bg-accent/50 transition-all duration-200",
+          "hover:bg-accent hover:text-white hover:shadow-lg hover:shadow-accent/25 dark:hover:bg-accent/50 transition-all duration-200",
         link: "text-primary underline-offset-4 hover:underline transition-all duration-200",
       },
       size: {

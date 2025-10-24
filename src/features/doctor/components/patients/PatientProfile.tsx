@@ -122,7 +122,7 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
             />
 
             {/* Tabs para diferentes secciones */}
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                 <TabsList className={`grid w-full ${isARTPatient(patient) ? 'grid-cols-4' : 'grid-cols-3'}`}>
                     <TabsTrigger value="overview">Resumen</TabsTrigger>
                     {isARTPatient(patient) && (

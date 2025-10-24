@@ -120,7 +120,7 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
         return (
             <Card>
                 <CardContent className="pt-6">
-                    <div className="flex items-center justify-between text-red-600">
+                    <div className="flex items-center justify-between text-destructive">
                         <div className="flex items-center gap-2">
                             <AlertCircle className="h-4 w-4" />
                             <span>Error al cargar los turnos: {error}</span>
@@ -218,7 +218,7 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                                                 {formatAppointmentDate(appointment.scheduledDateTime)}
                                             </CardTitle>
                                             {isUpcoming && (
-                                                <Badge variant="default" className="bg-blue-100 text-blue-800">
+                                                <Badge variant="default" className="bg-primary/20 text-primary">
                                                     Próximo
                                                 </Badge>
                                             )}
@@ -314,14 +314,14 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                                     </div>
                                     <div className="pl-6 space-y-1">
                                         <div className="flex items-center gap-2 text-xs">
-                                            <span className={`w-2 h-2 rounded-full ${followUp.hasOrigin ? 'bg-green-500' : 'bg-gray-300'
+                                            <span className={`w-2 h-2 rounded-full ${followUp.hasOrigin ? 'bg-status-step-4' : 'bg-muted'
                                                 }`}></span>
                                             <span className="text-muted-foreground">
                                                 {followUp.hasOrigin ? 'Tiene consulta origen' : 'Sin consulta origen'}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2 text-xs">
-                                            <span className={`w-2 h-2 rounded-full ${followUp.hasCompletion ? 'bg-green-500' : 'bg-gray-300'
+                                            <span className={`w-2 h-2 rounded-full ${followUp.hasCompletion ? 'bg-status-step-4' : 'bg-muted'
                                                 }`}></span>
                                             <span className="text-muted-foreground">
                                                 {followUp.hasCompletion ? 'Consulta completada' : 'Sin consulta completada'}
@@ -432,7 +432,7 @@ const AppointmentsLoading = () => {
         <div className="space-y-4">
             <Card>
                 <CardHeader>
-                    <div className="h-6 w-48 bg-gray-200 animate-pulse rounded"></div>
+                    <div className="h-6 w-48 bg-muted animate-pulse rounded"></div>
                 </CardHeader>
             </Card>
 
@@ -441,20 +441,20 @@ const AppointmentsLoading = () => {
                     <CardHeader>
                         <div className="flex justify-between">
                             <div className="space-y-2">
-                                <div className="h-5 w-64 bg-gray-200 animate-pulse rounded"></div>
-                                <div className="h-4 w-32 bg-gray-200 animate-pulse rounded"></div>
+                                <div className="h-5 w-64 bg-muted animate-pulse rounded"></div>
+                                <div className="h-4 w-32 bg-muted animate-pulse rounded"></div>
                             </div>
                             <div className="space-y-2">
-                                <div className="h-6 w-24 bg-gray-200 animate-pulse rounded"></div>
-                                <div className="h-6 w-20 bg-gray-200 animate-pulse rounded"></div>
+                                <div className="h-6 w-24 bg-muted animate-pulse rounded"></div>
+                                <div className="h-6 w-20 bg-muted animate-pulse rounded"></div>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-3">
-                            <div className="h-4 w-full bg-gray-200 animate-pulse rounded"></div>
-                            <div className="h-4 w-3/4 bg-gray-200 animate-pulse rounded"></div>
-                            <div className="h-4 w-1/2 bg-gray-200 animate-pulse rounded"></div>
+                            <div className="h-4 w-full bg-muted animate-pulse rounded"></div>
+                            <div className="h-4 w-3/4 bg-muted animate-pulse rounded"></div>
+                            <div className="h-4 w-1/2 bg-muted animate-pulse rounded"></div>
                         </div>
                     </CardContent>
                 </Card>

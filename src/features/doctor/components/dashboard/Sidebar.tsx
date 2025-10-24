@@ -37,7 +37,7 @@ export function DoctorSidebar({
     return (
         <div className="flex flex-col h-full border-r">
             <div className="p-6 border-b">
-                <h2 className="text-3xl font-semibold">E-BRIDGE</h2>
+                <h2 className="text-3xl font-semibold">e-Bridge</h2>
                 {/* <p className="text-sm text-muted-foreground">Dashboard Médico</p> */}
             </div>
             <nav className="flex-1 p-4">
@@ -45,13 +45,17 @@ export function DoctorSidebar({
                     {menuItems.map((item) => (
                         <li key={item.id}>
                             <GlowContainer
-                                glowColor={activeSection === item.id ? "rgba(26, 84, 68, 0.7)" : "rgba(69, 151, 128, 0.6)"}
+                                glowColor={activeSection === item.id ? "rgba(42, 47, 58, 0.5)" : "rgba(69, 151, 128, 0.6)"}
                                 glowSize={120}
                                 className="rounded-sm"
                             >
                                 <Button
                                     variant={activeSection === item.id ? "default" : "ghost"}
-                                    className="w-full justify-start"
+                                    className={`w-full justify-start ${
+                                        activeSection === item.id 
+                                            ? "bg-gradient-to-r from-[#2a2f3a] via-[#3a3f4a] to-[#2a2f3a] hover:from-[#3a3f4a] hover:via-[#4a4f5a] hover:to-[#3a3f4a] text-white shadow-lg shadow-[#2a2f3a]/30 border border-[#3a3f4a]/40" 
+                                            : ""
+                                    }`}
                                     onClick={() => item.active && setActiveSection(item.id)}
                                     disabled={!item.active}
                                 >

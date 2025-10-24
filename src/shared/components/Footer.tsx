@@ -19,16 +19,14 @@ export function Footer({ className }: FooterProps) {
     )}>
       <div className="container mx-auto max-w-7xl">
         <div className="flex flex-col items-center justify-between gap-2 sm:flex-row">
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-foreground">E-BRIDGE</span>
-            <span className="text-muted-foreground">by</span>
-            <span className="font-semibold text-primary">SHM</span>
-          </div>
-          
           <div className="flex items-center gap-4 text-xs">
             <span>© {currentYear} All rights reserved</span>
-            <span className="hidden sm:inline">•</span>
-            <span className="hidden sm:inline">Sistema de Gestión Médica</span>
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-foreground">e-Bridge</span>
+            <span className="text-muted-foreground">by</span>
+            <span className="font-semibold text-white">SHM</span>
           </div>
         </div>
       </div>

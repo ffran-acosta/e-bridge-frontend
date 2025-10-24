@@ -5,7 +5,7 @@ import LoginForm from "@/features/auth/components/forms/LoginForm";
 
 export default function Page() {
     return (
-        <AuthCard title="Iniciar sesión">
+        <AuthCard title="Bienvenido a e-Bridge">
             <LoginForm />
         </AuthCard>
     );
