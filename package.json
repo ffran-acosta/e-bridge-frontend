@@ -6,7 +6,10 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f frontend"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.1",

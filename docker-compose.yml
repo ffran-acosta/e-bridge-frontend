@@ -1,0 +1,19 @@
+services:
+  frontend:
+    build:
+      context: .
+      target: runner
+    container_name: ebridge-frontend
+    ports:
+      - "3001:3000"
+    env_file:
+      - docker.env
+    restart: unless-stopped
+    networks:
+      - e-bridge-backend
+
+networks:
+  e-bridge-backend:
+    external: true
+    name: e-bridge-backend_default
+
