@@ -3,8 +3,8 @@
 import { UseFormReturn } from 'react-hook-form';
 import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared';
 import { FormFieldWrapper } from '@/shared/components/forms/FormField';
-import { CreatePatientFormSchema } from '../../lib/patient-form.schema';
-import { SelectOption, Insurance } from '../../types/patient-form.types';
+import { CreatePatientFormSchema } from '../../../lib/patient-form.schema';
+import { SelectOption, Insurance } from '../../../types/patient-form.types';
 import { Plus, X, AlertCircle } from 'lucide-react';
 import { Alert } from '@/shared/components/ui/alert';
 

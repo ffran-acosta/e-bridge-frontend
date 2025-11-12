@@ -1,11 +1,11 @@
 "use client";
 
 import { create } from "zustand";
-import { api } from "@/lib/api";
+import { api, ApiOptions } from "@/lib/api";
 import { LoginInput, RegisterDoctorInput, RegisterAdminInput } from "../lib/schemas";
 import { User } from "../../../shared/types/auth";
 
-type ApiResponse<T = any> = {
+type ApiResponse<T = unknown> = {
     statusCode: number;
     message: string;
     data?: T;
@@ -35,7 +35,7 @@ type Actions = {
     setUser: (user: User | null) => void;
     clearAuth: () => void;
 
-    apiWithAuth: <T>(path: string, opts?: any) => Promise<T>;
+    apiWithAuth: <T>(path: string, opts?: ApiOptions) => Promise<T | null>;
 };
 
 const scheduleTokenRefresh = (get: () => State & Actions) => {
@@ -79,7 +79,10 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     // Helper para establecer usuario
     setUser: (user) => set({ user }),
 
-    apiWithAuth: async <T>(path: string, opts: any = {}): Promise<T> => {
+    apiWithAuth: async <T>(
+        path: string,
+        opts: ApiOptions = {}
+    ): Promise<T | null> => {
         try {
             return await api<T>(path, opts);
         } catch (error) {
@@ -125,7 +128,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
             }
         } catch (error) {
             // Si falla, limpiar completamente el estado de autenticación
-            console.log("No hay sesión activa, limpiando estado");
+            console.log("No hay sesión activa, limpiando estado", error);
             get().clearAuth();
         } finally {
             set({ loading: false, isInitialized: true });
@@ -135,7 +138,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     // Obtener datos del usuario actual
     getCurrentUser: async () => {
         try {
-            const response = await api<ApiResponse>("/auth/me");
+            const response = await api<ApiResponse<{ data?: User | null }>>("/auth/me");
             const userData = response?.data?.data;
 
             set({ user: userData || null });

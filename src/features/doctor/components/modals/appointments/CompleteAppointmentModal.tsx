@@ -8,7 +8,6 @@ import { useAppointmentStatusChange } from '../../../hooks/useAppointmentStatusC
 import { cn } from '@/lib/utils';
 import { CheckCircle, Calendar, Clock, MapPin, X } from 'lucide-react';
 import { formatAppointmentDateTime, formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
-import { formatMedicalEstablishmentInfo } from '../../../utils/appointmentFormatters';
 
 interface CompleteAppointmentModalProps {
   isOpen: boolean;
@@ -50,6 +49,12 @@ export function CompleteAppointmentModal({
       console.error('❌ Error al completar turno:', err);
     },
   });
+
+  const medicalEstablishmentInfo = appointment.medicalEstablishment
+    ? [appointment.medicalEstablishment.name, appointment.medicalEstablishment.address]
+        .filter(Boolean)
+        .join(' - ')
+    : 'Establecimiento no especificado';
 
   const handleComplete = () => {
     if (!selectedConsultationId) {
@@ -103,7 +108,7 @@ export function CompleteAppointmentModal({
                   <span>Establecimiento</span>
                 </div>
                 <p className="text-sm text-muted-foreground pl-6">
-                  {formatMedicalEstablishmentInfo(appointment)}
+                  {medicalEstablishmentInfo}
                 </p>
               </div>
             )}

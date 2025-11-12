@@ -9,7 +9,6 @@ import { useAppointmentStatusChange } from '../../../hooks/useAppointmentStatusC
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Calendar, Clock, MapPin, X } from 'lucide-react';
 import { formatAppointmentDateTime, formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
-import { formatMedicalEstablishmentInfo } from '../../../utils/appointmentFormatters';
 
 interface CancelAppointmentModalProps {
   isOpen: boolean;
@@ -36,6 +35,12 @@ export function CancelAppointmentModal({
 }: CancelAppointmentModalProps) {
   const [reason, setReason] = useState('');
   const [notes, setNotes] = useState('');
+
+  const medicalEstablishmentInfo = appointment.medicalEstablishment
+    ? [appointment.medicalEstablishment.name, appointment.medicalEstablishment.address]
+        .filter(Boolean)
+        .join(' - ')
+    : 'Establecimiento no especificado';
 
   const { cancelAppointment, isUpdating, error, clearError } = useAppointmentStatusChange({
     onSuccess: () => {
@@ -100,7 +105,7 @@ export function CancelAppointmentModal({
                   <span>Establecimiento</span>
                 </div>
                 <p className="text-sm text-muted-foreground pl-6">
-                  {formatMedicalEstablishmentInfo(appointment)}
+                  {medicalEstablishmentInfo}
                 </p>
               </div>
             )}

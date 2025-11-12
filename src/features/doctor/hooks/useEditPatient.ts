@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '@/lib/api';
+import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import { 
   editPatientFormSchema, 
@@ -66,7 +66,7 @@ export function useEditPatient({
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<EditPatientFormData>({
-    resolver: zodResolver(editPatientFormSchema),
+    resolver: zodResolver(editPatientFormSchema) as Resolver<EditPatientFormData>,
     defaultValues: mapPatientDataToForm(patientData),
   });
 
@@ -119,10 +119,14 @@ export function useEditPatient({
       console.log('📡 Enviando request a:', endpoint);
       console.log('📡 Request body:', requestBody);
 
-      const response = await api(endpoint, {
+      const response = await api<unknown>(endpoint, {
         method: 'PATCH',
-        body: requestBody,
+        body: requestBody as unknown as JsonValue,
       });
+
+      if (!response) {
+        throw new Error('Sin respuesta del servidor al editar el paciente');
+      }
 
       console.log('✅ Paciente editado exitosamente:', response);
       

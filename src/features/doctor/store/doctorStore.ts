@@ -2,7 +2,7 @@
 
 import { create } from "zustand";
 import { api } from "@/lib/api";
-import { Patient, PatientsParams, PatientsResponse, PatientProfile, PatientProfileResponse, BackendPatientsResponse, BackendPatientProfileResponse } from "@/shared/types/patients.types";
+import { Patient, PatientsParams, PatientProfile, BackendPatientsResponse, BackendPatientProfileResponse } from "@/shared/types/patients.types";
 import { DOCTOR_ENDPOINTS } from "../constants/endpoints";
 import { mapBackendPatientToFrontend, mapBackendPatientProfileToFrontend } from "../utils/patientMappers";
 
@@ -109,6 +109,10 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
                 `${DOCTOR_ENDPOINTS.patients}?${queryParams.toString()}`
             );
 
+            if (!response || !response.data) {
+                throw new Error('Sin respuesta del servidor al obtener pacientes');
+            }
+
             // Mapear los pacientes del backend al formato del frontend
             const mappedPatients = response.data.data.map(mapBackendPatientToFrontend);
 
@@ -177,6 +181,10 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
             }
 
             const response = await api<BackendPatientProfileResponse>(endpoint);
+
+            if (!response || !response.data) {
+                throw new Error('Sin respuesta del servidor al obtener el perfil del paciente');
+            }
 
             // Console logs para debug
             console.log('🔍 DEBUG - fetchPatientProfile:');

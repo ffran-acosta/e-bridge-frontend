@@ -61,7 +61,7 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
     };
 
     // Función para manejar la selección del tipo de consulta
-    const handleConsultationTypeSelected = (type: 'INGRESO' | 'ATENCION' | 'ALTA') => {
+    const handleConsultationTypeSelected = (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => {
         console.log('🎯 Tipo de consulta seleccionado:', type);
         // TODO: Aquí se abrirá el formulario específico para cada tipo
         // Por ahora solo mostramos un alert

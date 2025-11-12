@@ -176,6 +176,14 @@ interface ConsultationDetails {
   };
 }
 
+interface ConsultationDetailsApiResponse {
+  success?: boolean;
+  data?: {
+    statusCode?: number;
+    data?: ConsultationDetails;
+  };
+}
+
 interface UseConsultationDetailsProps {
   consultationId: string | null;
   enabled?: boolean;
@@ -201,12 +209,16 @@ export function useConsultationDetails({ consultationId, enabled = true }: UseCo
         console.log(`🎯 Obteniendo detalles de consulta: ${consultationId}`);
         const endpoint = DOCTOR_ENDPOINTS.consultationById(consultationId);
         
-        const response = await api(endpoint, {
+        const response = await api<ConsultationDetailsApiResponse>(endpoint, {
           method: 'GET',
         });
 
+        if (!response) {
+          throw new Error('Sin respuesta del servidor al obtener detalles de la consulta');
+        }
+
         console.log('✅ Detalles de consulta obtenidos:', response);
-        setConsultation(response.data?.data || response);
+        setConsultation(response.data?.data ?? null);
         
       } catch (err) {
         console.error(`❌ Error al obtener detalles de consulta ${consultationId}:`, err);

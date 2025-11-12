@@ -39,8 +39,16 @@ export const useWeeklyAppointments = () => {
 
             const response = await api<BackendCalendarApiResponse>(endpoint);
 
+            if (!response || !response.data) {
+                throw new Error('Sin respuesta del servidor al obtener los turnos de la semana');
+            }
+
             if (response.success) {
                 const appointmentsData = response.data.data;
+
+                if (!appointmentsData) {
+                    throw new Error('Datos de turnos no disponibles');
+                }
                 console.log('📅 Weekly appointments response:', {
                     date: appointmentsData.date,
                     count: appointmentsData.count,

@@ -83,6 +83,10 @@ export const useAppointmentsStore = create<AppointmentsStore>()(
                             `${DOCTOR_ENDPOINTS.patientAppointments(patientId)}`
                         );
 
+                        if (!response) {
+                            throw new Error('Sin respuesta del servidor al obtener turnos');
+                        }
+
                         if (response.success) {
                             appointmentsToUse = response.data.data.map(mapBackendAppointmentToFrontend);
                         } else {

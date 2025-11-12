@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
-import { AppointmentStatus } from '../constants/appointmentStatuses';
 
 interface UseAppointmentStatusChangeOptions {
   onSuccess?: () => void;

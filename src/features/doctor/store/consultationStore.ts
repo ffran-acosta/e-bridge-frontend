@@ -3,14 +3,12 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import type {
     Consultation,
-    ConsultationsResponse,
-    ConsultationsApiResponse,
     ConsultationsPagination,
     CreateConsultationDto,
     CreateConsultationResponse,
     BackendConsultationsApiResponse
 } from '@/shared/types/patients.types';
-import { api } from '@/lib/api';
+import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import { mapBackendConsultationToFrontend } from '../utils/patientMappers';
 
@@ -62,6 +60,10 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                     
                     const response = await api<BackendConsultationsApiResponse>(endpoint);
                     console.log('📦 Respuesta del backend:', response);
+
+                    if (!response || !response.data) {
+                        throw new Error('Sin respuesta del servidor al obtener consultas');
+                    }
 
                     // Mapear las consultas del backend al formato del frontend
                     const mappedConsultations = response.data.data.map(consultation => 
@@ -143,12 +145,16 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                     console.log('🔍 Endpoint seleccionado:', targetPath);
                     console.log('🔍 Tipo de consulta:', consultationType);
 
-                    const response = await api<any>(targetPath, {
+                    const response = await api<CreateConsultationResponse>(targetPath, {
                         method: 'POST',
-                        body: data,
+                        body: data as unknown as JsonValue,
                     });
 
-                    if (response?.data) {
+                    if (!response) {
+                        throw new Error('Sin respuesta del servidor al crear la consulta');
+                    }
+
+                    if (response.data) {
                         console.log('📦 Respuesta completa del backend al crear consulta:', response);
                         console.log('📦 response.data:', response.data);
                         

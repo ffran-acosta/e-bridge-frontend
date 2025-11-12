@@ -7,7 +7,6 @@ import { useDeleteAppointment } from '../../../hooks/useDeleteAppointment';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Calendar, Clock, MapPin, Trash2, X } from 'lucide-react';
 import { formatAppointmentDateTime, formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
-import { formatMedicalEstablishmentInfo } from '../../../utils/appointmentFormatters';
 
 interface DeleteAppointmentModalProps {
   isOpen: boolean;
@@ -51,6 +50,12 @@ export function DeleteAppointmentModal({
     onClose();
   };
 
+  const medicalEstablishmentInfo = appointment.medicalEstablishment
+    ? [appointment.medicalEstablishment.name, appointment.medicalEstablishment.address]
+        .filter(Boolean)
+        .join(' - ')
+    : 'Establecimiento no especificado';
+
   if (!isOpen) return null;
 
   return (
@@ -90,7 +95,7 @@ export function DeleteAppointmentModal({
                   <span>Establecimiento</span>
                 </div>
                 <p className="text-sm text-muted-foreground pl-6">
-                  {formatMedicalEstablishmentInfo(appointment)}
+                {medicalEstablishmentInfo}
                 </p>
               </div>
             )}

@@ -110,8 +110,16 @@ const useDoctorAppointmentsStore = create<DoctorAppointmentsStore>()(
 
                     const response = await api<BackendCalendarApiResponse>(endpoint);
 
+                    if (!response || !response.data) {
+                        throw new Error('Sin respuesta del servidor al obtener turnos');
+                    }
+
                     if (response.success) {
                         const calendarData = response.data.data;
+
+                        if (!calendarData) {
+                            throw new Error('Datos de turnos no disponibles');
+                        }
                         console.log('📅 Backend response:', {
                             view,
                             date: calendarData.date,

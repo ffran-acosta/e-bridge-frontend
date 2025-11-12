@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '@/lib/api';
+import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import { 
   altaConsultationFormSchema, 
@@ -28,7 +28,7 @@ export function useCreateAltaConsultation({
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<AltaConsultationFormData>({
-    resolver: zodResolver(altaConsultationFormSchema),
+    resolver: zodResolver(altaConsultationFormSchema) as Resolver<AltaConsultationFormData>,
     defaultValues: defaultAltaConsultationFormValues,
   });
 
@@ -82,10 +82,14 @@ export function useCreateAltaConsultation({
       console.log('📡 Enviando request a:', endpoint);
       console.log('📡 Request body:', requestBody);
 
-      const response = await api(endpoint, {
+      const response = await api<unknown>(endpoint, {
         method: 'POST',
-        body: requestBody,
+        body: requestBody as unknown as JsonValue,
       });
+
+      if (!response) {
+        throw new Error('Sin respuesta del servidor al crear la consulta de alta');
+      }
 
       console.log('✅ Consulta de ALTA creada exitosamente:', response);
       

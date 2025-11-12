@@ -90,6 +90,10 @@ export function useSiniestro(siniestroId?: string): UseSiniestroReturn {
                 DOCTOR_ENDPOINTS.siniestro(siniestroId)
             );
 
+            if (!response || !response.data) {
+                throw new Error('Sin respuesta del servidor al obtener información del siniestro');
+            }
+
             console.log('🔍 DEBUG - useSiniestro response:', response);
             setSiniestro(response.data.data);
         } catch (err) {

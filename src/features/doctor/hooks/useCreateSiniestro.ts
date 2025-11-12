@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '@/lib/api';
+import { api, JsonValue } from '@/lib/api';
 import { 
   createSiniestroSchema, 
   defaultSiniestroFormValues, 
@@ -28,8 +28,8 @@ export function useCreateSiniestro(options: UseCreateSiniestroOptions) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm({
-    resolver: zodResolver(createSiniestroSchema),
+  const form = useForm<CreateSiniestroFormSchema>({
+    resolver: zodResolver(createSiniestroSchema) as Resolver<CreateSiniestroFormSchema>,
     defaultValues: {
       patientId: patientId,
       artId: '',
@@ -70,8 +70,12 @@ export function useCreateSiniestro(options: UseCreateSiniestroOptions) {
       
       const response = await api<CreateSiniestroResponse>('/siniestros', {
         method: 'POST',
-        body: payload,
+        body: payload as unknown as JsonValue,
       });
+
+      if (!response) {
+        throw new Error('Sin respuesta del servidor al crear el siniestro');
+      }
       
       console.log('✅ Respuesta del servidor:', response);
 
@@ -129,6 +133,10 @@ export function useARTs() {
     try {
       console.log('📡 Llamando a /catalogs/arts');
       const response = await api<ARTResponse>('/catalogs/arts');
+
+      if (!response || !response.data) {
+        throw new Error('Sin respuesta del servidor al obtener ART');
+      }
       
       if (response.data?.data) {
         console.log('✅ ART cargadas:', response.data.data);
@@ -202,6 +210,10 @@ export function useMedicalEstablishments() {
       } else {
         console.log('📡 Llamando a /catalogs/establecimientos');
         const response = await api<MedicalEstablishmentResponse>('/catalogs/establecimientos');
+
+        if (!response || !response.data) {
+          throw new Error('Sin respuesta del servidor al obtener establecimientos');
+        }
         
         if (response.data?.data) {
           console.log('✅ Establecimientos cargados:', response.data.data);
@@ -241,6 +253,10 @@ export function useEmployers() {
     try {
       console.log('📡 Llamando a /catalogs/empleadores');
       const response = await api<EmployerResponse>('/catalogs/empleadores');
+
+      if (!response || !response.data) {
+        throw new Error('Sin respuesta del servidor al obtener empleadores');
+      }
       
       if (response.data?.data) {
         console.log('✅ Empleadores cargados:', response.data.data);

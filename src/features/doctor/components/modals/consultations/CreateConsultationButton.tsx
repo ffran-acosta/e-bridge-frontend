@@ -10,7 +10,7 @@ interface CreateConsultationButtonProps {
   patientName: string;
   hasConsultations: boolean;
   siniestroData?: any;
-  onConsultationTypeSelected: (type: 'INGRESO' | 'ATENCION' | 'ALTA') => void;
+  onConsultationTypeSelected: (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => void;
   onConsultationSuccess?: (consultation: any) => void;
 }
 
@@ -31,7 +31,7 @@ export function CreateConsultationButton({
     isModalOpen
   });
 
-  const handleSelectType = (type: 'INGRESO' | 'ATENCION' | 'ALTA') => {
+  const handleSelectType = (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => {
     console.log('🎯 CreateConsultationButton: Tipo seleccionado:', type);
     onConsultationTypeSelected(type);
   };

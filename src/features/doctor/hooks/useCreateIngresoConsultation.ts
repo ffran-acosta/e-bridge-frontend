@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '@/lib/api';
+import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import { 
   ingresoConsultationFormSchema, 
@@ -31,27 +31,38 @@ export function useCreateIngresoConsultation({
 
   // Configurar valores por defecto basados en el siniestro
   const getDefaultValues = (): Partial<IngresoConsultationFormData> => {
-    const defaults = { ...defaultIngresoConsultationFormValues };
+    const defaults: Partial<IngresoConsultationFormData> = {
+      ...defaultIngresoConsultationFormValues,
+    };
     
     if (siniestroData) {
+      const accidentDateTime =
+        typeof siniestroData.accidentDateTime === 'string'
+          ? siniestroData.accidentDateTime
+          : '';
+      const employerName =
+        typeof siniestroData.employer?.name === 'string'
+          ? siniestroData.employer.name
+          : '';
+
       // Pre-llenar campos con datos del siniestro
       defaults.artDetails = {
-        ...defaults.artDetails,
-        accidentDateTime: siniestroData.accidentDateTime || '',
-        accidentEstablishmentName: siniestroData.employer?.name || '',
+        ...(defaultIngresoConsultationFormValues.artDetails ?? {}),
+        accidentDateTime,
+        accidentEstablishmentName: employerName,
         accidentEstablishmentAddress: '', // No viene en siniestro
         accidentEstablishmentPhone: '', // No viene en siniestro
         accidentContactName: '', // No viene en siniestro
         accidentContactCellphone: '', // No viene en siniestro
         accidentContactEmail: '', // No viene en siniestro
-      };
+      } as IngresoConsultationFormData['artDetails'];
     }
     
     return defaults;
   };
 
   const form = useForm<IngresoConsultationFormData>({
-    resolver: zodResolver(ingresoConsultationFormSchema),
+    resolver: zodResolver(ingresoConsultationFormSchema) as Resolver<IngresoConsultationFormData>,
     defaultValues: getDefaultValues(),
   });
 
@@ -96,10 +107,14 @@ export function useCreateIngresoConsultation({
       console.log('📡 Request body:', requestBody);
       console.log('📡 Request body stringified:', JSON.stringify(requestBody));
 
-      const response = await api(endpoint, {
+      const response = await api<unknown>(endpoint, {
         method: 'POST',
-        body: requestBody,
+        body: requestBody as unknown as JsonValue,
       });
+
+      if (!response) {
+        throw new Error('Sin respuesta del servidor al crear la consulta de ingreso');
+      }
 
       console.log('✅ Consulta de INGRESO creada exitosamente:', response);
       

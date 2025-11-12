@@ -1,13 +1,29 @@
 import { z } from 'zod';
 
-// Enum para motivos de alta
-export const DISCHARGE_REASONS = [
-  { value: "ALTA_MEDICA", label: "Alta Médica" },
-  { value: "RECHAZO", label: "Rechazo" },
-  { value: "MUERTE", label: "Muerte" },
-  { value: "FIN_TRATAMIENTO", label: "Fin de Tratamiento" },
-  { value: "POR_DERIVACION", label: "Por Derivación" }
+const DISCHARGE_REASON_VALUES = [
+  "ALTA_MEDICA",
+  "RECHAZO",
+  "MUERTE",
+  "FIN_TRATAMIENTO",
+  "POR_DERIVACION",
 ] as const;
+
+const DISCHARGE_REASON_LABELS: Record<typeof DISCHARGE_REASON_VALUES[number], string> = {
+  ALTA_MEDICA: "Alta Médica",
+  RECHAZO: "Rechazo",
+  MUERTE: "Muerte",
+  FIN_TRATAMIENTO: "Fin de Tratamiento",
+  POR_DERIVACION: "Por Derivación",
+};
+
+// Enum para motivos de alta
+export const DISCHARGE_REASONS = DISCHARGE_REASON_VALUES.map((value) => ({
+  value,
+  label: DISCHARGE_REASON_LABELS[value],
+})) as Array<{
+  value: typeof DISCHARGE_REASON_VALUES[number];
+  label: string;
+}>;
 
 export const altaConsultationFormSchema = z.object({
   medicalEstablishmentId: z.string().uuid({ message: 'Establecimiento médico es requerido' }),
@@ -29,9 +45,7 @@ export const altaConsultationFormSchema = z.object({
     finalTreatmentEndDateTime: z.string().optional(),
     
     // Motivo de alta ITL
-    itlCeaseReason: z.enum(["ALTA_MEDICA", "RECHAZO", "MUERTE", "FIN_TRATAMIENTO", "POR_DERIVACION"], {
-      required_error: 'Motivo de alta ITL es requerido'
-    }),
+    itlCeaseReason: z.enum(DISCHARGE_REASON_VALUES),
     derivationReason: z.string().min(1, 'Motivo de derivación es requerido'),
     
     // Afecciones

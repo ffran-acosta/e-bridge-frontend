@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '@/lib/api';
+import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import { 
   createPatientSchema, 
@@ -27,8 +27,8 @@ export function useCreatePatient(options: UseCreatePatientOptions = {}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const form = useForm({
-    resolver: zodResolver(createPatientSchema),
+  const form = useForm<CreatePatientFormSchema>({
+    resolver: zodResolver(createPatientSchema) as Resolver<CreatePatientFormSchema>,
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -91,10 +91,14 @@ export function useCreatePatient(options: UseCreatePatientOptions = {}) {
         DOCTOR_ENDPOINTS.patients,
         {
           method: 'POST',
-          body: payload,
+          body: payload as unknown as JsonValue,
         }
       );
       
+      if (!response) {
+        throw new Error('Sin respuesta del servidor al crear el paciente');
+      }
+
       console.log('✅ Respuesta del servidor:', response);
       console.log('🔍 Tipo en respuesta:', response.data?.data?.type);
       console.log('🔍 Datos completos de respuesta:', JSON.stringify(response, null, 2));
@@ -153,7 +157,11 @@ export function useInsurances() {
     try {
       console.log('📡 Llamando a /catalogs/obras-sociales');
       const response = await api<InsuranceResponse>('/catalogs/obras-sociales');
-      
+
+      if (!response || !response.data) {
+        throw new Error('Sin respuesta del servidor al obtener obras sociales');
+      }
+
       if (response.success && response.data.data) {
         console.log('✅ Obras sociales cargadas:', response.data.data);
         setInsurances(response.data.data);

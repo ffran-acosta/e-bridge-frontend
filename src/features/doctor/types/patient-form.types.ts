@@ -66,7 +66,7 @@ export interface CreatePatientResponse {
   statusCode: number;
   timestamp: string;
   path: string;
-  data: {
+    data: {
     statusCode: number;
     message: string;
     data: {
@@ -124,6 +124,7 @@ export interface CreatePatientResponse {
       };
       createdAt: string;
       updatedAt: string;
+      siniestro?: unknown;
     };
   };
 }

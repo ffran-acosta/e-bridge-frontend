@@ -10,6 +10,7 @@ export const DOCTOR_ENDPOINTS = {
     patientConsultationIngreso: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations/ingreso`,
     patientConsultationAtencion: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations/atencion`,
     patientConsultationAlta: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations/alta`,
+    patientConsultationReingreso: (patientId: string) => `/doctor/consultations/patients/${patientId}/consultations/reingreso`,
     patientNextAllowedConsultations: (patientId: string) => `/doctor/consultations/patients/${patientId}/next-allowed-consultations`,
     
     // Endpoints para consultas básicas (pacientes normales)

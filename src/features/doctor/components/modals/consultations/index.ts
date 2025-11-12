@@ -12,4 +12,5 @@ export { ReingresoConsultationModal } from './ReingresoConsultationModal';
 export { ReingresoConsultationForm } from './ReingresoConsultationForm';
 export { DeleteConsultationModal } from './DeleteConsultationModal';
 export { ConsultationDetailsModal } from './ConsultationDetailsModal';
-export { BasicConsultationModal, BasicConsultationForm } from './BasicConsultationModal';
+export { BasicConsultationModal } from './BasicConsultationModal';
+export { BasicConsultationForm } from './BasicConsultationForm';

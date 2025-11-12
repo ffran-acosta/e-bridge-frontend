@@ -1,6 +1,44 @@
 // Mappers para transformar datos entre diferentes formatos
 
-import { BackendPatient, Patient, BackendPatientProfile, PatientProfile, BackendConsultation, Consultation } from "@/shared/types/patients.types";
+import {
+  BackendPatient,
+  Patient,
+  BackendPatientProfile,
+  PatientProfile,
+  BackendConsultation,
+  Consultation,
+} from "@/shared/types/patients.types";
+
+const mapBackendSiniestroToFrontend = (
+  siniestro: BackendPatientProfile["siniestro"]
+): PatientProfile["siniestro"] => {
+  if (!siniestro) {
+    return null;
+  }
+
+  return {
+    id: siniestro.id,
+    contingencyType: siniestro.contingencyType,
+    accidentDateTime: siniestro.accidentDateTime,
+    art: {
+      id: "",
+      name: "",
+      code: "",
+    },
+    medicalEstablishment: {
+      id: "",
+      name: "",
+      cuit: "",
+    },
+    employer: {
+      id: "",
+      name: "",
+      cuit: "",
+    },
+    createdAt: siniestro.createdAt,
+    updatedAt: siniestro.createdAt,
+  };
+};
 
 // ========== MAPPER PARA LISTA DE PACIENTES ==========
 
@@ -58,7 +96,7 @@ export const mapBackendPatientProfileToFrontend = (backendProfile: BackendPatien
             contactInfo: null, // No viene en la respuesta del backend
             isActive: backendProfile.insurance.isActive
         },
-        siniestro: backendProfile.siniestro, // Mapear el siniestro del backend
+        siniestro: mapBackendSiniestroToFrontend(backendProfile.siniestro), // Mapear el siniestro del backend
         assignedDoctors: backendProfile.assignedDoctors.map(assignment => ({
             id: assignment.id,
             assignedAt: assignment.assignedAt,

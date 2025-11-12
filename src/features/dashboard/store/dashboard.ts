@@ -73,6 +73,10 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
 
             const response = await apiWithAuth<{ data: DashboardResponse }>(DASHBOARD_ENDPOINTS.superAdmin.dashboard);
 
+            if (!response) {
+                throw new Error("Sin respuesta del servidor");
+            }
+
             const { stats, doctors, admins } = response.data;
 
             set({
@@ -81,8 +85,12 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
                 admins: admins.map(transformAdmin),
             });
 
-        } catch (error: any) {
-            set({ error: error.message || 'Error al cargar dashboard' });
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : "Error al cargar dashboard";
+            set({ error: message });
         } finally {
             set({ loading: false });
         }
@@ -112,11 +120,15 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
             });
 
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.log('Error occurred, reverting:', error);
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Error al cambiar estado del médico';
             set({
                 doctors: originalState,
-                error: error.message || 'Error al cambiar estado del médico'
+                error: message
             });
         }
     },
@@ -142,10 +154,14 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
                 body: { isActive: !admin.isActive }
             });
 
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Error al cambiar estado del administrador';
             set({
                 admins: originalState,
-                error: error.message || 'Error al cambiar estado del administrador'
+                error: message
             });
         }
     },
@@ -171,10 +187,14 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
                 body: { doctorIds: [doctorId] }
             });
 
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Error al asignar médico';
             // Si falla, revertir cambios
             await get().fetchDashboard();
-            set({ error: error.message || 'Error al asignar médico' });
+            set({ error: message });
         }
     },
 
@@ -198,10 +218,14 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
                 method: 'DELETE'
             });
 
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error
+                    ? error.message
+                    : 'Error al desasignar médico';
             // Si falla, revertir cambios
             await get().fetchDashboard();
-            set({ error: error.message || 'Error al desasignar médico' });
+            set({ error: message });
         }
     },
 

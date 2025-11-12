@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
+const CONSULTATION_TYPE_VALUES = ['INGRESO', 'ATENCION', 'ALTA'] as const;
+
 export const basicConsultationFormSchema = z.object({
   // Campos obligatorios según el backend
   medicalEstablishmentId: z.string().min(1, 'El establecimiento médico es requerido'),
-  type: z.enum(['INGRESO', 'ATENCION', 'ALTA'], {
-    required_error: 'El tipo de consulta es requerido',
-  }),
+  type: z.enum(CONSULTATION_TYPE_VALUES),
   consultationReason: z.string().min(1, 'El motivo de consulta es requerido'),
   diagnosis: z.string().min(1, 'El diagnóstico es requerido'),
   medicalIndications: z.string().min(1, 'Las indicaciones médicas son requeridas'),

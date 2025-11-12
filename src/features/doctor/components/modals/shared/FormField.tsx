@@ -9,7 +9,7 @@ interface FormFieldProps<
 > {
   control: Control<TFieldValues>;
   name: TName;
-  label: string;
+  label?: string;
   required?: boolean;
   render: ({ field, fieldState }: { field: any; fieldState: any }) => React.ReactNode;
 }
@@ -17,7 +17,13 @@ interface FormFieldProps<
 export function FormField<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>
->({ control, name, label, required, render }: FormFieldProps<TFieldValues, TName>) {
+>({
+  control,
+  name,
+  label = "",
+  required,
+  render,
+}: FormFieldProps<TFieldValues, TName>) {
   const { field, fieldState } = useController({
     control,
     name,

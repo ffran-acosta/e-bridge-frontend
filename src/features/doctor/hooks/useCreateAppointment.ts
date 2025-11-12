@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '@/lib/api';
+import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import { 
   appointmentFormSchema, 
@@ -52,13 +52,17 @@ export function useCreateAppointment({
       console.log('📡 Request body:', requestBody);
       console.log('📡 URL completa:', `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${endpoint}`);
 
-      const response = await api(endpoint, {
+      const response = await api<unknown>(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: requestBody,
+        body: requestBody as unknown as JsonValue,
       });
+
+      if (!response) {
+        throw new Error('Sin respuesta del servidor al crear el turno');
+      }
 
       console.log('✅ Turno creado exitosamente:', response);
       onSuccess?.(response);

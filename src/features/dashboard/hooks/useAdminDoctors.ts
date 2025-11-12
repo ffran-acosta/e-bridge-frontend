@@ -1,9 +1,14 @@
 "use client";
 import { useAuthStore } from '@/features/auth';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { transformDoctor } from '../store/dashboard';
 import { Doctor, BackendDoctor } from '../types/dashboard';
 import { DASHBOARD_ENDPOINTS } from '../constants/endpoints';
+
+type AdminDoctorsResponse =
+    | BackendDoctor[]
+    | { data?: BackendDoctor[] }
+    | { data?: { data?: BackendDoctor[] } };
 
 export function useAdminDoctors(searchTerm: string = '') {
     const [doctors, setDoctors] = useState<Doctor[]>([]);
@@ -12,28 +17,45 @@ export function useAdminDoctors(searchTerm: string = '') {
 
     const { apiWithAuth } = useAuthStore();
 
-    const fetchDoctors = async () => {
+    const fetchDoctors = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await apiWithAuth<{ data: BackendDoctor[] }>(DASHBOARD_ENDPOINTS.admin.doctors);
+            const response = await apiWithAuth<AdminDoctorsResponse>(DASHBOARD_ENDPOINTS.admin.doctors);
 
-            const doctorsData = Array.isArray(response.data) ? response.data : [];
+            if (!response) {
+                throw new Error('Sin respuesta del servidor al obtener médicos');
+            }
 
-            const transformedDoctors = doctorsData.map(transformDoctor);
+            let rawData: BackendDoctor[] = [];
+
+            if (Array.isArray(response)) {
+                rawData = response;
+            } else if (typeof response === 'object') {
+                const topLevel = response as { data?: BackendDoctor[] | { data?: BackendDoctor[] } };
+                if (Array.isArray(topLevel.data)) {
+                    rawData = topLevel.data;
+                } else if (topLevel.data && Array.isArray((topLevel.data as { data?: BackendDoctor[] }).data)) {
+                    rawData = (topLevel.data as { data?: BackendDoctor[] }).data ?? [];
+                }
+            }
+
+            const transformedDoctors = rawData.map(transformDoctor);
 
             setDoctors(transformedDoctors);
-        } catch (error: any) {
-            setError(error.message || 'Error al cargar médicos');
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : 'Error al cargar médicos';
+            setError(message);
             setDoctors([]);
         } finally {
             setLoading(false);
         }
-    };
+    }, [apiWithAuth]);
 
     useEffect(() => {
         fetchDoctors();
-    }, []);
+    }, [fetchDoctors]);
 
     const filteredDoctors = doctors.filter(doctor => {
         if (searchTerm && searchTerm.trim() !== '') {

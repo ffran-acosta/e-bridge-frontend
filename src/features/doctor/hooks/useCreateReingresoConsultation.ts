@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { api } from '@/lib/api';
+import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import { 
   reingresoConsultationFormSchema, 
@@ -28,7 +28,7 @@ export function useCreateReingresoConsultation({
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<ReingresoConsultationFormData>({
-    resolver: zodResolver(reingresoConsultationFormSchema),
+    resolver: zodResolver(reingresoConsultationFormSchema) as Resolver<ReingresoConsultationFormData>,
     defaultValues: defaultReingresoConsultationFormValues,
   });
 
@@ -71,10 +71,14 @@ export function useCreateReingresoConsultation({
       console.log('📡 Enviando request a:', endpoint);
       console.log('📡 Request body:', requestBody);
 
-      const response = await api(endpoint, {
+      const response = await api<unknown>(endpoint, {
         method: 'POST',
-        body: requestBody,
+        body: requestBody as unknown as JsonValue,
       });
+
+      if (!response) {
+        throw new Error('Sin respuesta del servidor al crear la consulta de reingreso');
+      }
 
       console.log('✅ Consulta de REINGRESO creada exitosamente:', response);
       

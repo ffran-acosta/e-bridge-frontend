@@ -3,8 +3,8 @@
 import { UseFormReturn } from 'react-hook-form';
 import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared';
 import { FormFieldWrapper } from '@/shared/components/forms/FormField';
-import { CreateSiniestroFormSchema } from '../../lib/siniestro-form.schema';
-import { SelectOption, ART, MedicalEstablishment, Employer } from '../../types/siniestro-form.types';
+import { CreateSiniestroFormSchema } from '../../../lib/siniestro-form.schema';
+import { SelectOption, ART, MedicalEstablishment, Employer } from '../../../types/siniestro-form.types';
 import { AlertCircle } from 'lucide-react';
 import { Alert } from '@/shared/components/ui/alert';
 
