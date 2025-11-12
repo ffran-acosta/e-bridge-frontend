@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/features';
 import { getRedirectPath } from '@/features/auth/lib/redirects';

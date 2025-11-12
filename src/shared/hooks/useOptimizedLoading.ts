@@ -18,6 +18,13 @@ interface LoadingState {
     hasData: boolean;
 }
 
+interface PaginationState {
+    page: number;
+    totalPages: number;
+    total: number;
+    limit: number;
+}
+
 // Hook optimizado para manejar estados de loading
 // Evita flashes de loading y maneja casos edge
 export function useOptimizedLoading<T>(
@@ -151,7 +158,7 @@ export function useListLoading<T>(
         reset
     } = useOptimizedLoading<T[]>(initialItems, options);
 
-    const [pagination, setPagination] = useState({
+    const [pagination, setPagination] = useState<PaginationState>({
         page: 1,
         totalPages: 1,
         total: 0,
@@ -160,7 +167,7 @@ export function useListLoading<T>(
 
     const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-    const loadMore = useCallback(async (loadMoreFn: () => Promise<{ items: T[], pagination: any }>) => {
+    const loadMore = useCallback(async (loadMoreFn: () => Promise<{ items: T[]; pagination: PaginationState }>) => {
         if (isLoadingMore || !pagination.page || pagination.page >= pagination.totalPages) {
             return;
         }
@@ -170,21 +177,23 @@ export function useListLoading<T>(
             const result = await loadMoreFn();
             setItems(prev => [...(prev || []), ...result.items]);
             setPagination(result.pagination);
-        } catch (error: any) {
-            setErrorState(error.message || 'Error al cargar más elementos');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error al cargar más elementos';
+            setErrorState(message);
         } finally {
             setIsLoadingMore(false);
         }
     }, [isLoadingMore, pagination, setItems, setErrorState]);
 
-    const refresh = useCallback(async (refreshFn: () => Promise<{ items: T[], pagination: any }>) => {
+    const refresh = useCallback(async (refreshFn: () => Promise<{ items: T[]; pagination: PaginationState }>) => {
         startLoading(true);
         try {
             const result = await refreshFn();
             setItems(result.items);
             setPagination(result.pagination);
-        } catch (error: any) {
-            setErrorState(error.message || 'Error al actualizar');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error al actualizar';
+            setErrorState(message);
         } finally {
             stopLoading();
         }
@@ -225,8 +234,9 @@ export function useCrudLoading<T>(
             const result = await createFn();
             loadingState.setData(result);
             return result;
-        } catch (error: any) {
-            loadingState.setErrorState(error.message || 'Error al crear');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error al crear';
+            loadingState.setErrorState(message);
             throw error;
         } finally {
             setIsCreating(false);
@@ -239,8 +249,9 @@ export function useCrudLoading<T>(
             const result = await updateFn();
             loadingState.setData(result);
             return result;
-        } catch (error: any) {
-            loadingState.setErrorState(error.message || 'Error al actualizar');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error al actualizar';
+            loadingState.setErrorState(message);
             throw error;
         } finally {
             setIsUpdating(false);
@@ -252,8 +263,9 @@ export function useCrudLoading<T>(
         try {
             await deleteFn();
             loadingState.setData(null);
-        } catch (error: any) {
-            loadingState.setErrorState(error.message || 'Error al eliminar');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error al eliminar';
+            loadingState.setErrorState(message);
             throw error;
         } finally {
             setIsDeleting(false);

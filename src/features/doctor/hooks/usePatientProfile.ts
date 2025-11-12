@@ -30,7 +30,7 @@ export function usePatientProfile(patientId?: string) {
         return () => {
             clearSelectedPatient();
         };
-    }, [patientId]); // Solo dependemos de patientId, las funciones son estables
+    }, [patientId, fetchPatientProfile, clearSelectedPatient]);
 
     // Console logs para debug
     console.log('🔍 DEBUG - usePatientProfile:');

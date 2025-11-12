@@ -13,14 +13,12 @@ import {
 
 interface UseCreateAtencionConsultationProps {
   patientId: string;
-  patientName: string;
-  onSuccess?: (consultation: any) => void;
+  onSuccess?: (consultation: unknown) => void;
   onError?: (error: string) => void;
 }
 
 export function useCreateAtencionConsultation({
   patientId,
-  patientName,
   onSuccess,
   onError,
 }: UseCreateAtencionConsultationProps) {

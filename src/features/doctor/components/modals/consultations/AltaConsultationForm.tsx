@@ -1,19 +1,20 @@
 "use client";
 
-import { UseFormReturn } from 'react-hook-form';
+import type { BaseSyntheticEvent } from 'react';
+import type { UseFormReturn } from 'react-hook-form';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/shared';
 import { FormField } from '../shared/FormField';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Checkbox } from '@/shared/components/ui/checkbox';
-import { CheckCircle, Building, AlertTriangle, FileText } from 'lucide-react';
+import { CheckCircle, AlertTriangle, FileText } from 'lucide-react';
 import { DateTimeInput } from '../shared/DateTimeInput';
-import { cn } from '@/lib/utils';
 import { AltaConsultationFormData, DISCHARGE_REASONS } from '../../../lib/alta-consultation-form.schema';
+import type { PatientProfile } from '@/shared/types/patients.types';
 
 interface AltaConsultationFormProps {
   form: UseFormReturn<AltaConsultationFormData>;
-  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  handleSubmit: (event?: BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
   error: string | null;
   patientName: string;
@@ -21,7 +22,7 @@ interface AltaConsultationFormProps {
     id: string;
     name: string;
   }>;
-  siniestroData?: any;
+  siniestroData?: PatientProfile['siniestro'];
   onClose: () => void;
 }
 
@@ -35,12 +36,7 @@ export function AltaConsultationForm({
   siniestroData,
   onClose,
 }: AltaConsultationFormProps) {
-  const { control, watch } = form;
-  
-  // Watch para campos condicionales
-  const pendingMedicalTreatment = watch('artDetails.pendingMedicalTreatment');
-  const disablingSequelae = watch('artDetails.disablingSequelae');
-  const finalDisablingSequelae = watch('artDetails.finalDisablingSequelae');
+  const { control } = form;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">

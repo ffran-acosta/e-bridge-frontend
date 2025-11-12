@@ -1,6 +1,9 @@
 'use client';
 
 import { lazy, Suspense } from 'react';
+import type { WeeklyAppointmentsViewProps } from './WeeklyAppointmentsView';
+import type { MonthlyAppointmentsViewProps } from './MonthlyAppointmentsView';
+import type { DailyAppointmentsViewProps } from './DailyAppointmentsView';
 
 // Componente de loading personalizado para las vistas de calendario
 const CalendarViewLoading = () => (
@@ -13,39 +16,45 @@ const CalendarViewLoading = () => (
 );
 
 // Lazy loading de las vistas de calendario
-const LazyWeeklyAppointmentsView = lazy(() => 
-    import('./WeeklyAppointmentsView').then(module => ({ 
-        default: module.WeeklyAppointmentsView 
+const LazyWeeklyAppointmentsView = lazy(() =>
+    import('./WeeklyAppointmentsView').then((module) => ({
+        default: module.WeeklyAppointmentsView,
     }))
 );
 
-const LazyMonthlyAppointmentsView = lazy(() => 
-    import('./MonthlyAppointmentsView').then(module => ({ 
-        default: module.MonthlyAppointmentsView 
+const LazyMonthlyAppointmentsView = lazy(() =>
+    import('./MonthlyAppointmentsView').then((module) => ({
+        default: module.MonthlyAppointmentsView,
     }))
 );
 
-const LazyDailyAppointmentsView = lazy(() => 
-    import('./DailyAppointmentsView').then(module => ({ 
-        default: module.DailyAppointmentsView 
+const LazyDailyAppointmentsView = lazy(() =>
+    import('./DailyAppointmentsView').then((module) => ({
+        default: module.DailyAppointmentsView,
     }))
 );
 
 // Wrapper components con Suspense
-export const LazyWeeklyView = (props: any) => (
+export const LazyWeeklyView = (props: WeeklyAppointmentsViewProps) => (
     <Suspense fallback={<CalendarViewLoading />}>
         <LazyWeeklyAppointmentsView {...props} />
     </Suspense>
 );
 
-export const LazyMonthlyView = (props: any) => (
+LazyWeeklyView.displayName = 'LazyWeeklyView';
+
+export const LazyMonthlyView = (props: MonthlyAppointmentsViewProps) => (
     <Suspense fallback={<CalendarViewLoading />}>
         <LazyMonthlyAppointmentsView {...props} />
     </Suspense>
 );
 
-export const LazyDailyView = (props: any) => (
+LazyMonthlyView.displayName = 'LazyMonthlyView';
+
+export const LazyDailyView = (props: DailyAppointmentsViewProps) => (
     <Suspense fallback={<CalendarViewLoading />}>
         <LazyDailyAppointmentsView {...props} />
     </Suspense>
 );
+
+LazyDailyView.displayName = 'LazyDailyView';

@@ -10,18 +10,17 @@ import {
   IngresoConsultationFormData,
   defaultIngresoConsultationFormValues 
 } from '../lib/ingreso-consultation-form.schema';
+import type { PatientProfile } from '@/shared/types/patients.types';
 
 interface UseCreateIngresoConsultationProps {
   patientId: string;
-  patientName: string;
-  siniestroData?: any; // Datos del siniestro para pre-llenar campos
-  onSuccess?: (consultation: any) => void;
+  siniestroData?: PatientProfile['siniestro']; // Datos del siniestro para pre-llenar campos
+  onSuccess?: (consultation: unknown) => void;
   onError?: (error: string) => void;
 }
 
 export function useCreateIngresoConsultation({
   patientId,
-  patientName,
   siniestroData,
   onSuccess,
   onError,

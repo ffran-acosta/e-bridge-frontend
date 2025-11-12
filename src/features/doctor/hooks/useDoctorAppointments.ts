@@ -40,7 +40,7 @@ const initialState: DoctorAppointmentsState = {
 };
 
     // Función para mapear datos del calendario del backend al formato del frontend
-const mapCalendarAppointmentToFrontend = (calendarAppointment: BackendCalendarAppointment, periodDate: string, view: CalendarView): Appointment => {
+const mapCalendarAppointmentToFrontend = (calendarAppointment: BackendCalendarAppointment): Appointment => {
     // Siempre usar la fecha real del turno del backend
     const appointmentDate = calendarAppointment.date;
     
@@ -127,8 +127,8 @@ const useDoctorAppointmentsStore = create<DoctorAppointmentsStore>()(
                             appointments: calendarData.appointments.slice(0, 3)
                         });
                         
-                        const mappedAppointments = calendarData.appointments.map(appointment => 
-                            mapCalendarAppointmentToFrontend(appointment, calendarData.date, view)
+                        const mappedAppointments = calendarData.appointments.map(appointment =>
+                            mapCalendarAppointmentToFrontend(appointment)
                         );
                         
                         console.log('🔄 Mapped appointments:', {
@@ -218,11 +218,11 @@ export const useDoctorAppointments = () => {
     // Cargar datos iniciales
     useEffect(() => {
         fetchAppointments(currentView, currentDate);
-        
+
         return () => {
             clearAppointments();
         };
-    }, []);
+    }, [fetchAppointments, currentView, currentDate, clearAppointments]);
 
     return {
         appointments,

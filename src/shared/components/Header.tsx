@@ -7,7 +7,7 @@ import {
     LogOut,
     ArrowLeft
 } from 'lucide-react';
-import { Button } from '@/shared'
+import { Button } from '@/shared';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared';
 import { UserAvatar } from '@/shared/components/UserAvatar';
 import { useAuthStore } from '@/features';
@@ -73,7 +73,7 @@ export function AppHeader({
                         <Menu className="h-5 w-5" />
                     </Button>
                 )}
-                {/* <h1 className="text-2xl font-semibold">{title}</h1> */}
+                {title && <h1 className="text-2xl font-semibold">{title}</h1>}
             </div>
 
             <DropdownMenu>

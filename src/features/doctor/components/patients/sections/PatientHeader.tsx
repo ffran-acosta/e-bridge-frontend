@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import {
     Edit,
     Phone,
@@ -12,15 +11,7 @@ import {
 import { Badge, Button, Card, CardHeader, CardTitle } from "@/shared";
 import { StatusBadge } from "@/shared/components/ui/StatusBadge";
 import { PatientProfile } from "@/shared/types/patients.types";
-import {
-    getFullName, 
-    calculateAge, 
-    formatPhone, 
-    formatAddress,
-    getStatusBadgeVariant,
-    formatStatus,
-    isARTPatient
-} from "../../../utils/patientFormatters";
+import { getFullName, calculateAge, formatPhone, formatAddress, isARTPatient } from "../../../utils/patientFormatters";
 import { formatLastConsultation } from "../../../utils/dateFormatters";
 
 interface PatientHeaderProps {

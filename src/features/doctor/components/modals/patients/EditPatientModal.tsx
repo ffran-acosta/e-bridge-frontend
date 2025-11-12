@@ -7,14 +7,15 @@ import { useInsurances } from '../../../hooks/useCreatePatient'; // Reusing hook
 import { EditPatientForm } from './EditPatientForm';
 import { cn } from '@/lib/utils';
 import { AlertCircle, User } from 'lucide-react';
+import type { PatientProfile, PatientProfileResponse } from '@/shared/types/patients.types';
 
 interface EditPatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   patientId: string;
   patientName: string;
-  patientData?: any; // Datos del paciente para precargar
-  onSuccess?: (patient: any) => void;
+  patientData?: Partial<PatientProfile> | null; // Datos del paciente para precargar
+  onSuccess?: (patient: PatientProfileResponse) => void;
   onError?: (error: string) => void;
 }
 
@@ -43,10 +44,10 @@ export function EditPatientModal({
 
   // Cargar insurances cuando se abre el modal
   React.useEffect(() => {
-    if (isOpen) {
+    if (isOpen && insurances.length === 0) {
       fetchInsurances();
     }
-  }, [isOpen, fetchInsurances]);
+  }, [isOpen, insurances.length, fetchInsurances]);
 
   const handleClose = () => {
     form.reset();
@@ -55,9 +56,6 @@ export function EditPatientModal({
   };
 
   if (!isOpen) return null;
-
-  const title = 'Editar Paciente';
-  const description = `Modificar información del paciente ${patientName}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

@@ -6,7 +6,7 @@ import { toast } from "sonner";
 interface UseFormSubmissionOptions<T> {
   onSubmit: (data: T) => Promise<void>;
   onSuccess?: (data: T) => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
   successMessage?: string;
   errorMessage?: string;
 }
@@ -26,8 +26,8 @@ export function useFormSubmission<T>({
       await onSubmit(data);
       toast.success(successMessage);
       onSuccess?.(data);
-    } catch (error: any) {
-      const errorMsg = error.message || errorMessage;
+    } catch (error: unknown) {
+      const errorMsg = error instanceof Error ? error.message : errorMessage;
       toast.error(errorMsg);
       onError?.(error);
     } finally {

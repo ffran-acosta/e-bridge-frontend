@@ -1,18 +1,19 @@
 "use client";
 
-import { UseFormReturn } from 'react-hook-form';
+import type { BaseSyntheticEvent } from 'react';
+import type { UseFormReturn } from 'react-hook-form';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/shared';
 import { FormField } from '../shared/FormField';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Stethoscope, Building } from 'lucide-react';
 import { DateTimeInput } from '../shared/DateTimeInput';
-import { cn } from '@/lib/utils';
 import { AtencionConsultationFormData } from '../../../lib/atencion-consultation-form.schema';
+import type { PatientProfile } from '@/shared/types/patients.types';
 
 interface AtencionConsultationFormProps {
   form: UseFormReturn<AtencionConsultationFormData>;
-  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  handleSubmit: (event?: BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
   error: string | null;
   patientName: string;
@@ -20,7 +21,7 @@ interface AtencionConsultationFormProps {
     id: string;
     name: string;
   }>;
-  siniestroData?: any;
+  siniestroData?: PatientProfile['siniestro'];
   onClose: () => void;
 }
 

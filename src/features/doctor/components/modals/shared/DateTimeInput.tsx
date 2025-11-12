@@ -6,7 +6,7 @@ import { Input } from '@/shared/components/ui/input';
 import { cn } from '@/lib/utils';
 
 interface DateTimeInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  type?: 'date' | 'datetime-local';
+  type?: 'date' | 'datetime-local' | 'time';
 }
 
 export const DateTimeInput = forwardRef<HTMLInputElement, DateTimeInputProps>(

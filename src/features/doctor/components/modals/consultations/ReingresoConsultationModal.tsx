@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
+import type { PatientProfile } from '@/shared/types/patients.types';
+import { Dialog, DialogContent, DialogHeader } from '@/shared';
 import { useCreateReingresoConsultation } from '../../../hooks/useCreateReingresoConsultation';
 import { useMedicalEstablishments } from '../../../hooks/useCreateSiniestro'; // Reusing hook for establishments
 import { ReingresoConsultationForm } from './ReingresoConsultationForm';
@@ -13,8 +14,8 @@ interface ReingresoConsultationModalProps {
   onClose: () => void;
   patientId: string;
   patientName: string;
-  siniestroData?: any;
-  onSuccess?: (consultation: any) => void;
+  siniestroData?: PatientProfile['siniestro'];
+  onSuccess?: (consultation: unknown) => void;
   onError?: (error: string) => void;
 }
 
@@ -29,7 +30,6 @@ export function ReingresoConsultationModal({
 }: ReingresoConsultationModalProps) {
   const { form, handleSubmit, isSubmitting, error, clearError } = useCreateReingresoConsultation({
     patientId,
-    patientName,
     onSuccess: (consultation) => {
       onSuccess?.(consultation);
       onClose();
@@ -63,9 +63,6 @@ export function ReingresoConsultationModal({
   };
 
   if (!isOpen) return null;
-
-  const title = 'Consulta de Reingreso ART';
-  const description = `Crear consulta de reingreso para el paciente ${patientName}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>

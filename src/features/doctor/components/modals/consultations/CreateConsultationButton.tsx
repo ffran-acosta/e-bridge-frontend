@@ -4,14 +4,15 @@ import { useState } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Plus } from 'lucide-react';
 import { ConsultationTypeSelectorModal } from './ConsultationTypeSelectorModal';
+import type { PatientProfile } from '@/shared/types/patients.types';
 
 interface CreateConsultationButtonProps {
   patientId: string;
   patientName: string;
   hasConsultations: boolean;
-  siniestroData?: any;
+  siniestroData?: PatientProfile['siniestro'];
   onConsultationTypeSelected: (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => void;
-  onConsultationSuccess?: (consultation: any) => void;
+  onConsultationSuccess?: (consultation: unknown) => void;
 }
 
 export function CreateConsultationButton({

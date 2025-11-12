@@ -5,20 +5,37 @@ import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
-import { 
-  editPatientFormSchema, 
+import {
+  editPatientFormSchema,
   EditPatientFormData,
-  defaultEditPatientFormValues 
+  defaultEditPatientFormValues,
 } from '../lib/edit-patient-form.schema';
+import type { PatientProfile, PatientProfileResponse } from '@/shared/types/patients.types';
 
 // Función para mapear datos del paciente al formulario
-const mapPatientDataToForm = (patientData: any): Partial<EditPatientFormData> => {
+const mapPatientDataToForm = (patientData?: Partial<PatientProfile> | null): Partial<EditPatientFormData> => {
   if (!patientData) return defaultEditPatientFormValues;
 
   // Convertir fecha ISO a formato date-local
-  const formatDateForInput = (isoDate: string) => {
+  const formatDateForInput = (isoDate?: string | null) => {
     if (!isoDate) return '';
     return new Date(isoDate).toISOString().slice(0, 10);
+  };
+
+  const normalizeCurrentStatus = (
+    status?: PatientProfile['currentStatus']
+  ): EditPatientFormData['currentStatus'] => {
+    switch (status) {
+      case 'INGRESO':
+      case 'ALTA':
+        return status;
+      case 'EN_TRATAMIENTO':
+        return 'ATENCION';
+      case 'DERIVADO':
+        return 'REINGRESO';
+      default:
+        return 'INGRESO';
+    }
   };
 
   return {
@@ -29,7 +46,7 @@ const mapPatientDataToForm = (patientData: any): Partial<EditPatientFormData> =>
     birthdate: formatDateForInput(patientData.birthdate),
     insuranceId: patientData.insurance?.id || '',
     type: patientData.type || 'NORMAL',
-    currentStatus: patientData.currentStatus || 'INGRESO',
+    currentStatus: normalizeCurrentStatus(patientData.currentStatus),
     street: patientData.street || '',
     streetNumber: patientData.streetNumber || '',
     floor: patientData.floor || '',
@@ -43,16 +60,16 @@ const mapPatientDataToForm = (patientData: any): Partial<EditPatientFormData> =>
     emergencyContactName: patientData.emergencyContactName || '',
     emergencyContactPhone: patientData.emergencyContactPhone || '',
     emergencyContactRelation: patientData.emergencyContactRelation || '',
-    medicalHistory: patientData.medicalHistory || [],
-    currentMedications: patientData.currentMedications || [],
-    allergies: patientData.allergies || [],
+    medicalHistory: patientData.medicalHistory ?? [],
+    currentMedications: patientData.currentMedications ?? [],
+    allergies: patientData.allergies ?? [],
   };
 };
 
 interface UseEditPatientProps {
   patientId: string;
-  patientData?: any; // Datos del paciente para precargar el formulario
-  onSuccess?: (patient: any) => void;
+  patientData?: Partial<PatientProfile> | null; // Datos del paciente para precargar el formulario
+  onSuccess?: (patient: PatientProfileResponse) => void;
   onError?: (error: string) => void;
 }
 
@@ -119,7 +136,7 @@ export function useEditPatient({
       console.log('📡 Enviando request a:', endpoint);
       console.log('📡 Request body:', requestBody);
 
-      const response = await api<unknown>(endpoint, {
+      const response = await api<PatientProfileResponse>(endpoint, {
         method: 'PATCH',
         body: requestBody as unknown as JsonValue,
       });

@@ -35,7 +35,7 @@ export const usePatientConsultations = (
         if (currentPatientId !== patientId || consultations.length === 0) {
             fetchConsultations(patientId, patientType);
         }
-    }, [patientId, autoFetch, fetchConsultations, currentPatientId, consultations.length]);
+    }, [patientId, patientType, autoFetch, fetchConsultations, currentPatientId, consultations.length]);
 
     // Limpiar datos cuando se desmonta o cambia el paciente
     useEffect(() => {

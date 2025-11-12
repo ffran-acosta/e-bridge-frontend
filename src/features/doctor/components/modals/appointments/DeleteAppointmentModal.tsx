@@ -4,9 +4,8 @@ import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { Button } from '@/shared/components/ui/button';
 import { useDeleteAppointment } from '../../../hooks/useDeleteAppointment';
-import { cn } from '@/lib/utils';
 import { AlertTriangle, Calendar, Clock, MapPin, Trash2, X } from 'lucide-react';
-import { formatAppointmentDateTime, formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
+import { formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
 
 interface DeleteAppointmentModalProps {
   isOpen: boolean;

@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { CreateAppointmentForm } from './CreateAppointmentForm';
 import { useCreateAppointment } from '../../../hooks/useCreateAppointment';
 import { Calendar } from 'lucide-react';
+import type { AppointmentFormData } from '../../../lib/appointment-form.schema';
 
 interface CreateAppointmentModalProps {
   isOpen: boolean;
@@ -33,7 +34,7 @@ export function CreateAppointmentModal({
     },
   });
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: AppointmentFormData) => {
     createAppointment(data);
   };
 
@@ -65,6 +66,7 @@ export function CreateAppointmentModal({
             patientId={patientId}
             doctorId={doctorId}
             patientName={patientName}
+            onCancel={handleClose}
           />
         </div>
       </DialogContent>

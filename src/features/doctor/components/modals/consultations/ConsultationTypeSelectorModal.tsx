@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Card, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
 import { 
   Stethoscope, 
@@ -18,6 +18,8 @@ import { IngresoConsultationModal } from './IngresoConsultationModal';
 import { AtencionConsultationModal } from './AtencionConsultationModal';
 import { AltaConsultationModal } from './AltaConsultationModal';
 import { ReingresoConsultationModal } from './ReingresoConsultationModal';
+import type { PatientProfile } from '@/shared/types/patients.types';
+import type { CreateSiniestroResponse } from '../../../types/siniestro-form.types';
 
 interface ConsultationTypeSelectorModalProps {
   isOpen: boolean;
@@ -25,9 +27,9 @@ interface ConsultationTypeSelectorModalProps {
   patientName: string;
   patientId: string;
   hasConsultations: boolean;
-  siniestroData?: any;
+  siniestroData?: PatientProfile['siniestro'] | CreateSiniestroResponse | null;
   onSelectType: (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => void;
-  onConsultationSuccess?: (consultation: any) => void;
+  onConsultationSuccess?: (consultation: unknown) => void;
 }
 
 export function ConsultationTypeSelectorModal({
@@ -44,6 +46,39 @@ export function ConsultationTypeSelectorModal({
   const [isAtencionModalOpen, setIsAtencionModalOpen] = useState(false);
   const [isAltaModalOpen, setIsAltaModalOpen] = useState(false);
   const [isReingresoModalOpen, setIsReingresoModalOpen] = useState(false);
+
+  const normalizedSiniestroData = useMemo<PatientProfile['siniestro'] | null>(() => {
+    if (!siniestroData) {
+      return null;
+    }
+
+    if ('art' in siniestroData) {
+      return siniestroData;
+    }
+
+    return {
+      id: siniestroData.id,
+      contingencyType: siniestroData.contingencyType,
+      accidentDateTime: siniestroData.accidentDateTime,
+      art: {
+        id: siniestroData.artId,
+        name: '',
+        code: '',
+      },
+      medicalEstablishment: {
+        id: '',
+        name: '',
+        cuit: '',
+      },
+      employer: {
+        id: '',
+        name: '',
+        cuit: '',
+      },
+      createdAt: siniestroData.createdAt,
+      updatedAt: siniestroData.createdAt,
+    };
+  }, [siniestroData]);
 
   const getAvailableTypes = () => {
     if (!hasConsultations) {
@@ -114,7 +149,7 @@ export function ConsultationTypeSelectorModal({
     }
   };
 
-  const handleIngresoSuccess = (consultation: any) => {
+  const handleIngresoSuccess = (consultation: unknown) => {
     console.log('✅ Consulta de INGRESO creada exitosamente:', consultation);
     setIsIngresoModalOpen(false);
     onConsultationSuccess?.(consultation);
@@ -126,7 +161,7 @@ export function ConsultationTypeSelectorModal({
     // El error se maneja dentro del modal de INGRESO
   };
 
-  const handleAtencionSuccess = (consultation: any) => {
+  const handleAtencionSuccess = (consultation: unknown) => {
     console.log('✅ Consulta de ATENCION creada exitosamente:', consultation);
     setIsAtencionModalOpen(false);
     onConsultationSuccess?.(consultation);
@@ -138,7 +173,7 @@ export function ConsultationTypeSelectorModal({
     // El error se maneja dentro del modal de ATENCION
   };
 
-  const handleAltaSuccess = (consultation: any) => {
+  const handleAltaSuccess = (consultation: unknown) => {
     console.log('✅ Consulta de ALTA creada exitosamente:', consultation);
     setIsAltaModalOpen(false);
     onConsultationSuccess?.(consultation);
@@ -150,7 +185,7 @@ export function ConsultationTypeSelectorModal({
     // El error se maneja dentro del modal de ALTA
   };
 
-  const handleReingresoSuccess = (consultation: any) => {
+  const handleReingresoSuccess = (consultation: unknown) => {
     console.log('✅ Consulta de REINGRESO creada exitosamente:', consultation);
     setIsReingresoModalOpen(false);
     onConsultationSuccess?.(consultation);
@@ -284,7 +319,7 @@ export function ConsultationTypeSelectorModal({
         onClose={() => setIsIngresoModalOpen(false)}
         patientId={patientId}
         patientName={patientName}
-        siniestroData={siniestroData}
+        siniestroData={normalizedSiniestroData ?? undefined}
         onSuccess={handleIngresoSuccess}
         onError={handleIngresoError}
       />
@@ -295,7 +330,7 @@ export function ConsultationTypeSelectorModal({
         onClose={() => setIsAtencionModalOpen(false)}
         patientId={patientId}
         patientName={patientName}
-        siniestroData={siniestroData}
+        siniestroData={normalizedSiniestroData ?? undefined}
         onSuccess={handleAtencionSuccess}
         onError={handleAtencionError}
       />
@@ -306,7 +341,7 @@ export function ConsultationTypeSelectorModal({
         onClose={() => setIsAltaModalOpen(false)}
         patientId={patientId}
         patientName={patientName}
-        siniestroData={siniestroData}
+        siniestroData={normalizedSiniestroData ?? undefined}
         onSuccess={handleAltaSuccess}
         onError={handleAltaError}
       />
@@ -317,7 +352,7 @@ export function ConsultationTypeSelectorModal({
         onClose={() => setIsReingresoModalOpen(false)}
         patientId={patientId}
         patientName={patientName}
-        siniestroData={siniestroData}
+        siniestroData={normalizedSiniestroData ?? undefined}
         onSuccess={handleReingresoSuccess}
         onError={handleReingresoError}
       />

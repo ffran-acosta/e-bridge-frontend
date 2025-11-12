@@ -12,11 +12,11 @@ import {
 } from 'lucide-react';
 import { Button, Card, CardContent, Badge } from '@/shared';
 import { StatusBadge } from '@/shared/components/ui/StatusBadge';
-import { formatAppointmentTime, formatAppointmentDate } from '../../utils/dateFormatters';
+import { formatAppointmentDate } from '../../utils/dateFormatters';
 import { getPreviousDay, getNextDay, isToday } from '../../utils/dateUtils';
 import type { BackendCalendarAppointment } from '@/shared/types/patients.types';
 
-interface DailyAppointmentsViewProps {
+export interface DailyAppointmentsViewProps {
     appointments: BackendCalendarAppointment[];
     currentDate: Date;
     loading: boolean;

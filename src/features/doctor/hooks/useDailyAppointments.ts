@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
 import { formatDateForAPI } from '../utils/dateUtils';
@@ -11,12 +11,6 @@ interface DailyAppointmentsState {
     currentDate: Date;
 }
 
-interface DailyAppointmentsActions {
-    fetchAppointments: (date: Date) => Promise<void>;
-    setCurrentDate: (date: Date) => void;
-    clearError: () => void;
-}
-
 export const useDailyAppointments = () => {
     const [state, setState] = useState<DailyAppointmentsState>({
         appointments: [],
@@ -25,7 +19,7 @@ export const useDailyAppointments = () => {
         currentDate: new Date(),
     });
 
-    const fetchAppointments = async (date: Date) => {
+    const fetchAppointments = useCallback(async (date: Date) => {
         setState(prev => ({ ...prev, loading: true, error: null }));
 
         try {
@@ -80,21 +74,25 @@ export const useDailyAppointments = () => {
                 error: errorMessage,
             }));
         }
-    };
+    }, []);
 
-    const setCurrentDate = (date: Date) => {
+    const setCurrentDate = useCallback((date: Date) => {
         setState(prev => ({ ...prev, currentDate: date }));
         fetchAppointments(date);
-    };
+    }, [fetchAppointments]);
 
-    const clearError = () => {
+    const clearError = useCallback(() => {
         setState(prev => ({ ...prev, error: null }));
-    };
+    }, []);
 
     // Cargar datos iniciales
     useEffect(() => {
         fetchAppointments(state.currentDate);
-    }, []);
+    }, [fetchAppointments, state.currentDate]);
+
+    const refetch = useCallback(() => {
+        fetchAppointments(state.currentDate);
+    }, [fetchAppointments, state.currentDate]);
 
     return {
         appointments: state.appointments,
@@ -104,6 +102,6 @@ export const useDailyAppointments = () => {
         fetchAppointments,
         setCurrentDate,
         clearError,
-        refetch: () => fetchAppointments(state.currentDate),
+        refetch,
     };
 };

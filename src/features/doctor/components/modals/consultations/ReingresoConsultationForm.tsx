@@ -1,6 +1,7 @@
 "use client";
 
-import { UseFormReturn } from 'react-hook-form';
+import type { BaseSyntheticEvent } from 'react';
+import type { UseFormReturn } from 'react-hook-form';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/shared';
 import { FormField } from '../shared/FormField';
 import { Input } from '@/shared/components/ui/input';
@@ -8,12 +9,12 @@ import { Textarea } from '@/shared/components/ui/textarea';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { RotateCcw, Building, Calendar, AlertCircle } from 'lucide-react';
 import { DateTimeInput } from '../shared/DateTimeInput';
-import { cn } from '@/lib/utils';
-import { ReingresoConsultationFormData, READMISSION_ACCEPTED_OPTIONS, READMISSION_DENIAL_REASONS } from '../../../lib/reingreso-consultation-form.schema';
+import { ReingresoConsultationFormData, READMISSION_DENIAL_REASONS } from '../../../lib/reingreso-consultation-form.schema';
+import type { PatientProfile } from '@/shared/types/patients.types';
 
 interface ReingresoConsultationFormProps {
   form: UseFormReturn<ReingresoConsultationFormData>;
-  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  handleSubmit: (event?: BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
   error: string | null;
   patientName: string;
@@ -21,7 +22,7 @@ interface ReingresoConsultationFormProps {
     id: string;
     name: string;
   }>;
-  siniestroData?: any;
+  siniestroData?: PatientProfile['siniestro'];
   onClose: () => void;
 }
 

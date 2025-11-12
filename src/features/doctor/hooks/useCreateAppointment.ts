@@ -10,7 +10,7 @@ import {
 } from '../lib/appointment-form.schema';
 
 interface UseCreateAppointmentProps {
-  onSuccess?: (appointment: any) => void;
+  onSuccess?: (appointment: unknown) => void;
   onError?: (error: string) => void;
 }
 

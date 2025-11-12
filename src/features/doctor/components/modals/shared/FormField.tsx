@@ -1,6 +1,7 @@
 "use client";
 
-import { Control, FieldPath, FieldValues, useController } from 'react-hook-form';
+import type { ReactNode } from 'react';
+import { Control, FieldPath, FieldValues, useController, ControllerRenderProps, ControllerFieldState } from 'react-hook-form';
 import { FormFieldWrapper } from '@/shared/components/forms/FormField';
 
 interface FormFieldProps<
@@ -11,7 +12,7 @@ interface FormFieldProps<
   name: TName;
   label?: string;
   required?: boolean;
-  render: ({ field, fieldState }: { field: any; fieldState: any }) => React.ReactNode;
+  render: (params: { field: ControllerRenderProps<TFieldValues, TName>; fieldState: ControllerFieldState }) => ReactNode;
 }
 
 export function FormField<

@@ -5,17 +5,13 @@ import {
     Calendar,
     ChevronLeft,
     ChevronRight,
-    AlertCircle,
-    Users,
-    CheckCircle,
-    Clock,
-    XCircle
+    AlertCircle
 } from 'lucide-react';
 import { Button, Card, CardContent, Badge } from '@/shared';
 import { getPreviousMonth, getNextMonth, getMonthDates, isToday } from '../../utils/dateUtils';
 import type { BackendCalendarApiResponse } from '@/shared/types/patients.types';
 
-interface MonthlyAppointmentsViewProps {
+export interface MonthlyAppointmentsViewProps {
     appointments: BackendCalendarApiResponse['data']['data']['appointments'];
     currentDate: Date;
     loading: boolean;
@@ -93,11 +89,6 @@ export const MonthlyAppointmentsView = React.memo(({
     const getMonthName = (date: Date) => {
         const monthYear = date.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
         return monthYear.charAt(0).toUpperCase() + monthYear.slice(1);
-    };
-
-    // Función para obtener el nombre corto del día
-    const getShortDayName = (date: Date) => {
-        return date.toLocaleDateString('es-ES', { weekday: 'short' });
     };
 
     // Nombres de los días de la semana (orden correcto para calendario que empieza en lunes)
@@ -291,3 +282,5 @@ export const MonthlyAppointmentsView = React.memo(({
         </div>
     );
 });
+
+MonthlyAppointmentsView.displayName = 'MonthlyAppointmentsView';

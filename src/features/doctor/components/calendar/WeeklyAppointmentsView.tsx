@@ -6,19 +6,16 @@ import {
     Clock,
     ChevronLeft,
     ChevronRight,
-    User,
-    FileText,
     AlertCircle,
     ChevronDown,
     ChevronUp
 } from 'lucide-react';
 import { Button, Card, CardContent, Badge } from '@/shared';
 import { StatusBadge } from '@/shared/components/ui/StatusBadge';
-import { formatAppointmentTime, formatAppointmentDate } from '../../utils/dateFormatters';
 import { getPreviousWeek, getNextWeek, getStartOfWeek, getWeekDates, isToday } from '../../utils/dateUtils';
 import type { BackendCalendarApiResponse } from '@/shared/types/patients.types';
 
-interface WeeklyAppointmentsViewProps {
+export interface WeeklyAppointmentsViewProps {
     appointments: BackendCalendarApiResponse['data']['data']['appointments'];
     currentDate: Date;
     loading: boolean;
@@ -365,3 +362,5 @@ export const WeeklyAppointmentsView = React.memo(({
         </div>
     );
 });
+
+WeeklyAppointmentsView.displayName = 'WeeklyAppointmentsView';

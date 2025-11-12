@@ -50,12 +50,6 @@ export const editPatientFormSchema = z.object({
 
 export type EditPatientFormData = z.infer<typeof editPatientFormSchema>;
 
-// Función para obtener la fecha actual en formato date-local
-const getCurrentDateLocal = () => {
-  const now = new Date();
-  return now.toISOString().slice(0, 10);
-};
-
 export const defaultEditPatientFormValues: Partial<EditPatientFormData> = {
   firstName: '',
   lastName: '',

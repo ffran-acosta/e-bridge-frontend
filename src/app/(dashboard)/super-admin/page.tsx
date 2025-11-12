@@ -31,10 +31,7 @@ export default function SuperAdminPage() {
         getDoctorName
     } = useAdmins(searchAdmins);
 
-    const {
-        stats,
-        loading: loadingStats
-    } = useDashboardStats();
+    const { stats } = useDashboardStats();
 
     const handleToggleAdminSelection = (adminId: string) => {
         setSelectedAdmin(selectedAdmin === adminId ? null : adminId);

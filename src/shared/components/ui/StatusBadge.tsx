@@ -1,4 +1,3 @@
-import React from "react"
 import { Badge } from "./badge"
 import { cn } from "@/lib/utils"
 
@@ -18,14 +17,23 @@ export type StatusType =
   | 'SCHEDULED'         // Programado - Azul
   | 'COMPLETED'         // Completado - Verde
 
+type StatusVariant =
+  | "step-1"
+  | "step-2"
+  | "step-3"
+  | "step-4"
+  | "cancelled"
+  | "no-show"
+  | "surgery"
+  | "referred"
+
 interface StatusBadgeProps {
   status: StatusType | string
   className?: string
-  showIcon?: boolean
 }
 
 // Mapeo de estados a variantes de Badge
-const statusVariantMap: Record<string, string> = {
+const statusVariantMap: Record<StatusType, StatusVariant> = {
   // Sistema de 4 pasos
   'INGRESO': 'step-1',
   'ATENCION': 'step-2', 
@@ -42,7 +50,7 @@ const statusVariantMap: Record<string, string> = {
 }
 
 // Mapeo de estados a etiquetas legibles
-const statusLabelMap: Record<string, string> = {
+const statusLabelMap: Record<StatusType, string> = {
   // Sistema de 4 pasos
   'INGRESO': 'Ingreso',
   'ATENCION': 'Atención',
@@ -58,13 +66,12 @@ const statusLabelMap: Record<string, string> = {
   'COMPLETED': 'Completado'
 }
 
-export function StatusBadge({ 
-  status, 
+export function StatusBadge({
+  status,
   className,
-  showIcon = false 
 }: StatusBadgeProps) {
-  const variant = statusVariantMap[status]
-  const label = statusLabelMap[status]
+  const variant = statusVariantMap[status as StatusType]
+  const label = statusLabelMap[status as StatusType]
 
   if (!variant || !label) {
     console.warn(`StatusBadge: Estado desconocido "${status}"`)
@@ -77,7 +84,7 @@ export function StatusBadge({
 
   return (
     <Badge 
-      variant={variant as any} 
+      variant={variant}
       className={cn("text-xs", className)}
     >
       {label}

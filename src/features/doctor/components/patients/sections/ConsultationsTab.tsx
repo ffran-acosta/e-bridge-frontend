@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AlertCircle, Calendar, FileText, MapPin, Plus, RefreshCw, Stethoscope, User, Info, Trash2, Eye } from 'lucide-react';
+import { AlertCircle, Calendar, FileText, MapPin, RefreshCw, Stethoscope, User, Trash2, Eye } from 'lucide-react';
 import {
     Alert,
     AlertDescription,
@@ -24,11 +24,7 @@ interface ConsultationsTabProps {
 }
 
 export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
-    const [isTypeSelectorOpen, setIsTypeSelectorOpen] = useState(false);
-    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const [selectedConsultationId, setSelectedConsultationId] = useState<string | null>(null);
     const [consultationToDelete, setConsultationToDelete] = useState<Consultation | null>(null);
-    const [selectedConsultationType, setSelectedConsultationType] = useState<'INGRESO' | 'ATENCION' | 'ALTA' | null>(null);
     const [consultationToView, setConsultationToView] = useState<Consultation | null>(null);
     
     const {

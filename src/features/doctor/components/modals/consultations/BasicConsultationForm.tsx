@@ -1,7 +1,6 @@
 "use client";
 
-import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
@@ -11,7 +10,7 @@ import { DateTimeInput } from '../shared/DateTimeInput';
 import { basicConsultationFormSchema, getBasicConsultationDefaultValues, consultationTypes, type BasicConsultationFormData } from '../../../lib/basic-consultation-form.schema';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { cn } from '@/lib/utils';
-import { Stethoscope, Calendar, Clock, FileText, Pill, AlertCircle } from 'lucide-react';
+import { Stethoscope, Calendar, FileText, AlertCircle } from 'lucide-react';
 
 interface BasicConsultationFormProps {
   onSubmit: (data: BasicConsultationFormData) => void;

@@ -1,13 +1,11 @@
 "use client";
 
-import React from "react";
 import {
     Building,
     Calendar,
     Shield,
     Users,
     AlertTriangle,
-    Clock,
     Loader2
 } from "lucide-react";
 import { Badge, Card, CardContent, CardHeader, CardTitle } from "@/shared";

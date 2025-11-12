@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { LoadingSpinner, TableSkeleton, CardSkeleton } from './loading-states';
+import { TableSkeleton, CardSkeleton } from './loading-states';
 import { Skeleton } from './skeleton';
 
 // Loading específico para listas de pacientes

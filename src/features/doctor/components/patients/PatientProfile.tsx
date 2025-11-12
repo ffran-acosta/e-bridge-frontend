@@ -1,17 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger
-} from "@/shared";
+import { Button, Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared";
 import { usePatientProfile } from "../../hooks/usePatientProfile";
 import { PatientHeader } from "./sections/PatientHeader";
 import { OverviewTab } from "./sections/OverviewTab";
@@ -28,7 +18,7 @@ interface PatientProfileProps {
     patientId?: string;
 }
 
-export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) => {
+const PatientProfileComponent = ({ patientId }: PatientProfileProps) => {
     const [activeTab, setActiveTab] = useState("overview");
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isConsultationTypeModalOpen, setIsConsultationTypeModalOpen] = useState(false);
@@ -43,10 +33,6 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
         setIsEditModalOpen(true);
     }, [patient]);
 
-    const handleExport = useCallback(() => {
-        console.log("Exportar perfil del paciente");
-    }, []);
-
     const handleContinueSiniestro = useCallback(() => {
         console.log('🎯 Continuar Siniestro clickeado para paciente:', patient?.firstName, patient?.lastName);
         setIsConsultationTypeModalOpen(true);
@@ -57,18 +43,13 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
         // El modal se maneja internamente, solo logueamos
     }, []);
 
-    const handleConsultationSuccess = useCallback((consultation: any) => {
+    const handleConsultationSuccess = useCallback((consultation: unknown) => {
         console.log('✅ Consulta creada exitosamente desde Continuar Siniestro:', consultation);
         refetch(); // Recargar datos del paciente
     }, [refetch]);
 
-    const handleConsultationError = useCallback((error: string) => {
-        console.error('Error al crear consulta:', error);
-        // TODO: Mostrar error al usuario
-    }, []);
-
-    const handleEditSuccess = useCallback((updatedPatient: any) => {
-        console.log('✅ Paciente editado exitosamente:', updatedPatient);
+    const handleEditSuccess = useCallback(() => {
+        console.log('✅ Paciente editado exitosamente');
         refetch(); // Recargar datos del paciente
     }, [refetch]);
 
@@ -180,4 +161,8 @@ export const PatientProfile = React.memo(({ patientId }: PatientProfileProps) =>
             />
         </div>
     );
-});
+};
+
+PatientProfileComponent.displayName = 'PatientProfile';
+
+export const PatientProfile = React.memo(PatientProfileComponent);

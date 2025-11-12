@@ -138,32 +138,40 @@ export function useMemoryLeakDetector(componentName: string) {
 
     // Cleanup automático
     useEffect(() => {
+        const listeners = listenersRef.current;
+        const timers = timersRef.current;
+        const intervals = intervalsRef.current;
+
         return () => {
             if (process.env.NODE_ENV === 'development') {
                 console.group(`🧹 Memory Leak Detection - ${componentName}`);
-                
+
                 // Cleanup listeners
-                listenersRef.current.forEach(cleanup => {
+                listeners.forEach(cleanup => {
                     try {
                         cleanup();
                     } catch (error) {
                         console.warn('Error during listener cleanup:', error);
                     }
                 });
-                
+
                 // Cleanup timers
-                timersRef.current.forEach(timer => {
+                timers.forEach(timer => {
                     clearTimeout(timer);
                 });
-                
+
                 // Cleanup intervals
-                intervalsRef.current.forEach(interval => {
+                intervals.forEach(interval => {
                     clearInterval(interval);
                 });
-                
-                console.log(`Cleaned up ${listenersRef.current.length} listeners, ${timersRef.current.length} timers, ${intervalsRef.current.length} intervals`);
+
+                console.log(`Cleaned up ${listeners.length} listeners, ${timers.length} timers, ${intervals.length} intervals`);
                 console.groupEnd();
             }
+
+            listenersRef.current = [];
+            timersRef.current = [];
+            intervalsRef.current = [];
         };
     }, [componentName]);
 

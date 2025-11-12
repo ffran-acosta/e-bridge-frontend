@@ -53,7 +53,7 @@ interface ConsultationDetails {
       code: string;
       name: string;
       planName: string;
-      contactInfo: any;
+      contactInfo: string | null;
       isActive: boolean;
       createdAt: string;
       updatedAt: string;

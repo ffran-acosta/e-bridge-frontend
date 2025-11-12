@@ -6,8 +6,6 @@ import { Skeleton } from './skeleton';
 
 // Tipos de loading states
 type LoadingSize = 'sm' | 'md' | 'lg';
-type LoadingVariant = 'spinner' | 'skeleton' | 'inline';
-
 interface LoadingSpinnerProps {
     size?: LoadingSize;
     message?: string;

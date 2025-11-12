@@ -1,10 +1,10 @@
 "use client";
 
 import React from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Input, Textarea, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared';
-import { Calendar, Clock, User, Stethoscope, FileText, AlertCircle } from 'lucide-react';
+import { Button, Textarea } from '@/shared';
+import { Calendar, User, FileText, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FormField } from '../shared/FormField';
 import { DateTimeInput } from '../shared/DateTimeInput';
@@ -20,6 +20,7 @@ interface CreateAppointmentFormProps {
   patientId: string;
   doctorId: string;
   patientName: string;
+  onCancel?: () => void;
 }
 
 export function CreateAppointmentForm({
@@ -29,6 +30,7 @@ export function CreateAppointmentForm({
   patientId,
   doctorId,
   patientName,
+  onCancel,
 }: CreateAppointmentFormProps) {
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm<AppointmentFormData>({
     resolver: zodResolver(appointmentFormSchema),
@@ -148,6 +150,7 @@ export function CreateAppointmentForm({
           disabled={isSubmitting || isLoading}
           size="lg"
           className="px-8"
+          onClick={onCancel}
         >
           Cancelar
         </Button>

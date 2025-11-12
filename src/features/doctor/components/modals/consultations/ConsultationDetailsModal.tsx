@@ -6,10 +6,9 @@ import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
 import { Badge } from '@/shared/components/ui/badge';
 import { Skeleton } from '@/shared/components/ui/skeleton';
-import { AlertCircle, Calendar, FileText, MapPin, User, Building, Stethoscope, Clock, Phone, Mail, AlertTriangle } from 'lucide-react';
+import { AlertCircle, Calendar, FileText, MapPin, User, Building, Stethoscope, Phone, Mail, AlertTriangle } from 'lucide-react';
 import { useConsultationDetails } from '../../../hooks/useConsultationDetails';
 import { formatConsultationDate, formatNextAppointmentDate } from '../../../utils/dateFormatters';
-import { cn } from '@/lib/utils';
 
 interface ConsultationDetailsModalProps {
   isOpen: boolean;
@@ -37,16 +36,6 @@ export function ConsultationDetailsModal({
       'REINGRESO': 'outline' as const
     };
     return variants[type as keyof typeof variants] || 'default';
-  };
-
-  const getConsultationTypeColor = (type: string): string => {
-    const colors = {
-      'INGRESO': 'text-blue-600 bg-blue-50',
-      'ATENCION': 'text-green-600 bg-green-50',
-      'ALTA': 'text-red-600 bg-red-50',
-      'REINGRESO': 'text-purple-600 bg-purple-50'
-    };
-    return colors[type as keyof typeof colors] || 'text-gray-600 bg-gray-50';
   };
 
   return (

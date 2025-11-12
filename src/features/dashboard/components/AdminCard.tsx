@@ -1,6 +1,6 @@
 "use client";
-import { Button, Badge } from "@/shared";
-import { Unlink, Plus } from "lucide-react";
+import { Button } from "@/shared";
+import { Plus } from "lucide-react";
 import { Admin, Doctor } from "../types/dashboard";
 import { UserCard } from "@/shared/components";
 

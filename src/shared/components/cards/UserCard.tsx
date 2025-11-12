@@ -27,7 +27,6 @@ interface UserCardProps {
   // Acciones
   onToggleStatus?: () => void;
   onSelect?: () => void;
-  onEdit?: () => void;
   
   // Estado visual
   isSelected?: boolean;
@@ -50,7 +49,6 @@ export function UserCard({
   badges = [],
   onToggleStatus,
   onSelect,
-  onEdit,
   isSelected = false,
   showStatusToggle = true,
   showAssignments = true,

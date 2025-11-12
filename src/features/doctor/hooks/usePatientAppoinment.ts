@@ -46,7 +46,7 @@ export const usePatientAppointments = (
         if (currentPatientId !== patientId || appointments.length === 0) {
             fetchAppointments(patientId);
         }
-    }, [patientId, autoFetch]); // Solo dependemos de patientId y autoFetch
+    }, [patientId, autoFetch, currentPatientId, appointments.length, fetchAppointments]);
 
     // Limpiar datos cuando se desmonta o cambia el paciente
     useEffect(() => {
@@ -55,7 +55,7 @@ export const usePatientAppointments = (
                 clearAppointments();
             }
         };
-    }, [patientId]); // Solo dependemos de patientId
+    }, [patientId, currentPatientId, clearAppointments]);
 
     return {
         appointments,

@@ -5,9 +5,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from '@/shared/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
 import { useAppointmentStatusChange } from '../../../hooks/useAppointmentStatusChange';
-import { cn } from '@/lib/utils';
 import { CheckCircle, Calendar, Clock, MapPin, X } from 'lucide-react';
-import { formatAppointmentDateTime, formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
+import { formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
 
 interface CompleteAppointmentModalProps {
   isOpen: boolean;
@@ -79,8 +78,9 @@ export function CompleteAppointmentModal({
             <CheckCircle className="h-5 w-5" />
             Completar Turno
           </DialogTitle>
-          <DialogDescription className="text-base text-muted-foreground">
-            Selecciona la consulta médica asociada a este turno.
+          <DialogDescription className="text-base text-muted-foreground space-y-1">
+            <p>Selecciona la consulta médica asociada a este turno.</p>
+            <p className="font-medium text-foreground">Paciente: {patientName}</p>
           </DialogDescription>
         </DialogHeader>
 

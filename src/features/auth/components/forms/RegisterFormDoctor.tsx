@@ -8,6 +8,10 @@ import { RegisterDoctorInput, doctorRegisterSchema } from "../../lib/schemas";
 import { SPECIALTIES } from "../../constant/specialties";
 import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared";
 
+const defaultValues: Partial<RegisterDoctorInput> = {
+    specialtyId: "",
+};
+
 export default function RegisterFormDoctor() {
     const { loading, registerDoctor } = useAuthStore();
 
@@ -18,15 +22,16 @@ export default function RegisterFormDoctor() {
         formState: { errors },
     } = useForm<RegisterDoctorInput>({
         resolver: zodResolver(doctorRegisterSchema),
-        defaultValues: { specialtyId: "" as any },
+        defaultValues,
     });
 
     const onSubmit = async (data: RegisterDoctorInput) => {
         try {
             await registerDoctor(data);
             toast.success("Doctor created");
-        } catch (e: any) {
-            toast.error(e.message ?? "Register failed");
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : "Register failed";
+            toast.error(message);
         }
     };
 

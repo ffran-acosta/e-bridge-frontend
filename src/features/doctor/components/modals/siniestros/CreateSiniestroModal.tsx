@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { useCreateSiniestro, useARTs, useMedicalEstablishments, useEmployers } from '../../../hooks/useCreateSiniestro';
-import { CONTINGENCY_TYPE_OPTIONS } from '../../../types/siniestro-form.types';
+import { CONTINGENCY_TYPE_OPTIONS, CreateSiniestroResponse } from '../../../types/siniestro-form.types';
 import { CreateSiniestroForm } from './CreateSiniestroForm';
 import { ConsultationTypeSelectorModal } from '../consultations/ConsultationTypeSelectorModal';
 import { cn } from '@/lib/utils';
@@ -13,7 +13,7 @@ interface CreateSiniestroModalProps {
   onClose: () => void;
   patientId: string;
   patientName: string;
-  onSuccess?: (siniestro: any) => void;
+  onSuccess?: (siniestro: CreateSiniestroResponse) => void;
   onError?: (error: string) => void;
 }
 
@@ -26,7 +26,7 @@ export function CreateSiniestroModal({
   onError,
 }: CreateSiniestroModalProps) {
   const [isConsultationModalOpen, setIsConsultationModalOpen] = useState(false);
-  const [createdSiniestro, setCreatedSiniestro] = useState<any>(null);
+  const [createdSiniestro, setCreatedSiniestro] = useState<CreateSiniestroResponse | null>(null);
 
   const {
     form,
@@ -95,20 +95,13 @@ export function CreateSiniestroModal({
 
   // Manejar el cierre del modal de consulta
   const handleConsultationClose = () => {
+    const siniestro = createdSiniestro;
     setIsConsultationModalOpen(false);
     setCreatedSiniestro(null);
-    onSuccess?.(createdSiniestro);
-    onClose();
-  };
-
-  const handleConsultationSuccess = () => {
-    console.log('✅ Consulta de INGRESO creada exitosamente');
-    handleConsultationClose();
-  };
-
-  const handleConsultationError = (error: string) => {
-    console.error('❌ Error al crear consulta de INGRESO:', error);
-    onError?.(error);
+    if (siniestro) {
+      onSuccess?.(siniestro);
+      onClose();
+    }
   };
 
   const title = 'Crear Siniestro ART';
@@ -135,7 +128,7 @@ export function CreateSiniestroModal({
         <div className="flex-1 overflow-y-auto pr-2 -mr-2">
           <div className="pr-2">
             <CreateSiniestroForm
-              form={form as any}
+              form={form}
               handleSubmit={handleSubmit}
               isSubmitting={isSubmitting}
               error={error}

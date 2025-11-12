@@ -1,8 +1,8 @@
 "use client";
 
-import { useAdminDoctors,  StatsCard, SearchInput, DoctorCardAdmin } from "@/features";
+import { useAdminDoctors, StatsCard, SearchInput, DoctorCardAdmin } from "@/features";
 import { AuthGuard } from "@/features/auth";
-import { useSearch, Card, CardHeader, CardTitle, CardContent, AppHeader } from "@/shared";
+import { useSearch, Card, CardHeader, CardTitle, CardContent } from "@/shared";
 import { Stethoscope } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useDoctorStore } from "@/features/doctor/store/doctorStore";
@@ -14,12 +14,7 @@ export default function AdminPage() {
     const { search: searchDoctors, setSearch: setSearchDoctors } = useSearch();
 
     // Data hook
-    const {
-        doctors,
-        loading,
-        error,
-        totalDoctors
-    } = useAdminDoctors(searchDoctors);
+    const { doctors, loading, error, totalDoctors } = useAdminDoctors(searchDoctors);
 
     // Doctor store para impersonación
     const { setImpersonatedDoctor } = useDoctorStore();
@@ -29,8 +24,6 @@ export default function AdminPage() {
         setImpersonatedDoctor(doctorId);
         router.push('/doctor/dashboard');
     };
-
-    const activeDoctors = doctors.filter(d => d.isActive).length;
 
     return (
         <AuthGuard allowedRoles={["SUPER_ADMIN", "ADMIN"]}>

@@ -6,7 +6,7 @@ import { BasicConsultationForm } from './BasicConsultationForm';
 import { useCreateBasicConsultation } from '../../../hooks/useCreateBasicConsultation';
 import { useMedicalEstablishments } from '../../../hooks/useCreateSiniestro';
 import { Stethoscope } from 'lucide-react';
-import { useEffect } from 'react';
+import type { BasicConsultationFormData } from '../../../lib/basic-consultation-form.schema';
 
 interface BasicConsultationModalProps {
   isOpen: boolean;
@@ -35,13 +35,13 @@ export function BasicConsultationModal({
 
   const { establishments, loading: establishmentsLoading, fetchEstablishments } = useMedicalEstablishments();
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isOpen) {
       fetchEstablishments();
     }
   }, [isOpen, fetchEstablishments]);
 
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: BasicConsultationFormData) => {
     createBasicConsultation(patientId, data);
   };
 
@@ -66,12 +66,18 @@ export function BasicConsultationModal({
         </DialogHeader>
 
         <div className="py-4">
-          <BasicConsultationForm
-            onSubmit={handleSubmit}
-            isLoading={isLoading}
-            error={error}
-            medicalEstablishments={establishments}
-          />
+          {establishmentsLoading ? (
+            <div className="flex items-center justify-center py-8 text-muted-foreground">
+              Cargando establecimientos...
+            </div>
+          ) : (
+            <BasicConsultationForm
+              onSubmit={handleSubmit}
+              isLoading={isLoading}
+              error={error}
+              medicalEstablishments={establishments}
+            />
+          )}
         </div>
       </DialogContent>
     </Dialog>

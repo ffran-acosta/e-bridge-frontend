@@ -1,27 +1,21 @@
-    import { AlertCircle, Calendar, Clock, MapPin, RefreshCw, Stethoscope, FileText, Plus, Trash2, Settings } from 'lucide-react';
-import {
-    Badge,
-    Button,
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    Skeleton
-} from '@/shared';
+    import { AlertCircle, Calendar, Clock, MapPin, RefreshCw, Stethoscope, FileText, Trash2 } from 'lucide-react';
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle } from '@/shared';
 import { formatAppointmentDateTime, formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
 import { getAppointmentStatus, isUpcomingAppointment, isOverdueAppointment, getAppointmentFollowUp, formatMedicalEstablishmentInfo } from '../../../utils/appointmentFormatters';
 import { truncateText } from '../../../utils/patientFormatters';
-import type { PatientProfile } from '@/shared/types/patients.types';
+import type { Appointment, PatientProfile } from '@/shared/types/patients.types';
 import { usePatientAppointments } from '@/features/doctor/hooks/usePatientAppoinment';
 import { DeleteAppointmentModal, CancelAppointmentModal, CompleteAppointmentModal, CreateAppointmentButton } from '../../modals/appointments';
 import { useAuthStore } from '@/features/auth/store/auth';
 import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
-import { appointmentStatuses, getAppointmentStatusLabel, getAppointmentStatusVariant } from '../../../constants/appointmentStatuses';
+import { appointmentStatuses } from '../../../constants/appointmentStatuses';
 
 interface AppointmentsTabProps {
     patient: PatientProfile;
 }
+
+type AppointmentStatusValue = (typeof appointmentStatuses)[number]['value'];
 
 export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
     const { user } = useAuthStore();
@@ -39,14 +33,14 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
 
     // Estado para los modales
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [appointmentToDelete, setAppointmentToDelete] = useState<any>(null);
+    const [appointmentToDelete, setAppointmentToDelete] = useState<Appointment | null>(null);
     const [cancelModalOpen, setCancelModalOpen] = useState(false);
-    const [appointmentToCancel, setAppointmentToCancel] = useState<any>(null);
+    const [appointmentToCancel, setAppointmentToCancel] = useState<Appointment | null>(null);
     const [completeModalOpen, setCompleteModalOpen] = useState(false);
-    const [appointmentToComplete, setAppointmentToComplete] = useState<any>(null);
+    const [appointmentToComplete, setAppointmentToComplete] = useState<Appointment | null>(null);
 
     // Función para abrir el modal de eliminar
-    const handleDeleteClick = (appointment: any) => {
+    const handleDeleteClick = (appointment: Appointment) => {
         setAppointmentToDelete(appointment);
         setDeleteModalOpen(true);
     };
@@ -63,7 +57,7 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
     };
 
     // Funciones para cancelar turno
-    const handleCancelClick = (appointment: any) => {
+    const handleCancelClick = (appointment: Appointment) => {
         setAppointmentToCancel(appointment);
         setCancelModalOpen(true);
     };
@@ -78,7 +72,7 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
     };
 
     // Funciones para completar turno
-    const handleCompleteClick = (appointment: any) => {
+    const handleCompleteClick = (appointment: Appointment) => {
         setAppointmentToComplete(appointment);
         setCompleteModalOpen(true);
     };
@@ -93,7 +87,7 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
     };
 
     // Función para manejar cambios de estado
-    const handleStatusChange = (appointment: any, newStatus: string) => {
+    const handleStatusChange = (appointment: Appointment, newStatus: AppointmentStatusValue) => {
         console.log('🎯 Cambiando estado del turno:', appointment.id, 'a:', newStatus);
         
         switch (newStatus) {
@@ -248,7 +242,9 @@ export const AppointmentsTab = ({ patient }: AppointmentsTabProps) => {
                                             </label>
                                             <Select
                                                 value={appointment.status || 'SCHEDULED'}
-                                                onValueChange={(newStatus) => handleStatusChange(appointment, newStatus)}
+                                                onValueChange={(newStatus) =>
+                                                    handleStatusChange(appointment, newStatus as AppointmentStatusValue)
+                                                }
                                                 disabled={appointment.status === 'COMPLETED' || appointment.status === 'CANCELLED'}
                                             >
                                                 <SelectTrigger className="w-full h-8 text-xs">

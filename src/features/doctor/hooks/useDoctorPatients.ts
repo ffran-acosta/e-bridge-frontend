@@ -25,7 +25,7 @@ export function useDoctorPatients(initialParams?: PatientsParams) {
     // Fetch inicial
     useEffect(() => {
         fetchPatients(initialParams);
-    }, []); // Solo en mount
+    }, [fetchPatients, initialParams]);
 
     // Función para refetch con parámetros específicos memoizada
     const refetch = useCallback((params?: PatientsParams) => {

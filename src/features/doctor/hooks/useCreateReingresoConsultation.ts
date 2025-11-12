@@ -13,14 +13,12 @@ import {
 
 interface UseCreateReingresoConsultationProps {
   patientId: string;
-  patientName: string;
-  onSuccess?: (consultation: any) => void;
+  onSuccess?: (consultation: unknown) => void;
   onError?: (error: string) => void;
 }
 
 export function useCreateReingresoConsultation({
   patientId,
-  patientName,
   onSuccess,
   onError,
 }: UseCreateReingresoConsultationProps) {

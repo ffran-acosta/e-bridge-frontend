@@ -1,16 +1,17 @@
 "use client";
 
+import type { BaseSyntheticEvent } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared';
 import { FormFieldWrapper } from '@/shared/components/forms/FormField';
 import { CreateSiniestroFormSchema } from '../../../lib/siniestro-form.schema';
-import { SelectOption, ART, MedicalEstablishment, Employer } from '../../../types/siniestro-form.types';
+import { SelectOption, ART, MedicalEstablishment, Employer, ContingencyType } from '../../../types/siniestro-form.types';
 import { AlertCircle } from 'lucide-react';
 import { Alert } from '@/shared/components/ui/alert';
 
 interface CreateSiniestroFormProps {
   form: UseFormReturn<CreateSiniestroFormSchema>;
-  handleSubmit: () => void;
+  handleSubmit: (event?: BaseSyntheticEvent) => void;
   isSubmitting: boolean;
   error: string | null;
   arts: ART[];
@@ -47,18 +48,8 @@ export function CreateSiniestroForm({
 }: CreateSiniestroFormProps) {
   const { register, watch, setValue, formState: { errors } } = form;
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    console.log('🔄 Formulario de siniestro enviado, ejecutando handleSubmit...');
-    console.log('🔍 Valores actuales del formulario:', form.getValues());
-    console.log('🔍 medicalEstablishmentId seleccionado:', form.getValues('medicalEstablishmentId'));
-    console.log('🔍 artId seleccionado:', form.getValues('artId'));
-    console.log('🔍 employerId seleccionado:', form.getValues('employerId'));
-    e.preventDefault();
-    handleSubmit();
-  };
-
   return (
-    <form onSubmit={handleFormSubmit} className="space-y-4 pb-6">
+    <form onSubmit={handleSubmit} className="space-y-4 pb-6">
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -92,7 +83,9 @@ export function CreateSiniestroForm({
           >
             <Select
               value={watch('contingencyType')}
-              onValueChange={(value) => setValue('contingencyType', value as any)}
+              onValueChange={(value) =>
+                setValue('contingencyType', value as ContingencyType, { shouldValidate: true })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccione tipo de contingencia" />

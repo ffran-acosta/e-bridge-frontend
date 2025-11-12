@@ -7,14 +7,14 @@ import { StatusBadge } from '@/shared/components/ui/StatusBadge';
 import { useDoctorPatients } from '../../hooks/useDoctorPatients';
 import { Patient } from '@/shared/types/patients.types';
 import { CreatePatientModal } from '../modals';
-import { CreatePatientResponse } from '../../types/patient-form.types';
+import type { CreatePatientResponse } from '../../types/patient-form.types';
 
 interface PatientsListProps {
     onPatientClick?: (patient: Patient) => void;
 }
 
 // Componente principal - Sección de pacientes
-export const PatientsList = React.memo(({ onPatientClick }: PatientsListProps) => {
+const PatientsListComponent = ({ onPatientClick }: PatientsListProps) => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
     // Hook integrado con API real
@@ -151,12 +151,20 @@ export const PatientsList = React.memo(({ onPatientClick }: PatientsListProps) =
 
         </div>
     );
-});
+};
+
+PatientsListComponent.displayName = 'PatientsList';
+
+export const PatientsList = React.memo(PatientsListComponent);
 
 // Componente para el contenido de cada tab
 interface PatientContentProps {
     patients: Patient[];
-    pagination: any;
+    pagination: {
+        page: number;
+        totalPages: number;
+        total: number;
+    } | null;
     loading: boolean;
     error: string | null;
     searchTerm: string;
@@ -171,7 +179,7 @@ interface PatientContentProps {
     onCreatePatient: () => void;
 }
 
-const PatientContent = React.memo(({
+const PatientContentComponent = ({
     patients,
     pagination,
     loading,
@@ -185,7 +193,7 @@ const PatientContent = React.memo(({
     onPatientClick,
     onPageChange,
     patientType,
-    onCreatePatient
+    onCreatePatient,
 }: PatientContentProps) => {
     // Error State
     if (error && !loading) {
@@ -255,12 +263,14 @@ const PatientContent = React.memo(({
                             <span>Pacientes {patientType === 'ART' ? 'ART' : 'Obra Social/Particulares'}</span>
                             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                         </div>
-                        <div className="flex items-center space-x-2">
-                            <Badge variant="secondary">
-                                {searchTerm ? patients.length : pagination.total}
-                                {searchTerm && ` de ${pagination.total}`} pacientes
-                            </Badge>
-                        </div>
+                        {pagination && (
+                            <div className="flex items-center space-x-2">
+                                <Badge variant="secondary">
+                                    {searchTerm ? patients.length : pagination.total}
+                                    {searchTerm && ` de ${pagination.total}`} pacientes
+                                </Badge>
+                            </div>
+                        )}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -271,7 +281,7 @@ const PatientContent = React.memo(({
                     />
 
                      {/* Paginación */}
-                     {!searchTerm && pagination.totalPages > 1 && (
+                     {!searchTerm && pagination && pagination.totalPages > 1 && (
                          <div className="flex justify-center mt-4 space-x-2">
                              <Button
                                  variant="outline"
@@ -300,17 +310,21 @@ const PatientContent = React.memo(({
             </Card>
         </>
     );
-});
+};
+
+PatientContentComponent.displayName = 'PatientContent';
+
+const PatientContent = React.memo(PatientContentComponent);
 
 // Tabla de pacientes
-const PatientsTable = React.memo(({
+const PatientsTableComponent = ({
     patients,
     onPatientClick,
-    loading
+    loading,
 }: {
-    patients: Patient[],
-    onPatientClick?: (patient: Patient) => void,
-    loading: boolean
+    patients: Patient[];
+    onPatientClick?: (patient: Patient) => void;
+    loading: boolean;
 }) => {
     const getStatusBadge = (status: Patient['status']) => {
         return <StatusBadge status={status} />;
@@ -402,4 +416,8 @@ const PatientsTable = React.memo(({
             </table>
         </div>
     );
-});
+};
+
+PatientsTableComponent.displayName = 'PatientsTable';
+
+const PatientsTable = React.memo(PatientsTableComponent);

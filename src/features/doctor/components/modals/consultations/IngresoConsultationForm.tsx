@@ -1,20 +1,19 @@
 "use client";
 
-import { UseFormReturn } from 'react-hook-form';
+import type { BaseSyntheticEvent } from 'react';
+import type { FieldPath, UseFormReturn } from 'react-hook-form';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/shared';
 import { FormField } from '../shared/FormField';
-import { FormWrapper } from '@/shared/components/forms/FormWrapper';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { AlertTriangle, Building, User } from 'lucide-react';
 import { DateTimeInput } from '../shared/DateTimeInput';
-import { cn } from '@/lib/utils';
 import { IngresoConsultationFormData } from '../../../lib/ingreso-consultation-form.schema';
 
 interface IngresoConsultationFormProps {
   form: UseFormReturn<IngresoConsultationFormData>;
-  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  handleSubmit: (event?: BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
   error: string | null;
   patientName: string;
@@ -38,14 +37,13 @@ export function IngresoConsultationForm({
   
   // Observar cambios en fechas para calcular automáticamente otras fechas
   const accidentDateTime = watch('artDetails.accidentDateTime');
-  const workAbsenceStartDateTime = watch('artDetails.workAbsenceStartDateTime');
 
   // Función para establecer fecha automáticamente
-  const setAutomaticDate = (field: string, hoursToAdd: number = 0) => {
+  const setAutomaticDate = (field: FieldPath<IngresoConsultationFormData>, hoursToAdd: number = 0) => {
     if (accidentDateTime) {
       const accidentDate = new Date(accidentDateTime);
       accidentDate.setHours(accidentDate.getHours() + hoursToAdd);
-      setValue(field as any, accidentDate.toISOString());
+      setValue(field, accidentDate.toISOString());
     }
   };
 

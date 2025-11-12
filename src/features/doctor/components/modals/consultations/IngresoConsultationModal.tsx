@@ -1,7 +1,8 @@
 "use client";
 
 import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
+import type { PatientProfile } from '@/shared/types/patients.types';
+import { Dialog, DialogContent, DialogHeader } from '@/shared';
 import { useCreateIngresoConsultation } from '../../../hooks/useCreateIngresoConsultation';
 import { useMedicalEstablishments } from '../../../hooks/useCreateSiniestro';
 import { IngresoConsultationForm } from './IngresoConsultationForm';
@@ -12,8 +13,8 @@ interface IngresoConsultationModalProps {
   onClose: () => void;
   patientId: string;
   patientName: string;
-  siniestroData?: any;
-  onSuccess?: (consultation: any) => void;
+  siniestroData?: PatientProfile['siniestro'];
+  onSuccess?: (consultation: unknown) => void;
   onError?: (error: string) => void;
 }
 
@@ -34,7 +35,6 @@ export function IngresoConsultationModal({
     clearError,
   } = useCreateIngresoConsultation({
     patientId,
-    patientName,
     siniestroData,
     onSuccess: (consultation) => {
       console.log('✅ Consulta de INGRESO creada exitosamente:', consultation);
@@ -64,9 +64,6 @@ export function IngresoConsultationModal({
       clearError();
     }
   }, [isOpen, clearError]);
-
-  const title = 'Consulta de Ingreso ART';
-  const description = `Crear consulta de ingreso para el paciente ${patientName}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>

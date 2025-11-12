@@ -7,12 +7,13 @@ import { GENDER_OPTIONS, PATIENT_TYPE_OPTIONS } from '../../../types/patient-for
 import { CreatePatientForm } from './CreatePatientForm';
 import { CreateSiniestroModal } from '../siniestros/CreateSiniestroModal';
 import { cn } from '@/lib/utils';
+import type { CreatePatientResponse } from '../../../types/patient-form.types';
 
 interface CreatePatientModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultType?: 'NORMAL' | 'ART';
-  onSuccess?: (patient: any) => void;
+  onSuccess?: (patient: CreatePatientResponse) => void;
   onError?: (error: string) => void;
 }
 
@@ -24,7 +25,7 @@ export function CreatePatientModal({
   onError,
 }: CreatePatientModalProps) {
   const [isSiniestroModalOpen, setIsSiniestroModalOpen] = useState(false);
-  const [createdPatient, setCreatedPatient] = useState<any>(null);
+  const [createdPatient, setCreatedPatient] = useState<CreatePatientResponse | null>(null);
   const {
     form,
     handleSubmit,
@@ -79,7 +80,7 @@ export function CreatePatientModal({
       console.log('🚀 Llamando fetchInsurances...');
       fetchInsurances();
     }
-  }, [isOpen, insurances.length, fetchInsurances]); // Removido insurancesLoading de las dependencias
+  }, [isOpen, insurances.length, insurancesLoading, fetchInsurances]);
 
   // Limpiar errores cuando se cierra el modal
   useEffect(() => {
@@ -93,12 +94,14 @@ export function CreatePatientModal({
   // Manejar el cierre del modal de siniestro
   const handleSiniestroClose = () => {
     setIsSiniestroModalOpen(false);
-    onSuccess?.(createdPatient);
-    onClose();
+    if (createdPatient) {
+      onSuccess?.(createdPatient);
+      onClose();
+    }
   };
 
   // Manejar el éxito del siniestro
-  const handleSiniestroSuccess = (siniestro: any) => {
+  const handleSiniestroSuccess = (siniestro: unknown) => {
     console.log('✅ Siniestro creado exitosamente:', siniestro);
     // Aquí podríamos abrir el modal de consulta INGRESO si fuera necesario
     handleSiniestroClose();
@@ -145,7 +148,7 @@ export function CreatePatientModal({
         <div className="flex-1 overflow-y-auto pr-2 -mr-2">
           <div className="pr-2">
             <CreatePatientForm
-              form={form as any}
+              form={form}
               handleSubmit={handleSubmit}
               isSubmitting={isSubmitting}
               error={error}

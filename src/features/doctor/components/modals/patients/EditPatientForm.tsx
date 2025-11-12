@@ -1,18 +1,18 @@
 "use client";
 
+import type { BaseSyntheticEvent } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Button, Card, CardContent, CardHeader, CardTitle } from '@/shared';
 import { FormField } from '../shared/FormField';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
-import { User, MapPin, Phone, Mail, Heart, Pill, AlertTriangle } from 'lucide-react';
+import { User, MapPin, Phone, Heart, AlertTriangle } from 'lucide-react';
 import { DateTimeInput } from '../shared/DateTimeInput';
-import { cn } from '@/lib/utils';
 import { EditPatientFormData, GENDERS, PATIENT_TYPES, CURRENT_STATUS_OPTIONS } from '../../../lib/edit-patient-form.schema';
 
 interface EditPatientFormProps {
   form: UseFormReturn<EditPatientFormData>;
-  handleSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  handleSubmit: (event?: BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
   error: string | null;
   patientName: string;
@@ -32,7 +32,7 @@ export function EditPatientForm({
   insurances,
   onClose,
 }: EditPatientFormProps) {
-  const { control, watch } = form;
+  const { control } = form;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">

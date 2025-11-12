@@ -1,16 +1,17 @@
 "use client";
 
+import type { BaseSyntheticEvent } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { Button, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared';
 import { FormFieldWrapper } from '@/shared/components/forms/FormField';
 import { CreatePatientFormSchema } from '../../../lib/patient-form.schema';
-import { SelectOption, Insurance } from '../../../types/patient-form.types';
+import { SelectOption, Insurance, Gender, PatientType } from '../../../types/patient-form.types';
 import { Plus, X, AlertCircle } from 'lucide-react';
 import { Alert } from '@/shared/components/ui/alert';
 
 interface CreatePatientFormProps {
   form: UseFormReturn<CreatePatientFormSchema>;
-  handleSubmit: () => void;
+  handleSubmit: (event?: BaseSyntheticEvent) => void;
   isSubmitting: boolean;
   error: string | null;
   insurances: Insurance[];
@@ -37,9 +38,6 @@ export function CreatePatientForm({
 }: CreatePatientFormProps) {
   const { register, watch, setValue, formState: { errors } } = form;
 
-  // Observar el tipo de paciente para mostrar campos condicionales
-  const patientType = watch('type');
-
   // Manejar arrays dinámicos
   const addArrayItem = (field: 'medicalHistory' | 'currentMedications' | 'allergies') => {
     const currentValues = form.getValues(field) || [];
@@ -58,16 +56,8 @@ export function CreatePatientForm({
     form.setValue(field, newValues);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    console.log('🔄 Formulario enviado, ejecutando handleSubmit...');
-    console.log('🔍 Valores actuales del formulario:', form.getValues());
-    console.log('🔍 Tipo actual en formulario:', form.getValues('type'));
-    e.preventDefault();
-    handleSubmit();
-  };
-
   return (
-    <form onSubmit={handleFormSubmit} className="space-y-4 pb-6">
+    <form onSubmit={handleSubmit} className="space-y-4 pb-6">
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
@@ -126,7 +116,9 @@ export function CreatePatientForm({
           >
             <Select
               value={watch('gender')}
-              onValueChange={(value) => setValue('gender', value as any)}
+              onValueChange={(value) =>
+                setValue('gender', value as Gender, { shouldValidate: true })
+              }
             >
               <SelectTrigger>
                 <SelectValue placeholder="Seleccione género" />
@@ -160,7 +152,9 @@ export function CreatePatientForm({
           >
             <Select
               value={watch('type')}
-              onValueChange={(value) => setValue('type', value as any)}
+              onValueChange={(value) =>
+                setValue('type', value as PatientType, { shouldValidate: true })
+              }
               disabled={defaultType !== 'NORMAL'} // Si viene predeterminado como ART, no se puede cambiar
             >
               <SelectTrigger>

@@ -13,14 +13,12 @@ import {
 
 interface UseCreateAltaConsultationProps {
   patientId: string;
-  patientName: string;
-  onSuccess?: (consultation: any) => void;
+  onSuccess?: (consultation: unknown) => void;
   onError?: (error: string) => void;
 }
 
 export function useCreateAltaConsultation({
   patientId,
-  patientName,
   onSuccess,
   onError,
 }: UseCreateAltaConsultationProps) {

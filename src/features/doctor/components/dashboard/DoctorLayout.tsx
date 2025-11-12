@@ -21,7 +21,7 @@ export function DoctorLayout({
     currentView = 'dashboard',
     onBackClick
 }: DoctorLayoutProps) {
-    const { user, logout } = useAuthStore();
+    const { user } = useAuthStore();
     const { isImpersonating, clearImpersonation } = useDoctorStore();
     const router = useRouter();
     const [activeSection, setActiveSection] = useState('pacientes');
@@ -78,7 +78,6 @@ export function DoctorLayout({
                     <DoctorSidebar
                         activeSection={activeSection}
                         setActiveSection={setActiveSection}
-                        user={user}
                     />
                 </div>
             )}
@@ -93,7 +92,6 @@ export function DoctorLayout({
                                 setActiveSection(section);
                                 setIsMobileSidebarOpen(false);
                             }}
-                            user={user}
                         />
                     </SheetContent>
                 </Sheet>

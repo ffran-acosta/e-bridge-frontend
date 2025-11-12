@@ -6,9 +6,8 @@ import { Button } from '@/shared/components/ui/button';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { useAppointmentStatusChange } from '../../../hooks/useAppointmentStatusChange';
-import { cn } from '@/lib/utils';
 import { AlertTriangle, Calendar, Clock, MapPin, X } from 'lucide-react';
-import { formatAppointmentDateTime, formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
+import { formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
 
 interface CancelAppointmentModalProps {
   isOpen: boolean;
@@ -76,8 +75,9 @@ export function CancelAppointmentModal({
             <AlertTriangle className="h-5 w-5" />
             Cancelar Turno
           </DialogTitle>
-          <DialogDescription className="text-base text-muted-foreground">
-            Proporciona el motivo de la cancelación del turno.
+          <DialogDescription className="text-base text-muted-foreground space-y-1">
+            <p>Proporciona el motivo de la cancelación del turno.</p>
+            <p className="font-medium text-foreground">Paciente: {patientName}</p>
           </DialogDescription>
         </DialogHeader>
 
