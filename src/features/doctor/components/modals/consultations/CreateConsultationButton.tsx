@@ -25,20 +25,11 @@ export function CreateConsultationButton({
 }: CreateConsultationButtonProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  console.log('🎯 CreateConsultationButton: Componente renderizado con props:', {
-    patientId,
-    patientName,
-    hasConsultations,
-    isModalOpen
-  });
-
   const handleSelectType = (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => {
-    console.log('🎯 CreateConsultationButton: Tipo seleccionado:', type);
     onConsultationTypeSelected(type);
   };
 
   const handleButtonClick = () => {
-    console.log('🎯 CreateConsultationButton: Botón clickeado, abriendo modal...');
     setIsModalOpen(true);
   };
 

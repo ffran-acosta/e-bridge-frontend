@@ -50,7 +50,6 @@ export function useCreatePatient(options: UseCreatePatientOptions = {}) {
   }, [defaultType, form]);
 
   const createPatient = async (data: CreatePatientFormData) => {
-    console.log('🚀 createPatient ejecutado con datos:', data);
     setIsSubmitting(true);
     setError(null);
 
@@ -81,11 +80,6 @@ export function useCreatePatient(options: UseCreatePatientOptions = {}) {
         currentMedications: data.currentMedications,
         allergies: data.allergies,
       };
-
-      console.log('📡 Enviando petición a:', DOCTOR_ENDPOINTS.patients);
-      console.log('📦 Payload completo:', payload);
-      console.log('🔍 Tipo en payload:', payload.type);
-      console.log('🔍 DefaultType recibido:', defaultType);
       
       const response = await api<CreatePatientResponse>(
         DOCTOR_ENDPOINTS.patients,
@@ -98,10 +92,6 @@ export function useCreatePatient(options: UseCreatePatientOptions = {}) {
       if (!response) {
         throw new Error('Sin respuesta del servidor al crear el paciente');
       }
-
-      console.log('✅ Respuesta del servidor:', response);
-      console.log('🔍 Tipo en respuesta:', response.data?.data?.type);
-      console.log('🔍 Datos completos de respuesta:', JSON.stringify(response, null, 2));
 
       // Limpiar el formulario después del éxito
       form.reset({
@@ -123,11 +113,10 @@ export function useCreatePatient(options: UseCreatePatientOptions = {}) {
 
   const handleSubmit = form.handleSubmit(
     (data) => {
-      console.log('✅ Validación exitosa, datos:', data);
       createPatient(data);
     },
-    (errors) => {
-      console.log('❌ Errores de validación:', errors);
+    () => {
+      // Errores de validación manejados por react-hook-form
     }
   );
 
@@ -150,12 +139,10 @@ export function useInsurances() {
   const [error, setError] = useState<string | null>(null);
 
   const fetchInsurances = useCallback(async () => {
-    console.log('🔍 Iniciando carga de obras sociales...');
     setLoading(true);
     setError(null);
 
     try {
-      console.log('📡 Llamando a /catalogs/obras-sociales');
       const response = await api<InsuranceResponse>('/catalogs/obras-sociales');
 
       if (!response || !response.data) {
@@ -163,7 +150,6 @@ export function useInsurances() {
       }
 
       if (response.success && response.data.data) {
-        console.log('✅ Obras sociales cargadas:', response.data.data);
         setInsurances(response.data.data);
       } else {
         throw new Error('Respuesta inválida del servidor');

@@ -33,13 +33,6 @@ interface SiniestroTabProps {
 export function SiniestroTab({ patient }: SiniestroTabProps) {
     const { siniestro, loading, error } = useSiniestro(patient.siniestro?.id);
 
-    // Debug log
-    console.log('🔍 DEBUG - SiniestroTab:');
-    console.log('📋 patient.siniestro:', patient.siniestro);
-    console.log('📋 siniestro:', siniestro);
-    console.log('📋 loading:', loading);
-    console.log('📋 error:', error);
-
     if (!patient.siniestro) {
         return (
             <Card>

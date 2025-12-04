@@ -35,29 +35,20 @@ export function CreatePatientModal({
   } = useCreatePatient({
     defaultType,
     onSuccess: (patient) => {
-      console.log('🎯 Paciente creado exitosamente:', patient);
       const patientType = patient.data?.data?.type;
       const patientData = patient.data?.data;
-      console.log('🔍 Tipo de paciente:', patientType);
-      console.log('🔍 Datos del paciente:', patientData);
       
       // Si es un paciente ART, verificar si ya tiene siniestro
       if (patientType === 'ART') {
-        console.log('🚀 Paciente ART creado, verificando siniestro...');
-        
         // Verificar si el paciente ya tiene siniestro
         if (patientData?.siniestro) {
-          console.log('⚠️ El paciente ART ya tiene un siniestro asociado:', patientData.siniestro);
-          console.log('✅ Cerrando modal - siniestro ya existe');
           onSuccess?.(patient);
           onClose();
         } else {
-          console.log('🚀 Abriendo modal de siniestro para paciente ART sin siniestro');
           setCreatedPatient(patient);
           setIsSiniestroModalOpen(true);
         }
       } else {
-        console.log('✅ Paciente NORMAL, cerrando modal normalmente');
         // Si es paciente NORMAL, cerrar modal normalmente
         onSuccess?.(patient);
         onClose();
@@ -75,9 +66,7 @@ export function CreatePatientModal({
 
   // Cargar obras sociales cuando se abre el modal
   useEffect(() => {
-    console.log('🔄 useEffect ejecutado:', { isOpen, insurancesLength: insurances.length, insurancesLoading });
     if (isOpen && insurances.length === 0 && !insurancesLoading) {
-      console.log('🚀 Llamando fetchInsurances...');
       fetchInsurances();
     }
   }, [isOpen, insurances.length, insurancesLoading, fetchInsurances]);
@@ -101,23 +90,10 @@ export function CreatePatientModal({
   };
 
   // Manejar el éxito del siniestro
-  const handleSiniestroSuccess = (siniestro: unknown) => {
-    console.log('✅ Siniestro creado exitosamente:', siniestro);
+  const handleSiniestroSuccess = () => {
     // Aquí podríamos abrir el modal de consulta INGRESO si fuera necesario
     handleSiniestroClose();
   };
-
-  // Debug: Log del estado del modal de siniestro
-  useEffect(() => {
-    console.log('🔍 Estado del modal de siniestro:', {
-      isSiniestroModalOpen,
-      createdPatient: createdPatient ? { 
-        id: createdPatient.data?.data?.id, 
-        type: createdPatient.data?.data?.type,
-        name: `${createdPatient.data?.data?.firstName} ${createdPatient.data?.data?.lastName}`
-      } : null
-    });
-  }, [isSiniestroModalOpen, createdPatient]);
 
   const title = defaultType === 'ART' 
     ? 'Crear Paciente ART' 

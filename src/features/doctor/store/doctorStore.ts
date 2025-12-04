@@ -186,16 +186,8 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
                 throw new Error('Sin respuesta del servidor al obtener el perfil del paciente');
             }
 
-            // Console logs para debug
-            console.log('🔍 DEBUG - fetchPatientProfile:');
-            console.log('📡 Response completa:', response);
-            console.log('📡 response.data:', response.data);
-            console.log('📡 response.data.data:', response.data.data);
-
             // Mapear el perfil del backend al formato del frontend
             const mappedProfile = mapBackendPatientProfileToFrontend(response.data.data);
-            
-            console.log('📋 mappedProfile:', mappedProfile);
 
             set({
                 selectedPatient: mappedProfile,

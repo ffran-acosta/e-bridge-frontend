@@ -53,13 +53,9 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                 set({ loading: true, error: null, currentPatientId: patientId });
 
                 try {
-                    console.log('🔍 Cargando consultas para paciente:', patientId);
-                    console.log('🔍 Tipo de paciente:', patientType);
                     const endpoint = DOCTOR_ENDPOINTS.patientConsultations(patientId);
-                    console.log('📡 Llamando endpoint:', endpoint);
                     
                     const response = await api<BackendConsultationsApiResponse>(endpoint);
-                    console.log('📦 Respuesta del backend:', response);
 
                     if (!response || !response.data) {
                         throw new Error('Sin respuesta del servidor al obtener consultas');
@@ -69,13 +65,10 @@ export const useConsultationsStore = create<ConsultationsStore>()(
                     const mappedConsultations = response.data.data.map(consultation => 
                         mapBackendConsultationToFrontend(consultation, patientType)
                     );
-                    console.log('✅ Consultas mapeadas:', mappedConsultations);
                     
                     // Verificar si las consultas pertenecen realmente al paciente
                     const patientIdsInConsultations = mappedConsultations.map(c => c.patientId);
                     const uniquePatientIds = [...new Set(patientIdsInConsultations)];
-                    console.log('🔍 Patient IDs en las consultas:', patientIdsInConsultations);
-                    console.log('🔍 Patient IDs únicos:', uniquePatientIds);
                     
                     // Solo validar si hay consultas
                     if (mappedConsultations.length > 0) {

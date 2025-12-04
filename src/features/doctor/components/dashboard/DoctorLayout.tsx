@@ -28,7 +28,7 @@ export function DoctorLayout({
     const [activeSection, setActiveSection] = useState('pacientes');
     
     // Restaurar la sección activa desde sessionStorage cuando se monta el dashboard
-    React.useEffect(() => {1
+    React.useEffect(() => {
         if (currentView === 'dashboard') {
             const savedSection = sessionStorage.getItem('doctorActiveSection');
             if (savedSection) {
@@ -38,10 +38,6 @@ export function DoctorLayout({
         }
     }, [currentView]);
 
-    // Debug: verificar cambios en activeSection
-    React.useEffect(() => {
-        console.log('🔵 activeSection cambió a:', activeSection);
-    }, [activeSection]);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -70,7 +66,7 @@ export function DoctorLayout({
     };
 
     const handleProfileClick = () => {
-        console.log('Navigate to doctor profile');
+        // TODO: Implementar navegación al perfil del doctor
     };
 
     const handleExitImpersonation = () => {
@@ -161,47 +157,20 @@ export function DoctorLayout({
                     )}
                     
                     {/* Mostrar contenido según la sección activa */}
-                    {(() => {
-                        console.log('🔍 Evaluando renderizado - activeSection:', activeSection, 'currentView:', currentView);
-                        console.log('🔍 Comparaciones:', {
-                            'activeSection === validador': activeSection === 'validador',
-                            'activeSection === turnos': activeSection === 'turnos',
-                            'currentView === patientProfile': currentView === 'patientProfile'
-                        });
-                        
-                        if (currentView === 'patientProfile') {
-                            console.log('📋 Retornando children (patientProfile)');
-                            return children;
-                        }
-                        
-                        if (activeSection === 'turnos') {
-                            console.log('📅 Retornando AppointmentsCalendar');
-                            return (
-                                <div className="max-w-4xl mx-auto">
-                                    <AppointmentsCalendar />
-                                </div>
-                            );
-                        }
-                        
-                        if (activeSection === 'validador') {
-                            console.log('✅ Retornando ValidatorView');
-                            return (
-                                <div className="max-w-4xl mx-auto">
-                                    <ValidatorView />
-                                </div>
-                            );
-                        }
-                        
-                        console.log('📋 Retornando children (default)');
-                        return children;
-                    })()}
-                    
-                    {/* Debug temporal - remover después */}
-                    {process.env.NODE_ENV === 'development' && (
-                        <div className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
-                            Active: {activeSection} | View: {currentView}
+                    {currentView === 'patientProfile' ? (
+                        children
+                    ) : activeSection === 'turnos' ? (
+                        <div className="max-w-4xl mx-auto">
+                            <AppointmentsCalendar />
                         </div>
+                    ) : activeSection === 'validador' ? (
+                        <div className="max-w-4xl mx-auto">
+                            <ValidatorView />
+                        </div>
+                    ) : (
+                        children
                     )}
+                    
                 </main>
             </div>
         </div>

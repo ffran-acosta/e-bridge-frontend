@@ -42,6 +42,7 @@ function CredentialCard({ logoType, onValidate }: CredentialCardProps) {
                   width={180}
                   height={90}
                   className="object-contain"
+                  style={{ height: 'auto' }}
                 />
               ) : logoType === 'avalian-2' ? (
                 <Image
@@ -50,6 +51,7 @@ function CredentialCard({ logoType, onValidate }: CredentialCardProps) {
                   width={180}
                   height={90}
                   className="object-contain"
+                  style={{ height: 'auto' }}
                 />
               ) : null}
             </div>
@@ -86,10 +88,6 @@ export function ValidatorView() {
     setIsModalOpen(false);
   };
 
-  // Verificar que el componente se renderice
-  React.useEffect(() => {
-    console.log('✅ ValidatorView componente montado');
-  }, []);
 
   return (
     <div className="space-y-12 py-8">

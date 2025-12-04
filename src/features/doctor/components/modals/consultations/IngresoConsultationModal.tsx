@@ -2,7 +2,7 @@
 
 import React from 'react';
 import type { PatientProfile } from '@/shared/types/patients.types';
-import { Dialog, DialogContent, DialogHeader } from '@/shared';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { useCreateIngresoConsultation } from '../../../hooks/useCreateIngresoConsultation';
 import { useMedicalEstablishments } from '../../../hooks/useCreateSiniestro';
 import { IngresoConsultationForm } from './IngresoConsultationForm';
@@ -75,7 +75,10 @@ export function IngresoConsultationModal({
         )}
       >
         <DialogHeader className="flex-shrink-0 pb-6 border-b">
-          {/* Título removido - se muestra en el formulario con icono */}
+          <DialogTitle className="sr-only">Consulta de Ingreso</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulario para crear una consulta de ingreso médico
+          </DialogDescription>
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto pr-2 -mr-2">

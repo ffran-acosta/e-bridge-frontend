@@ -2,7 +2,7 @@
 
 import React from 'react';
 import type { PatientProfile } from '@/shared/types/patients.types';
-import { Dialog, DialogContent, DialogHeader } from '@/shared';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { useCreateAtencionConsultation } from '../../../hooks/useCreateAtencionConsultation';
 import { useMedicalEstablishments } from '../../../hooks/useCreateSiniestro'; // Reusing hook for establishments
 import { AtencionConsultationForm } from './AtencionConsultationForm';
@@ -74,7 +74,10 @@ export function AtencionConsultationModal({
         )}
       >
         <DialogHeader className="flex-shrink-0 pb-6 border-b">
-          {/* Título removido - se muestra en el formulario con icono */}
+          <DialogTitle className="sr-only">Consulta de Atención</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulario para crear una consulta de atención médica
+          </DialogDescription>
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto pr-2 -mr-2">

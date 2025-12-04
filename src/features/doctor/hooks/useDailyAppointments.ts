@@ -26,11 +26,6 @@ export const useDailyAppointments = () => {
             const dateStr = formatDateForAPI(date);
             const endpoint = DOCTOR_ENDPOINTS.appointmentsToday(dateStr);
 
-            console.log('🌐 Fetching daily appointments:', {
-                date: dateStr,
-                endpoint,
-            });
-
             const response = await api<BackendCalendarApiResponse>(endpoint);
 
             if (!response || !response.data) {
@@ -43,12 +38,6 @@ export const useDailyAppointments = () => {
                 if (!appointmentsData) {
                     throw new Error('Datos de turnos no disponibles');
                 }
-
-                console.log('📅 Daily appointments response:', {
-                    date: appointmentsData.date,
-                    count: appointmentsData.count,
-                    appointments: appointmentsData.appointments.slice(0, 3),
-                });
 
                 setState(prev => ({
                     ...prev,

@@ -26,11 +26,6 @@ export const useWeeklyAppointments = () => {
             const dateStr = formatDateForAPI(date);
             const endpoint = DOCTOR_ENDPOINTS.appointmentsWeek(dateStr);
 
-            console.log('🌐 Fetching weekly appointments:', {
-                date: dateStr,
-                endpoint,
-            });
-
             const response = await api<BackendCalendarApiResponse>(endpoint);
 
             if (!response || !response.data) {
@@ -43,11 +38,6 @@ export const useWeeklyAppointments = () => {
                 if (!appointmentsData) {
                     throw new Error('Datos de turnos no disponibles');
                 }
-                console.log('📅 Weekly appointments response:', {
-                    date: appointmentsData.date,
-                    count: appointmentsData.count,
-                    appointments: appointmentsData.appointments.slice(0, 5),
-                });
 
                 setState(prev => ({
                     ...prev,

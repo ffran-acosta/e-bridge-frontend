@@ -94,7 +94,6 @@ export function useSiniestro(siniestroId?: string): UseSiniestroReturn {
                 throw new Error('Sin respuesta del servidor al obtener información del siniestro');
             }
 
-            console.log('🔍 DEBUG - useSiniestro response:', response);
             setSiniestro(response.data.data);
         } catch (err) {
             console.error('❌ Error en useSiniestro:', err);

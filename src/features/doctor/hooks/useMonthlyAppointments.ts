@@ -26,11 +26,6 @@ export const useMonthlyAppointments = () => {
             const dateStr = formatDateForAPI(date);
             const endpoint = DOCTOR_ENDPOINTS.appointmentsMonth(dateStr);
 
-            console.log('🌐 Fetching monthly appointments:', {
-                date: dateStr,
-                endpoint,
-            });
-
             const response = await api<BackendCalendarApiResponse>(endpoint);
 
             if (!response || !response.data) {
@@ -43,11 +38,6 @@ export const useMonthlyAppointments = () => {
                 if (!appointmentsData) {
                     throw new Error('Datos de turnos no disponibles');
                 }
-                console.log('📅 Monthly appointments response:', {
-                    date: appointmentsData.date,
-                    count: appointmentsData.count,
-                    appointments: appointmentsData.appointments.slice(0, 5),
-                });
 
                 setState(prev => ({
                     ...prev,

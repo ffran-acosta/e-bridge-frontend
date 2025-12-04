@@ -128,8 +128,6 @@ export function ConsultationTypeSelectorModal({
   const availableTypes = getAvailableTypes();
 
   const handleSelectType = (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => {
-    console.log('🎯 ConsultationTypeSelectorModal: Tipo seleccionado:', type);
-    
     if (type === 'INGRESO') {
       // Abrir modal de INGRESO directamente
       setIsIngresoModalOpen(true);
@@ -150,7 +148,6 @@ export function ConsultationTypeSelectorModal({
   };
 
   const handleIngresoSuccess = (consultation: unknown) => {
-    console.log('✅ Consulta de INGRESO creada exitosamente:', consultation);
     setIsIngresoModalOpen(false);
     onConsultationSuccess?.(consultation);
     onClose();
@@ -162,7 +159,6 @@ export function ConsultationTypeSelectorModal({
   };
 
   const handleAtencionSuccess = (consultation: unknown) => {
-    console.log('✅ Consulta de ATENCION creada exitosamente:', consultation);
     setIsAtencionModalOpen(false);
     onConsultationSuccess?.(consultation);
     onClose();
@@ -174,7 +170,6 @@ export function ConsultationTypeSelectorModal({
   };
 
   const handleAltaSuccess = (consultation: unknown) => {
-    console.log('✅ Consulta de ALTA creada exitosamente:', consultation);
     setIsAltaModalOpen(false);
     onConsultationSuccess?.(consultation);
     onClose();
@@ -186,7 +181,6 @@ export function ConsultationTypeSelectorModal({
   };
 
   const handleReingresoSuccess = (consultation: unknown) => {
-    console.log('✅ Consulta de REINGRESO creada exitosamente:', consultation);
     setIsReingresoModalOpen(false);
     onConsultationSuccess?.(consultation);
     onClose();
@@ -196,12 +190,6 @@ export function ConsultationTypeSelectorModal({
     console.error('❌ Error al crear consulta de REINGRESO:', error);
     // El error se maneja dentro del modal de REINGRESO
   };
-
-  console.log('🎯 ConsultationTypeSelectorModal: Renderizando con props:', {
-    isOpen,
-    patientName,
-    hasConsultations
-  });
 
   if (!isOpen) return null;
 

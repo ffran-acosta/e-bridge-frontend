@@ -32,10 +32,6 @@ export function usePatientProfile(patientId?: string) {
         };
     }, [patientId, fetchPatientProfile, clearSelectedPatient]);
 
-    // Console logs para debug
-    console.log('🔍 DEBUG - usePatientProfile:');
-    console.log('📋 selectedPatient:', selectedPatient);
-
     return {
         // Estado
         patient: selectedPatient,

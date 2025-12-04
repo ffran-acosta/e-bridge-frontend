@@ -49,10 +49,8 @@ export function DoctorSidebar({
                                             : ""
                                     }`}
                                     onClick={() => {
-                                        console.log('Sidebar click:', item.id, 'active:', item.active);
                                         if (item.active) {
                                             setActiveSection(item.id);
-                                            console.log('setActiveSection llamado con:', item.id);
                                         }
                                     }}
                                     disabled={!item.active}

@@ -29,27 +29,22 @@ const PatientProfileComponent = ({ patientId }: PatientProfileProps) => {
 
     // Handlers para acciones del header
     const handleEdit = useCallback(() => {
-        console.log('🎯 Editar paciente clickeado para:', patient?.firstName, patient?.lastName);
         setIsEditModalOpen(true);
-    }, [patient]);
-
-    const handleContinueSiniestro = useCallback(() => {
-        console.log('🎯 Continuar Siniestro clickeado para paciente:', patient?.firstName, patient?.lastName);
-        setIsConsultationTypeModalOpen(true);
-    }, [patient]);
-
-    const handleSelectConsultationType = useCallback((type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => {
-        console.log('🎯 Tipo de consulta seleccionado desde Continuar Siniestro:', type);
-        // El modal se maneja internamente, solo logueamos
     }, []);
 
-    const handleConsultationSuccess = useCallback((consultation: unknown) => {
-        console.log('✅ Consulta creada exitosamente desde Continuar Siniestro:', consultation);
+    const handleContinueSiniestro = useCallback(() => {
+        setIsConsultationTypeModalOpen(true);
+    }, []);
+
+    const handleSelectConsultationType = useCallback(() => {
+        // El modal se maneja internamente
+    }, []);
+
+    const handleConsultationSuccess = useCallback(() => {
         refetch(); // Recargar datos del paciente
     }, [refetch]);
 
     const handleEditSuccess = useCallback(() => {
-        console.log('✅ Paciente editado exitosamente');
         refetch(); // Recargar datos del paciente
     }, [refetch]);
 

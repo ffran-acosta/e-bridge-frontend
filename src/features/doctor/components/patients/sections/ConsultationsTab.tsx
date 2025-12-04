@@ -64,15 +64,6 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
         alert(`Seleccionaste: ${type}. Próximamente se abrirá el formulario correspondiente.`);
     };
 
-    // Debug: Verificar si el paciente es ART
-    console.log('🎯 ConsultationsTab: Verificando paciente ART:', {
-        patientId: patient.id,
-        patientName: `${patient.firstName} ${patient.lastName}`,
-        isARTPatient: isARTPatient(patient),
-        hasSiniestro: !!patient.siniestro,
-        consultationsCount: consultations.length
-    });
-
     if (loading && consultations.length === 0) {
         return <ConsultationsLoading />;
     }

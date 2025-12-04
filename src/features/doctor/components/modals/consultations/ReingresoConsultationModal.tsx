@@ -2,7 +2,7 @@
 
 import React from 'react';
 import type { PatientProfile } from '@/shared/types/patients.types';
-import { Dialog, DialogContent, DialogHeader } from '@/shared';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { useCreateReingresoConsultation } from '../../../hooks/useCreateReingresoConsultation';
 import { useMedicalEstablishments } from '../../../hooks/useCreateSiniestro'; // Reusing hook for establishments
 import { ReingresoConsultationForm } from './ReingresoConsultationForm';
@@ -74,7 +74,10 @@ export function ReingresoConsultationModal({
         )}
       >
         <DialogHeader className="flex-shrink-0 pb-6 border-b">
-          {/* Título removido - se muestra en el formulario con icono */}
+          <DialogTitle className="sr-only">Consulta de Reingreso</DialogTitle>
+          <DialogDescription className="sr-only">
+            Formulario para crear una consulta de reingreso médico
+          </DialogDescription>
         </DialogHeader>
         
         <div className="flex-1 overflow-y-auto pr-2 -mr-2">
