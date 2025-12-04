@@ -26,6 +26,17 @@ export function DoctorLayout({
     const { isImpersonating, clearImpersonation } = useDoctorStore();
     const router = useRouter();
     const [activeSection, setActiveSection] = useState('pacientes');
+    
+    // Restaurar la sección activa desde sessionStorage cuando se monta el dashboard
+    React.useEffect(() => {1
+        if (currentView === 'dashboard') {
+            const savedSection = sessionStorage.getItem('doctorActiveSection');
+            if (savedSection) {
+                setActiveSection(savedSection);
+                sessionStorage.removeItem('doctorActiveSection');
+            }
+        }
+    }, [currentView]);
 
     // Debug: verificar cambios en activeSection
     React.useEffect(() => {
@@ -83,7 +94,16 @@ export function DoctorLayout({
                 <div className="w-64 flex-shrink-0">
                     <DoctorSidebar
                         activeSection={activeSection}
-                        setActiveSection={setActiveSection}
+                        setActiveSection={(section) => {
+                            // Si estamos en el perfil del paciente y cambiamos de sección, navegar al dashboard
+                            if (currentView === 'patientProfile' && section !== 'pacientes') {
+                                // Guardar la sección en sessionStorage para mantenerla después de navegar
+                                sessionStorage.setItem('doctorActiveSection', section);
+                                router.push('/doctor/dashboard');
+                            } else {
+                                setActiveSection(section);
+                            }
+                        }}
                     />
                 </div>
             )}
@@ -95,7 +115,14 @@ export function DoctorLayout({
                         <DoctorSidebar
                             activeSection={activeSection}
                             setActiveSection={(section) => {
-                                setActiveSection(section);
+                                // Si estamos en el perfil del paciente y cambiamos de sección, navegar al dashboard
+                                if (currentView === 'patientProfile' && section !== 'pacientes') {
+                                    // Guardar la sección en sessionStorage para mantenerla después de navegar
+                                    sessionStorage.setItem('doctorActiveSection', section);
+                                    router.push('/doctor/dashboard');
+                                } else {
+                                    setActiveSection(section);
+                                }
                                 setIsMobileSidebarOpen(false);
                             }}
                         />
