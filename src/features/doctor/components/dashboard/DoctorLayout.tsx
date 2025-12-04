@@ -5,6 +5,7 @@ import { Sheet, SheetContent, Alert } from '@/shared';
 import { AppHeader } from '@/shared/components/Header';
 import { DoctorSidebar } from './Sidebar';
 import { AppointmentsCalendar } from '../calendar';
+import { ValidatorView } from '../validator/ValidatorView';
 import { useAuthStore } from '@/features/auth/store/auth';
 import { useDoctorStore } from '@/features/doctor/store/doctorStore';
 import { useImpersonationCleanup } from '@/features/doctor/hooks/useImpersonationCleanup';
@@ -25,6 +26,11 @@ export function DoctorLayout({
     const { isImpersonating, clearImpersonation } = useDoctorStore();
     const router = useRouter();
     const [activeSection, setActiveSection] = useState('pacientes');
+
+    // Debug: verificar cambios en activeSection
+    React.useEffect(() => {
+        console.log('🔵 activeSection cambió a:', activeSection);
+    }, [activeSection]);
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
 
@@ -127,13 +133,47 @@ export function DoctorLayout({
                         </Alert>
                     )}
                     
-                    {/* Mostrar calendario cuando la sección activa sea 'turnos' */}
-                    {activeSection === 'turnos' ? (
-                        <div className="max-w-4xl mx-auto">
-                            <AppointmentsCalendar />
+                    {/* Mostrar contenido según la sección activa */}
+                    {(() => {
+                        console.log('🔍 Evaluando renderizado - activeSection:', activeSection, 'currentView:', currentView);
+                        console.log('🔍 Comparaciones:', {
+                            'activeSection === validador': activeSection === 'validador',
+                            'activeSection === turnos': activeSection === 'turnos',
+                            'currentView === patientProfile': currentView === 'patientProfile'
+                        });
+                        
+                        if (currentView === 'patientProfile') {
+                            console.log('📋 Retornando children (patientProfile)');
+                            return children;
+                        }
+                        
+                        if (activeSection === 'turnos') {
+                            console.log('📅 Retornando AppointmentsCalendar');
+                            return (
+                                <div className="max-w-4xl mx-auto">
+                                    <AppointmentsCalendar />
+                                </div>
+                            );
+                        }
+                        
+                        if (activeSection === 'validador') {
+                            console.log('✅ Retornando ValidatorView');
+                            return (
+                                <div className="max-w-4xl mx-auto">
+                                    <ValidatorView />
+                                </div>
+                            );
+                        }
+                        
+                        console.log('📋 Retornando children (default)');
+                        return children;
+                    })()}
+                    
+                    {/* Debug temporal - remover después */}
+                    {process.env.NODE_ENV === 'development' && (
+                        <div className="fixed bottom-4 right-4 bg-black/80 text-white p-2 rounded text-xs z-50">
+                            Active: {activeSection} | View: {currentView}
                         </div>
-                    ) : (
-                        children
                     )}
                 </main>
             </div>

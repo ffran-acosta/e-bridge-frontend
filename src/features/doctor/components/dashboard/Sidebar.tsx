@@ -48,7 +48,13 @@ export function DoctorSidebar({
                                             ? "bg-gradient-to-r from-[#2a2f3a] via-[#3a3f4a] to-[#2a2f3a] hover:from-[#3a3f4a] hover:via-[#4a4f5a] hover:to-[#3a3f4a] text-white shadow-lg shadow-[#2a2f3a]/30 border border-[#3a3f4a]/40" 
                                             : ""
                                     }`}
-                                    onClick={() => item.active && setActiveSection(item.id)}
+                                    onClick={() => {
+                                        console.log('Sidebar click:', item.id, 'active:', item.active);
+                                        if (item.active) {
+                                            setActiveSection(item.id);
+                                            console.log('setActiveSection llamado con:', item.id);
+                                        }
+                                    }}
                                     disabled={!item.active}
                                 >
                                     <item.icon className="mr-3 h-4 w-4" />
