@@ -8,3 +8,4 @@ export { useDoctorAppointments } from './useDoctorAppointments';
 export { useDailyAppointments } from './useDailyAppointments';
 export { useWeeklyAppointments } from './useWeeklyAppointments';
 export { useMonthlyAppointments } from './useMonthlyAppointments';
+export { useExportConsultations } from './useExportConsultations';

@@ -28,4 +28,5 @@ export const DOCTOR_ENDPOINTS = {
         date ? `/doctor/appointments/week?date=${date}` : '/doctor/appointments/week',
     appointmentsMonth: (date?: string) => 
         date ? `/doctor/appointments/month?date=${date}` : '/doctor/appointments/month',
+    exportList: '/doctor/consultations/export-list',
 } as const;

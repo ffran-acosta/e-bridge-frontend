@@ -6,6 +6,7 @@ import { AppHeader } from '@/shared/components/Header';
 import { DoctorSidebar } from './Sidebar';
 import { AppointmentsCalendar } from '../calendar';
 import { ValidatorView } from '../validator/ValidatorView';
+import { ExportView } from '../export/ExportView';
 import { useAuthStore } from '@/features/auth/store/auth';
 import { useDoctorStore } from '@/features/doctor/store/doctorStore';
 import { useImpersonationCleanup } from '@/features/doctor/hooks/useImpersonationCleanup';
@@ -167,6 +168,8 @@ export function DoctorLayout({
                         <div className="max-w-4xl mx-auto">
                             <ValidatorView />
                         </div>
+                    ) : activeSection === 'exportar' ? (
+                        <ExportView />
                     ) : (
                         children
                     )}
