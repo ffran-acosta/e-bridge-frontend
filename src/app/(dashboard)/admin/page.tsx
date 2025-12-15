@@ -20,8 +20,12 @@ export default function AdminPage() {
     const { setImpersonatedDoctor } = useDoctorStore();
 
     const handleViewProfile = (doctorId: string) => {
+        // Buscar el doctor para obtener su nombre
+        const doctor = doctors.find(d => d.id === doctorId);
+        const doctorName = doctor ? `Dr. ${doctor.firstName} ${doctor.lastName}` : null;
+        
         // Configurar impersonación y navegar al dashboard del doctor
-        setImpersonatedDoctor(doctorId);
+        setImpersonatedDoctor(doctorId, doctorName);
         router.push('/doctor/dashboard');
     };
 

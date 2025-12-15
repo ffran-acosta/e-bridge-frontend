@@ -11,6 +11,7 @@ type DashboardState = {
     stats: DashboardStats | null;
     loading: boolean;
     error: string | null;
+    _lastFetch?: number; // Para evitar múltiples llamadas simultáneas
 };
 
 type DashboardActions = {
@@ -63,21 +64,43 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
     stats: null,
     loading: false,
     error: null,
+    _lastFetch: 0, // Para evitar múltiples llamadas simultáneas
 
     clearError: () => set({ error: null }),
 
     fetchDashboard: async () => {
-        set({ loading: true, error: null });
+        const currentState = get();
+        // Evitar múltiples llamadas simultáneas (dentro de 2 segundos)
+        const now = Date.now();
+        const lastFetch = currentState._lastFetch || 0;
+        if (currentState.loading || (now - lastFetch < 2000)) {
+            console.log('⏭️ Saltando llamada duplicada a fetchDashboard');
+            return;
+        }
+
+        set({ loading: true, error: null, _lastFetch: now });
         try {
             const { apiWithAuth } = useAuthStore.getState();
 
+            console.log('📡 Llamando a:', DASHBOARD_ENDPOINTS.superAdmin.dashboard);
             const response = await apiWithAuth<{ data: DashboardResponse }>(DASHBOARD_ENDPOINTS.superAdmin.dashboard);
+
+            console.log('📥 Respuesta recibida:', response);
 
             if (!response) {
                 throw new Error("Sin respuesta del servidor");
             }
 
-            const { stats, doctors, admins } = response.data;
+            // Manejar diferentes estructuras de respuesta
+            const responseData = response.data || response;
+            const { stats, doctors, admins } = responseData;
+
+            if (!stats || !doctors || !admins) {
+                console.error('❌ Estructura de respuesta inválida:', responseData);
+                throw new Error("Estructura de respuesta inválida del servidor");
+            }
+
+            console.log('✅ Datos transformados:', { stats, doctorsCount: doctors.length, adminsCount: admins.length });
 
             set({
                 stats: transformStats(stats),
@@ -86,6 +109,7 @@ export const useDashboardStore = create<DashboardState & DashboardActions>((set,
             });
 
         } catch (error: unknown) {
+            console.error('❌ Error al cargar dashboard:', error);
             const message =
                 error instanceof Error
                     ? error.message

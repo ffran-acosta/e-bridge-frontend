@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
+import { useDoctorStore } from '../store/doctorStore';
 
 interface UseDeleteAppointmentOptions {
   onSuccess?: () => void;
@@ -25,11 +26,18 @@ export function useDeleteAppointment({
 
       console.log('📡 Enviando DELETE a:', endpoint);
 
+      // Si estamos impersonando, enviar el doctorId como header
+      const store = useDoctorStore.getState();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (store.isImpersonating && store.impersonatedDoctorId) {
+        headers['X-Doctor-Id'] = store.impersonatedDoctorId;
+      }
+
       await api(endpoint, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
       });
 
       console.log('✅ Turno eliminado exitosamente');

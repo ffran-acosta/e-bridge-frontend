@@ -3,6 +3,7 @@ import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
+import { useDoctorStore } from '../store/doctorStore';
 import { 
   createPatientSchema, 
   defaultFormValues, 
@@ -26,6 +27,7 @@ export function useCreatePatient(options: UseCreatePatientOptions = {}) {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isImpersonating, impersonatedDoctorId } = useDoctorStore();
 
   const form = useForm<CreatePatientFormSchema>({
     resolver: zodResolver(createPatientSchema) as Resolver<CreatePatientFormSchema>,
@@ -81,11 +83,19 @@ export function useCreatePatient(options: UseCreatePatientOptions = {}) {
         allergies: data.allergies,
       };
       
+      // Si estamos impersonando, enviar el doctorId como header
+      // El backend está configurado para aceptar X-Doctor-Id en CORS
+      const headers: Record<string, string> = {};
+      if (isImpersonating && impersonatedDoctorId) {
+        headers['X-Doctor-Id'] = impersonatedDoctorId;
+      }
+      
       const response = await api<CreatePatientResponse>(
         DOCTOR_ENDPOINTS.patients,
         {
           method: 'POST',
           body: payload as unknown as JsonValue,
+          ...(Object.keys(headers).length > 0 ? { headers } : {}),
         }
       );
       

@@ -13,8 +13,11 @@ export function useDoctors(searchTerm: string = '') {
     const clearError = useDashboardStore(state => state.clearError);
 
     useEffect(() => {
-        fetchDashboard();
-    }, [fetchDashboard]);
+        // Solo cargar si no hay datos y no está cargando
+        if (doctors.length === 0 && !loading) {
+            fetchDashboard();
+        }
+    }, []); // Ejecutar solo una vez al montar
 
     // Filtro memoizado que reacciona al searchTerm que viene como parámetro
     const filteredDoctors = useMemo(() => {

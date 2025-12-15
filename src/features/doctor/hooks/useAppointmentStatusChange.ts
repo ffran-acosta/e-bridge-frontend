@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
+import { useDoctorStore } from '../store/doctorStore';
 
 interface UseAppointmentStatusChangeOptions {
   onSuccess?: () => void;
@@ -31,11 +32,18 @@ export function useAppointmentStatusChange({
       console.log('📡 Enviando POST a:', endpoint);
       console.log('📡 Request body:', requestBody);
 
+      // Si estamos impersonando, enviar el doctorId como header
+      const store = useDoctorStore.getState();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (store.isImpersonating && store.impersonatedDoctorId) {
+        headers['X-Doctor-Id'] = store.impersonatedDoctorId;
+      }
+
       await api(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: requestBody,
       });
 
@@ -68,11 +76,18 @@ export function useAppointmentStatusChange({
       console.log('📡 Enviando POST a:', endpoint);
       console.log('📡 Request body:', requestBody);
 
+      // Si estamos impersonando, enviar el doctorId como header
+      const store = useDoctorStore.getState();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (store.isImpersonating && store.impersonatedDoctorId) {
+        headers['X-Doctor-Id'] = store.impersonatedDoctorId;
+      }
+
       await api(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: requestBody,
       });
 
@@ -106,11 +121,18 @@ export function useAppointmentStatusChange({
       console.log('📡 Enviando PATCH a:', endpoint);
       console.log('📡 Request body:', requestBody);
 
+      // Si estamos impersonando, enviar el doctorId como header
+      const store = useDoctorStore.getState();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (store.isImpersonating && store.impersonatedDoctorId) {
+        headers['X-Doctor-Id'] = store.impersonatedDoctorId;
+      }
+
       await api(endpoint, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: requestBody,
       });
 

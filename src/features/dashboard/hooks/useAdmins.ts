@@ -15,11 +15,8 @@ export function useAdmins(searchTerm: string = '') {
     const getAdminById = useDashboardStore(state => state.getAdminById);
     const clearError = useDashboardStore(state => state.clearError);
 
-    useEffect(() => {
-        if (admins.length === 0 && !loading) {
-            fetchDashboard();
-        }
-    }, [admins.length, loading, fetchDashboard]);
+    // No llamar fetchDashboard aquí porque useDoctors ya lo hace
+    // Ambos comparten el mismo store, así que solo necesitamos una llamada
 
     // Filtro memoizado que reacciona al searchTerm
     const filteredAdmins = useMemo(() => {

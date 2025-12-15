@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sheet, SheetContent, Alert } from '@/shared';
+import { Sheet, SheetContent, Button } from '@/shared';
+import { Shield, ArrowLeft } from 'lucide-react';
 import { AppHeader } from '@/shared/components/Header';
 import { DoctorSidebar } from './Sidebar';
 import { AppointmentsCalendar } from '../calendar';
@@ -24,7 +25,7 @@ export function DoctorLayout({
     onBackClick
 }: DoctorLayoutProps) {
     const { user } = useAuthStore();
-    const { isImpersonating, clearImpersonation } = useDoctorStore();
+    const { isImpersonating, impersonatedDoctorName, clearImpersonation } = useDoctorStore();
     const router = useRouter();
     const [activeSection, setActiveSection] = useState('pacientes');
     
@@ -144,20 +145,37 @@ export function DoctorLayout({
                 <main className="flex-1 overflow-auto p-6">
                     {/* Banner de impersonación */}
                     {isImpersonating && (
-                        <Alert className="mb-4 border-amber-200 bg-amber-50 text-amber-800">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-2">
-                                    <span className="font-medium">Modo Administrador</span>
-                                    <span className="text-sm">Estás viendo la vista del doctor</span>
+                        <div className="mb-6 rounded-lg border border-[#3a3f4a]/40 bg-gradient-to-r from-[#2a2f3a] via-[#3a3f4a] to-[#2a2f3a] p-4 shadow-lg shadow-[#2a2f3a]/30">
+                            <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="flex size-10 items-center justify-center rounded-full bg-white/10">
+                                        <Shield className="size-5 text-white" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="font-semibold text-white">Modo Administrador</span>
+                                        <span className="text-sm text-white/80">
+                                            {impersonatedDoctorName 
+                                                ? (
+                                                    <>
+                                                        Estás viendo la vista de <span className="font-bold text-base">{impersonatedDoctorName}</span>
+                                                    </>
+                                                )
+                                                : 'Estás viendo la vista del doctor'
+                                            }
+                                        </span>
+                                    </div>
                                 </div>
-                                <button
+                                <Button
+                                    variant="outline"
+                                    size="sm"
                                     onClick={handleExitImpersonation}
-                                    className="text-sm underline hover:no-underline"
+                                    className="bg-white/5 text-white border-white/20 hover:bg-white/10 hover:text-white"
                                 >
-                                    Volver al panel de administración
-                                </button>
+                                    <ArrowLeft className="size-4" />
+                                    Volver al panel
+                                </Button>
                             </div>
-                        </Alert>
+                        </div>
                     )}
                     
                     {/* Mostrar contenido según la sección activa */}

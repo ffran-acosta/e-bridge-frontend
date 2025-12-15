@@ -6,6 +6,16 @@ import { Patient, PatientsParams, PatientProfile, BackendPatientsResponse, Backe
 import { DOCTOR_ENDPOINTS } from "../constants/endpoints";
 import { mapBackendPatientToFrontend, mapBackendPatientProfileToFrontend } from "../utils/patientMappers";
 
+/**
+ * Helper para obtener headers de impersonación
+ */
+const getImpersonationHeaders = (isImpersonating: boolean, impersonatedDoctorId: string | null): Record<string, string> => {
+    if (isImpersonating && impersonatedDoctorId) {
+        return { 'X-Doctor-Id': impersonatedDoctorId };
+    }
+    return {};
+};
+
 type State = {
     // Estado existente de pacientes (lista)
     patients: Patient[];
@@ -28,6 +38,7 @@ type State = {
 
     // Estado para impersonación (admin viendo doctor)
     impersonatedDoctorId: string | null;
+    impersonatedDoctorName: string | null;
     isImpersonating: boolean;
 };
 
@@ -48,7 +59,7 @@ type Actions = {
     clearProfileError: () => void;
 
     // Acciones para impersonación
-    setImpersonatedDoctor: (doctorId: string | null) => void;
+    setImpersonatedDoctor: (doctorId: string | null, doctorName?: string | null) => void;
     clearImpersonation: () => void;
 };
 
@@ -74,6 +85,7 @@ const initialState: State = {
 
     // Estado inicial de impersonación
     impersonatedDoctorId: null,
+    impersonatedDoctorName: null,
     isImpersonating: false,
 };
 
@@ -100,13 +112,16 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
                 queryParams.set('sortBy', sortBy);
             }
 
-            // Si estamos impersonando, agregar el doctorId como query param
-            if (currentState.isImpersonating && currentState.impersonatedDoctorId) {
-                queryParams.set('doctorId', currentState.impersonatedDoctorId);
-            }
+            // Si estamos impersonando, enviar el doctorId como header
+            // El backend está configurado para aceptar X-Doctor-Id en CORS
+            const headers = getImpersonationHeaders(
+                currentState.isImpersonating,
+                currentState.impersonatedDoctorId
+            );
 
             const response = await api<BackendPatientsResponse>(
-                `${DOCTOR_ENDPOINTS.patients}?${queryParams.toString()}`
+                `${DOCTOR_ENDPOINTS.patients}?${queryParams.toString()}`,
+                Object.keys(headers).length > 0 ? { headers } : {}
             );
 
             if (!response || !response.data) {
@@ -175,12 +190,17 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
             const currentState = get();
             let endpoint = DOCTOR_ENDPOINTS.patientProfile(patientId);
             
-            // Si estamos impersonando, agregar el doctorId como query param
-            if (currentState.isImpersonating && currentState.impersonatedDoctorId) {
-                endpoint += `?doctorId=${currentState.impersonatedDoctorId}`;
-            }
+            // Si estamos impersonando, enviar el doctorId como header
+            // El backend está configurado para aceptar X-Doctor-Id en CORS
+            const headers = getImpersonationHeaders(
+                currentState.isImpersonating,
+                currentState.impersonatedDoctorId
+            );
 
-            const response = await api<BackendPatientProfileResponse>(endpoint);
+            const response = await api<BackendPatientProfileResponse>(
+                endpoint,
+                Object.keys(headers).length > 0 ? { headers } : {}
+            );
 
             if (!response || !response.data) {
                 throw new Error('Sin respuesta del servidor al obtener el perfil del paciente');
@@ -206,9 +226,10 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
     clearProfileError: () => set({ profileError: null }),
 
     // ========== ACCIONES PARA IMPERSONACIÓN ==========
-    setImpersonatedDoctor: (doctorId: string | null) => {
+    setImpersonatedDoctor: (doctorId: string | null, doctorName?: string | null) => {
         set({ 
             impersonatedDoctorId: doctorId,
+            impersonatedDoctorName: doctorName || null,
             isImpersonating: !!doctorId
         });
     },
@@ -216,6 +237,7 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
     clearImpersonation: () => {
         set({ 
             impersonatedDoctorId: null,
+            impersonatedDoctorName: null,
             isImpersonating: false
         });
     },

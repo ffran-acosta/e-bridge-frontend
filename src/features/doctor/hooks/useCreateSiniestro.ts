@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api, JsonValue } from '@/lib/api';
+import { useDoctorStore } from '../store/doctorStore';
 import { 
   createSiniestroSchema, 
   defaultSiniestroFormValues, 
@@ -27,6 +28,7 @@ export function useCreateSiniestro(options: UseCreateSiniestroOptions) {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isImpersonating, impersonatedDoctorId } = useDoctorStore();
 
   const form = useForm<CreateSiniestroFormSchema>({
     resolver: zodResolver(createSiniestroSchema) as Resolver<CreateSiniestroFormSchema>,
@@ -61,9 +63,17 @@ export function useCreateSiniestro(options: UseCreateSiniestroOptions) {
         accidentDateTime: data.accidentDateTime,
       };
       
+      // Si estamos impersonando, enviar el doctorId como header
+      // El backend está configurado para aceptar X-Doctor-Id en CORS
+      const headers: Record<string, string> = {};
+      if (isImpersonating && impersonatedDoctorId) {
+        headers['X-Doctor-Id'] = impersonatedDoctorId;
+      }
+      
       const response = await api<CreateSiniestroResponse>('/siniestros', {
         method: 'POST',
         body: payload as unknown as JsonValue,
+        ...(Object.keys(headers).length > 0 ? { headers } : {}),
       });
 
       if (!response) {

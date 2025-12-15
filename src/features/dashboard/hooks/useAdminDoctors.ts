@@ -81,6 +81,6 @@ export function useAdminDoctors(searchTerm: string = '') {
         error,
         refetch: fetchDoctors,
         clearError: () => setError(null),
-        totalDoctors: filteredDoctors.length
+        totalDoctors: doctors.length // Total antes del filtro
     };
 }

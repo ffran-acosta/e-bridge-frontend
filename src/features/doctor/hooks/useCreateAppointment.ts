@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
+import { useDoctorStore } from '../store/doctorStore';
 import { 
   appointmentFormSchema, 
   getAppointmentDefaultValues, 
@@ -52,11 +53,18 @@ export function useCreateAppointment({
       console.log('📡 Request body:', requestBody);
       console.log('📡 URL completa:', `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${endpoint}`);
 
+      // Si estamos impersonando, enviar el doctorId como header
+      const store = useDoctorStore.getState();
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (store.isImpersonating && store.impersonatedDoctorId) {
+        headers['X-Doctor-Id'] = store.impersonatedDoctorId;
+      }
+
       const response = await api<unknown>(endpoint, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: requestBody as unknown as JsonValue,
       });
 

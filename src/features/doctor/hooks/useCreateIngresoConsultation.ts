@@ -5,6 +5,7 @@ import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { api, JsonValue } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../constants/endpoints';
+import { useDoctorStore } from '../store/doctorStore';
 import { 
   ingresoConsultationFormSchema, 
   IngresoConsultationFormData,
@@ -106,9 +107,17 @@ export function useCreateIngresoConsultation({
       console.log('📡 Request body:', requestBody);
       console.log('📡 Request body stringified:', JSON.stringify(requestBody));
 
+      // Si estamos impersonando, enviar el doctorId como header
+      const store = useDoctorStore.getState();
+      const headers: Record<string, string> = {};
+      if (store.isImpersonating && store.impersonatedDoctorId) {
+        headers['X-Doctor-Id'] = store.impersonatedDoctorId;
+      }
+
       const response = await api<unknown>(endpoint, {
         method: 'POST',
         body: requestBody as unknown as JsonValue,
+        ...(Object.keys(headers).length > 0 ? { headers } : {}),
       });
 
       if (!response) {
