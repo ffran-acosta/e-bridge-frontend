@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAppointmentStatusChange } from '../../../hooks/useAppointmentStatusChange';
 import { CheckCircle, Calendar, Clock, MapPin, X } from 'lucide-react';
 import { formatAppointmentDate, formatAppointmentTime } from '../../../utils/dateFormatters';
+import { ConsultationTypeBadge } from '@/features/doctor/components/shared/ConsultationTypeBadge';
 
 interface CompleteAppointmentModalProps {
   isOpen: boolean;
@@ -130,8 +131,8 @@ export function CompleteAppointmentModal({
               <SelectContent>
                 {consultations.map((consultation) => (
                   <SelectItem key={consultation.id} value={consultation.id}>
-                    <div className="flex flex-col">
-                      <span className="font-medium">{consultation.consultationType}</span>
+                    <div className="flex flex-col gap-0.5">
+                      <ConsultationTypeBadge type={consultation.consultationType} />
                       <span className="text-xs text-muted-foreground">
                         {new Date(consultation.createdAt).toLocaleDateString('es-AR')}
                       </span>

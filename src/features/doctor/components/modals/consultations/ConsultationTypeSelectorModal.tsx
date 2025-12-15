@@ -14,6 +14,7 @@ import {
   Info,
   RotateCcw
 } from 'lucide-react';
+import { PatientTypeBadge } from '@/features/doctor/components/shared/PatientTypeBadge';
 import { IngresoConsultationModal } from './IngresoConsultationModal';
 import { AtencionConsultationModal } from './AtencionConsultationModal';
 import { AltaConsultationModal } from './AltaConsultationModal';
@@ -202,10 +203,10 @@ export function ConsultationTypeSelectorModal({
             Nueva Consulta ART - {patientName}
           </DialogTitle>
           <DialogDescription>
-            Selecciona el tipo de consulta a crear para este paciente ART
+            Selecciona el tipo de consulta a crear para este paciente
           </DialogDescription>
           <div className="mt-2 flex items-center gap-2 text-sm">
-            <Badge variant="outline">Caso ART</Badge>
+            <PatientTypeBadge type="ART" />
             {!hasConsultations && (
               <div className="flex items-center gap-1 text-orange-600">
                 <AlertTriangle className="h-3 w-3" />

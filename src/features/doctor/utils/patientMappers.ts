@@ -50,6 +50,7 @@ export const mapBackendPatientToFrontend = (backendPatient: BackendPatient): Pat
         dni: backendPatient.dni,
         age: backendPatient.age,
         gender: backendPatient.gender,
+        type: backendPatient.type,
         phone: backendPatient.phone1,
         email: backendPatient.email,
         address: `${backendPatient.city}, ${backendPatient.province}`,

@@ -6,6 +6,7 @@ export interface Patient {
     dni: string;
     age: number;
     gender: 'FEMENINO' | 'MASCULINO' | 'NO_BINARIO';
+    type: 'NORMAL' | 'ART';
     phone: string;
     email: string;
     address: string;

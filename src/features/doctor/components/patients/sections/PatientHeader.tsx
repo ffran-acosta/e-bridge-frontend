@@ -8,11 +8,12 @@ import {
     User,
     Plus,
 } from "lucide-react";
-import { Badge, Button, Card, CardHeader, CardTitle } from "@/shared";
+import { Button, Card, CardHeader, CardTitle } from "@/shared";
 import { StatusBadge } from "@/shared/components/ui/StatusBadge";
 import { PatientProfile } from "@/shared/types/patients.types";
 import { getFullName, calculateAge, formatPhone, formatAddress, isARTPatient } from "../../../utils/patientFormatters";
 import { formatLastConsultation } from "../../../utils/dateFormatters";
+import { PatientTypeBadge } from "@/features/doctor/components/shared/PatientTypeBadge";
 
 interface PatientHeaderProps {
     patient: PatientProfile;
@@ -56,9 +57,7 @@ export function PatientHeader({ patient, onEdit, onContinueSiniestro }: PatientH
                                 <div className="flex flex-wrap items-center gap-2 mt-1">
                                     <StatusBadge status={patient.currentStatus} />
                                     {isARTPatient(patient) && (
-                                        <Badge variant="destructive">
-                                            ART
-                                        </Badge>
+                                        <PatientTypeBadge type="ART" />
                                     )}
                                     <span className="text-xs md:text-sm text-muted-foreground">
                                         Última consulta: {formatLastConsultation(patient.stats.lastConsultationDate)}

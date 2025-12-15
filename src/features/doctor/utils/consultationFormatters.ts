@@ -48,3 +48,29 @@ export const getArtCaseLabel = (isArtCase: boolean): {
         ? { label: 'Caso ART', variant: 'surgery' }      // ESPECIAL - Púrpura (ART)
         : { label: 'Consulta General', variant: 'step-1' }; // PASO 1 - Azul (General)
 };
+
+// Tipo de consulta (INGRESO, ATENCION, ALTA, REINGRESO)
+export const getConsultationTypeLabel = (type: string): string => {
+    const labels = {
+        INGRESO: 'Ingreso',
+        ATENCION: 'Atención',
+        ALTA: 'Alta Médica',
+        REINGRESO: 'Reingreso',
+    } as const;
+
+    return labels[type as keyof typeof labels] ?? type;
+};
+
+export const getConsultationTypeVariant = (
+    type: string
+): 'default' | 'destructive' | 'outline' | 'secondary' => {
+    const variants = {
+        INGRESO: 'default',
+        ATENCION: 'secondary',
+        ALTA: 'destructive',
+        REINGRESO: 'outline',
+    } as const;
+
+    return variants[type as keyof typeof variants] ?? 'default';
+};
+

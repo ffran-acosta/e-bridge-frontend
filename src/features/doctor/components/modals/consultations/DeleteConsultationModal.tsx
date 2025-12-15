@@ -1,10 +1,11 @@
-"use client";
+'use client';
 
 import React from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/shared';
 import { Button } from '@/shared/components/ui/button';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import { useDeleteConsultation } from '../../../hooks/useDeleteConsultation';
+import { ConsultationTypeBadge } from '@/features/doctor/components/shared/ConsultationTypeBadge';
 
 interface DeleteConsultationModalProps {
   isOpen: boolean;
@@ -71,7 +72,7 @@ export function DeleteConsultationModal({
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">Tipo:</span>
-                <span className="text-sm text-muted-foreground">{consultationType}</span>
+                <ConsultationTypeBadge type={consultationType} />
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-foreground">Fecha:</span>

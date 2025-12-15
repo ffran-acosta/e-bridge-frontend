@@ -4,6 +4,8 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 import { Checkbox } from '@/shared';
 import type { ExportConsultation } from '../../types/export-consultations.types';
+import { ConsultationTypeBadge } from '@/features/doctor/components/shared/ConsultationTypeBadge';
+import { PatientTypeBadge } from '@/features/doctor/components/shared/PatientTypeBadge';
 
 interface ConsultationsTableProps {
     consultations: ExportConsultation[];
@@ -20,7 +22,9 @@ export function ConsultationsTable({
     onSelectionChange,
     onSelectAll,
 }: ConsultationsTableProps) {
-    const allSelected = consultations.length > 0 && consultations.every((c) => selectedIds.has(c.id));
+    const allSelected =
+        consultations.length > 0 && consultations.every((c) => selectedIds.has(c.id));
+
     const formatDate = (dateString: string) => {
         try {
             const date = new Date(dateString);
@@ -34,38 +38,6 @@ export function ConsultationsTable({
         } catch {
             return dateString;
         }
-    };
-
-    const getTypeLabel = (type: ExportConsultation['type']) => {
-        const labels = {
-            'INGRESO': 'Ingreso',
-            'ATENCION': 'Atención',
-            'ALTA': 'Alta',
-            'REINGRESO': 'Reingreso',
-        };
-        return labels[type] || type;
-    };
-
-    const getTypeBadgeColor = (type: ExportConsultation['type']) => {
-        const colors = {
-            'INGRESO': 'bg-blue-100 text-blue-800',
-            'ATENCION': 'bg-green-100 text-green-800',
-            'ALTA': 'bg-purple-100 text-purple-800',
-            'REINGRESO': 'bg-orange-100 text-orange-800',
-        };
-        return colors[type] || 'bg-gray-100 text-gray-800';
-    };
-
-    const getPatientTypeBadge = (patientType: ExportConsultation['patientType']) => {
-        return patientType === 'ART' ? (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
-                ART
-            </span>
-        ) : (
-            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                Normal
-            </span>
-        );
     };
 
     if (loading && consultations.length === 0) {
@@ -91,7 +63,9 @@ export function ConsultationsTable({
                         </th>
                         <th className="text-left p-3 font-medium">Paciente</th>
                         <th className="text-left p-3 font-medium">Tipo Consulta</th>
-                        <th className="text-left p-3 font-medium hidden sm:table-cell">Tipo Paciente</th>
+                        <th className="text-left p-3 font-medium hidden sm:table-cell">
+                            Tipo Paciente
+                        </th>
                         <th className="text-left p-3 font-medium hidden md:table-cell">Fecha</th>
                     </tr>
                 </thead>
@@ -121,16 +95,10 @@ export function ConsultationsTable({
                                     </div>
                                 </td>
                                 <td className="p-3">
-                                    <span
-                                        className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTypeBadgeColor(
-                                            consultation.type
-                                        )}`}
-                                    >
-                                        {getTypeLabel(consultation.type)}
-                                    </span>
+                                    <ConsultationTypeBadge type={consultation.type} />
                                 </td>
                                 <td className="p-3 hidden sm:table-cell">
-                                    {getPatientTypeBadge(consultation.patientType)}
+                                    <PatientTypeBadge type={consultation.patientType} />
                                 </td>
                                 <td className="p-3 hidden md:table-cell">
                                     <div className="text-sm">{formatDate(consultation.date)}</div>

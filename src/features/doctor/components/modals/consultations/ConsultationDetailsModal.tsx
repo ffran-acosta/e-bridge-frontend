@@ -9,6 +9,8 @@ import { Skeleton } from '@/shared/components/ui/skeleton';
 import { AlertCircle, Calendar, FileText, MapPin, User, Building, Stethoscope, Phone, Mail, AlertTriangle } from 'lucide-react';
 import { useConsultationDetails } from '../../../hooks/useConsultationDetails';
 import { formatConsultationDate, formatNextAppointmentDate } from '../../../utils/dateFormatters';
+import { ConsultationTypeBadge } from '@/features/doctor/components/shared/ConsultationTypeBadge';
+import { PatientTypeBadge } from '@/features/doctor/components/shared/PatientTypeBadge';
 
 interface ConsultationDetailsModalProps {
   isOpen: boolean;
@@ -27,16 +29,6 @@ export function ConsultationDetailsModal({
   });
 
   if (!isOpen) return null;
-
-  const getConsultationTypeVariant = (type: string): "default" | "destructive" | "outline" | "secondary" => {
-    const variants = {
-      'INGRESO': 'default' as const,
-      'ATENCION': 'secondary' as const,
-      'ALTA': 'destructive' as const,
-      'REINGRESO': 'outline' as const
-    };
-    return variants[type as keyof typeof variants] || 'default';
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -83,12 +75,7 @@ export function ConsultationDetailsModal({
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-muted-foreground">Tipo de Consulta</label>
-                        <Badge 
-                          variant={getConsultationTypeVariant(consultation.type)}
-                          className="text-sm"
-                        >
-                          {consultation.type}
-                        </Badge>
+                        <ConsultationTypeBadge type={consultation.type} />
                       </div>
                       
                       <div className="space-y-2">
@@ -178,9 +165,7 @@ export function ConsultationDetailsModal({
                       
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-muted-foreground">Tipo de Paciente</label>
-                        <Badge variant={consultation.patient.type === 'ART' ? 'default' : 'secondary'}>
-                          {consultation.patient.type}
-                        </Badge>
+                        <PatientTypeBadge type={consultation.patient.type} />
                       </div>
                     </div>
 

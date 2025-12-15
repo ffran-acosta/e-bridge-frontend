@@ -14,10 +14,11 @@ import {
 import type { PatientProfile, Consultation } from '@/shared/types/patients.types';
 import { usePatientConsultations } from '@/features/doctor/hooks/usePatientConsultations';
 import { formatConsultationDate, formatNextAppointmentDate } from '@/features/doctor/utils/dateFormatters';
-import { getConsultationStatus, formatDoctorInfo, getArtCaseLabel } from '@/features/doctor/utils/consultationFormatters';
+import { getConsultationStatus, formatDoctorInfo } from '@/features/doctor/utils/consultationFormatters';
 import { truncateText, isARTPatient } from '@/features/doctor/utils/patientFormatters';
 // Nuevo sistema de consultas
 import { CreateConsultationButton, CreateBasicConsultationButton, DeleteConsultationModal, ConsultationDetailsModal } from '../../modals';
+import { ConsultationTypeBadge } from '@/features/doctor/components/shared/ConsultationTypeBadge';
 
 interface ConsultationsTabProps {
     patient: PatientProfile;
@@ -35,26 +36,6 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
         refetch,
         loadPage
     } = usePatientConsultations(patient.id, patient.type);
-
-    const getConsultationTypeLabel = (type: string) => {
-        const labels = {
-            'INGRESO': 'Ingreso',
-            'ATENCION': 'Atención',
-            'ALTA': 'Alta Médica',
-            'REINGRESO': 'Reingreso'
-        };
-        return labels[type as keyof typeof labels] || type;
-    };
-
-    const getConsultationTypeVariant = (type: string): "default" | "destructive" | "outline" | "secondary" => {
-        const variants = {
-            'INGRESO': 'default' as const,
-            'ATENCION': 'secondary' as const,
-            'ALTA': 'destructive' as const,
-            'REINGRESO': 'outline' as const
-        };
-        return variants[type as keyof typeof variants] || 'default';
-    };
 
     // Función para manejar la selección del tipo de consulta
     const handleConsultationTypeSelected = (type: 'INGRESO' | 'ATENCION' | 'ALTA' | 'REINGRESO') => {
@@ -196,7 +177,6 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
             <div className="grid gap-4">
                 {consultations.map((consultation) => {
                     const status = getConsultationStatus(consultation);
-                    const artCase = getArtCaseLabel(consultation.isArtCase);
 
                     return (
                         <Card key={consultation.id} className="hover:shadow-md transition-shadow">
@@ -218,14 +198,7 @@ export const ConsultationsTab = ({ patient }: ConsultationsTabProps) => {
                                                 {status.label}
                                             </Badge>
                                         )}
-                                        <Badge variant={artCase.variant}>
-                                            {artCase.label}
-                                        </Badge>
-                                        {consultation.consultationType && (
-                                            <Badge variant={getConsultationTypeVariant(consultation.consultationType)}>
-                                                {getConsultationTypeLabel(consultation.consultationType)}
-                                            </Badge>
-                                        )}
+                                        <ConsultationTypeBadge type={consultation.consultationType} />
                                     </div>
                                 </div>
                             </CardHeader>
