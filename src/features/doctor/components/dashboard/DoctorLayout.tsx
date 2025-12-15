@@ -14,7 +14,7 @@ import { useRouter } from 'next/navigation';
 
 interface DoctorLayoutProps {
     children: React.ReactNode;
-    currentView?: 'dashboard' | 'patientProfile';
+    currentView?: 'dashboard' | 'patientProfile' | 'profile';
     onBackClick?: () => void;
 }
 
@@ -57,6 +57,9 @@ export function DoctorLayout({
         if (currentView === 'patientProfile') {
             return 'Perfil del Paciente';
         }
+        if (currentView === 'profile') {
+            return 'Mi Perfil';
+        }
         const titles = {
             'pacientes': 'Pacientes',
             'turnos': 'Turnos',
@@ -67,7 +70,7 @@ export function DoctorLayout({
     };
 
     const handleProfileClick = () => {
-        // TODO: Implementar navegación al perfil del doctor
+        router.push('/doctor/profile');
     };
 
     const handleExitImpersonation = () => {
@@ -133,8 +136,8 @@ export function DoctorLayout({
                     title={getSectionTitle()}
                     isMobile={isMobile}
                     onMobileMenuClick={() => setIsMobileSidebarOpen(true)}
-                    showBackButton={currentView === 'patientProfile'}
-                    onBackClick={onBackClick}
+                    showBackButton={currentView === 'patientProfile' || currentView === 'profile'}
+                    onBackClick={currentView === 'profile' ? () => router.push('/doctor/dashboard') : onBackClick}
                     onProfileClick={handleProfileClick}
                 />
 

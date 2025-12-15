@@ -9,6 +9,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     
     // Detectar si estamos en la vista del perfil del paciente
     const isPatientProfile = pathname.includes('/doctor/patients/') && pathname !== '/doctor/patients';
+    // Detectar si estamos en la vista del perfil del doctor
+    const isProfilePage = pathname === '/doctor/profile';
     
     const handleBackClick = () => {
         router.push('/doctor/dashboard');
@@ -17,7 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     return (
         <AuthGuard allowedRoles={["SUPER_ADMIN", "ADMIN", "DOCTOR"]}>
             <DoctorLayout 
-                currentView={isPatientProfile ? 'patientProfile' : 'dashboard'}
+                currentView={isPatientProfile ? 'patientProfile' : isProfilePage ? 'profile' : 'dashboard'}
                 onBackClick={isPatientProfile ? handleBackClick : undefined}
             >
                 {children}
