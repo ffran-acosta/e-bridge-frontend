@@ -43,11 +43,7 @@ export function DoctorSidebar({
                             >
                                 <Button
                                     variant={activeSection === item.id ? "default" : "ghost"}
-                                    className={`w-full justify-start ${
-                                        activeSection === item.id 
-                                            ? "bg-gradient-to-r from-[#2a2f3a] via-[#3a3f4a] to-[#2a2f3a] hover:from-[#3a3f4a] hover:via-[#4a4f5a] hover:to-[#3a3f4a] text-white shadow-lg shadow-[#2a2f3a]/30 border border-[#3a3f4a]/40" 
-                                            : ""
-                                    }`}
+                                    className="w-full justify-start relative"
                                     onClick={() => {
                                         if (item.active) {
                                             setActiveSection(item.id);

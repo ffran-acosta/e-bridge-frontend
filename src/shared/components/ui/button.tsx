@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gradient-to-r from-[#2a2f3a] via-[#3a3f4a] to-[#2a2f3a] text-white shadow-lg shadow-[#2a2f3a]/30 border border-[#3a3f4a]/40 hover:from-[#3a3f4a] hover:via-[#4a4f5a] hover:to-[#3a3f4a] transition-all duration-200",
+          "relative overflow-hidden bg-gradient-to-r from-[#2a2f3a] via-[#3a3f4a] to-[#2a2f3a] text-white shadow-lg shadow-[#2a2f3a]/30 border border-[#3a3f4a]/40 hover:from-[#3a3f4a] hover:via-[#4a4f5a] hover:to-[#3a3f4a] transition-all duration-200 [&>*]:relative [&>*]:z-10 before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/15 before:to-transparent before:-skew-x-12 before:animate-shimmer before:pointer-events-none before:z-[1]",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 hover:shadow-lg hover:shadow-destructive/25 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60 transition-all duration-200",
         outline:
