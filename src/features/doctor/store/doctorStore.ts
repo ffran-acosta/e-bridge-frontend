@@ -6,15 +6,6 @@ import { Patient, PatientsParams, PatientProfile, BackendPatientsResponse, Backe
 import { DOCTOR_ENDPOINTS } from "../constants/endpoints";
 import { mapBackendPatientToFrontend, mapBackendPatientProfileToFrontend } from "../utils/patientMappers";
 
-/**
- * Helper para obtener headers de impersonación
- */
-const getImpersonationHeaders = (isImpersonating: boolean, impersonatedDoctorId: string | null): Record<string, string> => {
-    if (isImpersonating && impersonatedDoctorId) {
-        return { 'X-Doctor-Id': impersonatedDoctorId };
-    }
-    return {};
-};
 
 type State = {
     // Estado existente de pacientes (lista)
@@ -114,10 +105,10 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
 
             // Si estamos impersonando, enviar el doctorId como header
             // El backend está configurado para aceptar X-Doctor-Id en CORS
-            const headers = getImpersonationHeaders(
-                currentState.isImpersonating,
-                currentState.impersonatedDoctorId
-            );
+            const headers: Record<string, string> = {};
+            if (currentState.isImpersonating && currentState.impersonatedDoctorId) {
+                headers['X-Doctor-Id'] = currentState.impersonatedDoctorId;
+            }
 
             const response = await api<BackendPatientsResponse>(
                 `${DOCTOR_ENDPOINTS.patients}?${queryParams.toString()}`,
@@ -188,14 +179,14 @@ export const useDoctorStore = create<State & Actions>((set, get) => ({
 
         try {
             const currentState = get();
-            let endpoint = DOCTOR_ENDPOINTS.patientProfile(patientId);
+            const endpoint = DOCTOR_ENDPOINTS.patientProfile(patientId);
             
             // Si estamos impersonando, enviar el doctorId como header
             // El backend está configurado para aceptar X-Doctor-Id en CORS
-            const headers = getImpersonationHeaders(
-                currentState.isImpersonating,
-                currentState.impersonatedDoctorId
-            );
+            const headers: Record<string, string> = {};
+            if (currentState.isImpersonating && currentState.impersonatedDoctorId) {
+                headers['X-Doctor-Id'] = currentState.impersonatedDoctorId;
+            }
 
             const response = await api<BackendPatientProfileResponse>(
                 endpoint,

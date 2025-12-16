@@ -15,6 +15,7 @@ export function useCreateBasicConsultation({
 }: UseCreateBasicConsultationOptions) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { isImpersonating, impersonatedDoctorId } = useDoctorStore();
 
   const createBasicConsultation = useCallback(async (
     patientId: string,
@@ -50,12 +51,11 @@ export function useCreateBasicConsultation({
       console.log('📡 URL completa:', `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${endpoint}`);
 
       // Si estamos impersonando, enviar el doctorId como header
-      const store = useDoctorStore.getState();
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
-      if (store.isImpersonating && store.impersonatedDoctorId) {
-        headers['X-Doctor-Id'] = store.impersonatedDoctorId;
+      if (isImpersonating && impersonatedDoctorId) {
+        headers['X-Doctor-Id'] = impersonatedDoctorId;
       }
 
       await api(endpoint, {
