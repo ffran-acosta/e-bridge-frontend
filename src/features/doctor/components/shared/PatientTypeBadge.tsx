@@ -29,3 +29,4 @@ export function PatientTypeBadge({ type, className }: PatientTypeBadgeProps) {
     </Badge>
   );
 }
+
