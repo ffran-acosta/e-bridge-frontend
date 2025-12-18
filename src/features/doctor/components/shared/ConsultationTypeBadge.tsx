@@ -32,4 +32,3 @@ export function ConsultationTypeBadge({ type, className }: ConsultationTypeBadge
     </Badge>
   );
 }
-
