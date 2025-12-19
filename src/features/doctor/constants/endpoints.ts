@@ -29,4 +29,10 @@ export const DOCTOR_ENDPOINTS = {
     appointmentsMonth: (date?: string) => 
         date ? `/doctor/appointments/month?date=${date}` : '/doctor/appointments/month',
     exportList: '/doctor/consultations/export-list',
+    // Endpoints del validador
+    validateEligibility: '/integrations/avalian/elegibilidad',
+    authorize: '/doctor/validator/authorize',
+    cancelTransaction: (transactionNumber: string) => `/doctor/validator/transactions/${transactionNumber}/cancel`,
+    recoverAuthorization: (authorizationNumber: string) => `/doctor/validator/authorizations/${authorizationNumber}`,
+    listAuthorizations: (dni?: string) => dni ? `/doctor/validator/authorizations?dni=${dni}` : '/doctor/validator/authorizations',
 } as const;
