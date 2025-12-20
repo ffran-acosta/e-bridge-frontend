@@ -62,7 +62,7 @@ export function SocioNumberInput({
         value={displayValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        placeholder="478691/10"
+        placeholder="000000/00"
         maxLength={9} // 6 dígitos + 1 barra + 2 dígitos
         aria-invalid={!!error}
         className="text-sm font-mono"
