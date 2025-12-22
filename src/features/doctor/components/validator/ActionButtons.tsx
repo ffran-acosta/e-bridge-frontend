@@ -12,11 +12,11 @@ interface ActionButtonsProps {
 
 export function ActionButtons({ onValidateStatus, onAuthorize, isLoading = false }: ActionButtonsProps) {
   return (
-    <div className="flex flex-wrap gap-4 justify-center">
+    <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 justify-center">
       <Button
         onClick={onValidateStatus}
         disabled={isLoading}
-        className="flex items-center gap-2 min-w-[180px]"
+        className="flex items-center justify-center gap-2 w-full sm:w-auto sm:min-w-[180px]"
         variant="default"
       >
         <CheckCircle2 className="h-4 w-4" />
@@ -25,7 +25,7 @@ export function ActionButtons({ onValidateStatus, onAuthorize, isLoading = false
       <Button
         onClick={onAuthorize}
         disabled={isLoading}
-        className="flex items-center gap-2 min-w-[180px]"
+        className="flex items-center justify-center gap-2 w-full sm:w-auto sm:min-w-[180px]"
         variant="default"
       >
         <ShieldCheck className="h-4 w-4" />

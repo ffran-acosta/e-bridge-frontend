@@ -1,20 +1,39 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared';
 import { CredentialCard } from './CredentialCard';
 import { ActionButtons } from './ActionButtons';
 import { TransactionsTable } from './TransactionsTable';
+import { TransactionFiltersComponent } from './components/TransactionFilters';
+import { TransactionPagination } from './components/TransactionPagination';
 import { ValidateStatusModal } from './modals/ValidateStatusModal';
-import type { Transaction } from './types';
+import { useValidatorStore } from '@/features/doctor/store/validatorStore';
 
 export function ValidatorView() {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
   const [isValidateModalOpen, setIsValidateModalOpen] = useState(false);
   
-  // Placeholder para transacciones - se reemplazará con datos reales del backend
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  // Store de Zustand para transacciones
+  const {
+    transactions,
+    pagination,
+    loading: isLoading,
+    error,
+    filters,
+    fetchTransactions,
+    updateFilters,
+    applyFilters,
+    setPage,
+    setLimit,
+    clearFilters,
+  } = useValidatorStore();
+
+  // Cargar transacciones al montar el componente
+  useEffect(() => {
+    fetchTransactions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToggleExpanded = () => {
     setIsExpanded(!isExpanded);
@@ -35,20 +54,20 @@ export function ValidatorView() {
     // Aquí se llamará al endpoint de autorización
   };
 
-  const handleCancel = (transactionId: string, transactionNumber?: string) => {
+  const handleCancel = (transactionId: string, idTransaccion?: string | null) => {
     // TODO: Implementar anulación de consulta
-    console.log('Anular transacción:', transactionId, transactionNumber);
+    console.log('Anular transacción:', transactionId, idTransaccion);
     // Aquí se llamará al endpoint de anulación
   };
 
-  const handleRecover = (transactionId: string, authorizationNumber?: string) => {
+  const handleRecover = (transactionId: string, idAutorizacion?: string | null) => {
     // TODO: Implementar recuperación de autorización
-    console.log('Recuperar autorización:', transactionId, authorizationNumber);
+    console.log('Recuperar autorización:', transactionId, idAutorizacion);
     // Aquí se llamará al endpoint de recuperación
   };
 
   return (
-    <div className="space-y-8 py-8">
+    <div className="space-y-4 sm:space-y-6 lg:space-y-8 py-4 sm:py-6 lg:py-8 px-2 sm:px-4 lg:px-0">
       {/* Credencial con logo Avalian - clickeable para expandir/colapsar */}
       <CredentialCard 
         logoType="avalian-1" 
@@ -56,35 +75,59 @@ export function ValidatorView() {
         onToggle={handleToggleExpanded}
       />
 
+      {/* Botones de acción principales - directamente debajo de la credencial */}
+      {isExpanded && (
+        <div className="animate-in fade-in slide-in-from-top-4 duration-300">
+          <ActionButtons
+            onValidateStatus={handleValidateStatus}
+            onAuthorize={handleAuthorize}
+            isLoading={isLoading}
+          />
+        </div>
+      )}
+
       {/* Funcionalidades expandidas */}
       {isExpanded && (
-        <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
-          {/* Botones de acción principales */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Acciones Principales</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ActionButtons
-                onValidateStatus={handleValidateStatus}
-                onAuthorize={handleAuthorize}
-                isLoading={isLoading}
-              />
-            </CardContent>
-          </Card>
-
+        <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
           {/* Listado de transacciones y autorizaciones */}
           <Card>
-            <CardHeader>
-              <CardTitle>Historial de Transacciones y Autorizaciones</CardTitle>
+            <CardHeader className="pb-3 sm:pb-6">
+              <CardTitle className="text-base sm:text-lg">Historial de Transacciones y Autorizaciones</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-3 sm:space-y-4 pt-0">
+              {/* Filtros */}
+              <TransactionFiltersComponent
+                filters={filters}
+                onFiltersChange={updateFilters}
+                onApplyFilters={applyFilters}
+                onClearFilters={clearFilters}
+                isLoading={isLoading}
+              />
+
+              {/* Error */}
+              {error && (
+                <div className="bg-destructive/10 border border-destructive/20 rounded-lg p-3 flex items-center gap-2">
+                  <p className="text-destructive text-sm">{error}</p>
+                </div>
+              )}
+
+              {/* Tabla de transacciones */}
               <TransactionsTable
                 transactions={transactions}
                 onCancel={handleCancel}
                 onRecover={handleRecover}
                 isLoading={isLoading}
               />
+
+              {/* Paginación */}
+              {pagination && pagination.total > 0 && (
+                <TransactionPagination
+                  pagination={pagination}
+                  onPageChange={setPage}
+                  onLimitChange={setLimit}
+                  isLoading={isLoading}
+                />
+              )}
             </CardContent>
           </Card>
         </div>
