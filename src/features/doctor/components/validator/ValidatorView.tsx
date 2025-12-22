@@ -8,11 +8,13 @@ import { TransactionsTable } from './TransactionsTable';
 import { TransactionFiltersComponent } from './components/TransactionFilters';
 import { TransactionPagination } from './components/TransactionPagination';
 import { ValidateStatusModal } from './modals/ValidateStatusModal';
+import { AuthorizeModal } from './modals/AuthorizeModal';
 import { useValidatorStore } from '@/features/doctor/store/validatorStore';
 
 export function ValidatorView() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isValidateModalOpen, setIsValidateModalOpen] = useState(false);
+  const [isAuthorizeModalOpen, setIsAuthorizeModalOpen] = useState(false);
   
   // Store de Zustand para transacciones
   const {
@@ -48,9 +50,13 @@ export function ValidatorView() {
   };
 
   const handleAuthorize = () => {
-    // TODO: Implementar autorización de consulta
-    console.log('Autorizar consulta');
-    // Aquí se llamará al endpoint de autorización
+    setIsAuthorizeModalOpen(true);
+  };
+
+  const handleAuthorizeSuccess = (data: any) => {
+    console.log('Consulta autorizada exitosamente:', data);
+    // Refrescar la lista de transacciones después de autorizar
+    fetchTransactions();
   };
 
   const handleCancel = (transactionId: string, idTransaccion?: string | null) => {
@@ -135,6 +141,13 @@ export function ValidatorView() {
         isOpen={isValidateModalOpen}
         onClose={() => setIsValidateModalOpen(false)}
         onSuccess={handleValidateSuccess}
+      />
+
+      {/* Modal de autorización */}
+      <AuthorizeModal
+        isOpen={isAuthorizeModalOpen}
+        onClose={() => setIsAuthorizeModalOpen(false)}
+        onSuccess={handleAuthorizeSuccess}
       />
     </div>
   );
