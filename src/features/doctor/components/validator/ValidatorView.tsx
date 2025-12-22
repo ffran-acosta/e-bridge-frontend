@@ -23,7 +23,6 @@ export function ValidatorView() {
     filters,
     fetchTransactions,
     updateFilters,
-    applyFilters,
     setPage,
     setLimit,
     clearFilters,
@@ -99,9 +98,7 @@ export function ValidatorView() {
               <TransactionFiltersComponent
                 filters={filters}
                 onFiltersChange={updateFilters}
-                onApplyFilters={applyFilters}
                 onClearFilters={clearFilters}
-                isLoading={isLoading}
               />
 
               {/* Error */}

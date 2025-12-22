@@ -2,26 +2,24 @@
 
 import React, { useState, useEffect } from 'react';
 import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Button } from '@/shared';
-import { X, Filter, Search } from 'lucide-react';
+import { X, Filter } from 'lucide-react';
 import type { OperationType, TransactionStatus, TransactionFilters } from '../types';
 
 interface TransactionFiltersProps {
   filters: TransactionFilters;
   onFiltersChange: (filters: Partial<TransactionFilters>) => void;
-  onApplyFilters: () => void;
   onClearFilters: () => void;
-  isLoading?: boolean;
 }
 
 const operationTypeLabels: Record<OperationType, string> = {
   ELG: 'Elegibilidad',
-  AP: 'Autorización',
-  ATR: 'Anulación',
-  RA: 'Recuperar Autorización',
+  AP: 'Autorizaci?n',
+  ATR: 'Anulaci?n',
+  RA: 'Recuperar Autorizaci?n',
   LT: 'Listar',
 };
 
-// Tipos de operación que se muestran en el filtro (excluyendo RA y LT que son acciones separadas)
+// Tipos de operaci?n que se muestran en el filtro (excluyendo RA y LT que son acciones separadas)
 const filterableOperationTypes: OperationType[] = ['ELG', 'AP', 'ATR'];
 
 const statusLabels: Record<NonNullable<TransactionStatus>, string> = {
@@ -33,64 +31,68 @@ const statusLabels: Record<NonNullable<TransactionStatus>, string> = {
 export function TransactionFiltersComponent({ 
   filters, 
   onFiltersChange, 
-  onApplyFilters,
-  onClearFilters,
-  isLoading = false
+  onClearFilters
 }: TransactionFiltersProps) {
-  // Estado local para TODOS los filtros (no se aplican hasta presionar el botón)
-  const [localFilters, setLocalFilters] = useState<Partial<TransactionFilters>>({
-    operationType: filters.operationType,
-    status: filters.status,
-    codigoSocio: filters.codigoSocio || '',
-    fechaDesde: filters.fechaDesde,
-    fechaHasta: filters.fechaHasta,
-    idTransaccion: filters.idTransaccion || '',
-    idAutorizacion: filters.idAutorizacion || '',
-  });
+  // Estado local solo para los inputs de texto (con debounce)
+  const [localCodigoSocio, setLocalCodigoSocio] = useState(filters.codigoSocio || '');
+  const [localIdTransaccion, setLocalIdTransaccion] = useState(filters.idTransaccion || '');
+  const [localIdAutorizacion, setLocalIdAutorizacion] = useState(filters.idAutorizacion || '');
 
   // Sincronizar estado local cuando cambian los filtros externos (ej: al limpiar)
   useEffect(() => {
-    setLocalFilters({
-      operationType: filters.operationType,
-      status: filters.status,
-      codigoSocio: filters.codigoSocio || '',
-      fechaDesde: filters.fechaDesde,
-      fechaHasta: filters.fechaHasta,
-      idTransaccion: filters.idTransaccion || '',
-      idAutorizacion: filters.idAutorizacion || '',
-    });
-  }, [filters]);
+    setLocalCodigoSocio(filters.codigoSocio || '');
+    setLocalIdTransaccion(filters.idTransaccion || '');
+    setLocalIdAutorizacion(filters.idAutorizacion || '');
+  }, [filters.codigoSocio, filters.idTransaccion, filters.idAutorizacion]);
 
-  const handleApplyFilters = () => {
-    // Limpiar código de socio: remover la barra y cualquier carácter no numérico
-    // El código de socio son 6+2=8 dígitos, pero puede venir con 3 más (token) = 11
-    const codigoSocioCleaned = localFilters.codigoSocio?.trim()
-      ? localFilters.codigoSocio.trim().replace(/\D/g, '') // Solo números
-      : undefined;
+  // Debounce para codigoSocio - limpiar la barra y enviar solo n?meros
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const value = localCodigoSocio.trim();
+      const cleaned = value ? value.replace(/\D/g, '') : '';
+      onFiltersChange({ 
+        codigoSocio: cleaned || undefined 
+      });
+    }, 500); // 500ms de delay
 
-    // Aplicar todos los filtros locales al estado global y hacer la petición
-    const filtersToApply: Partial<TransactionFilters> = {
-      operationType: localFilters.operationType,
-      status: localFilters.status,
-      codigoSocio: codigoSocioCleaned || undefined,
-      fechaDesde: localFilters.fechaDesde,
-      fechaHasta: localFilters.fechaHasta,
-      idTransaccion: localFilters.idTransaccion?.trim() || undefined,
-      idAutorizacion: localFilters.idAutorizacion?.trim() || undefined,
-    };
-    
-    onFiltersChange(filtersToApply);
-    onApplyFilters();
-  };
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localCodigoSocio]);
+
+  // Debounce para idTransaccion
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const value = localIdTransaccion.trim();
+      onFiltersChange({ 
+        idTransaccion: value || undefined 
+      });
+    }, 500); // 500ms de delay
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localIdTransaccion]);
+
+  // Debounce para idAutorizacion
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const value = localIdAutorizacion.trim();
+      onFiltersChange({ 
+        idAutorizacion: value || undefined 
+      });
+    }, 500); // 500ms de delay
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [localIdAutorizacion]);
 
   const hasActiveFilters = Boolean(
-    localFilters.operationType || 
-    localFilters.status || 
-    localFilters.codigoSocio || 
-    localFilters.fechaDesde || 
-    localFilters.fechaHasta ||
-    localFilters.idTransaccion ||
-    localFilters.idAutorizacion
+    filters.operationType || 
+    filters.status || 
+    filters.codigoSocio || 
+    filters.fechaDesde || 
+    filters.fechaHasta ||
+    filters.idTransaccion ||
+    filters.idAutorizacion
   );
 
   return (
@@ -100,41 +102,28 @@ export function TransactionFiltersComponent({
           <Filter className="h-3 w-3 sm:h-4 sm:w-4" />
           Filtros
         </h3>
-        <div className="flex items-center gap-2">
-          {hasActiveFilters && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClearFilters}
-              className="h-7 text-xs"
-            >
-              <X className="h-3 w-3 mr-1" />
-              <span className="hidden sm:inline">Limpiar</span>
-              <span className="sm:hidden">Limpiar</span>
-            </Button>
-          )}
+        {hasActiveFilters && (
           <Button
-            variant="default"
+            variant="ghost"
             size="sm"
-            onClick={handleApplyFilters}
-            disabled={isLoading}
+            onClick={onClearFilters}
             className="h-7 text-xs"
           >
-            <Search className="h-3 w-3 mr-1" />
-            <span className="hidden sm:inline">Buscar</span>
-            <span className="sm:hidden">Buscar</span>
+            <X className="h-3 w-3 mr-1" />
+            <span className="hidden sm:inline">Limpiar</span>
+            <span className="sm:hidden">Limpiar</span>
           </Button>
-        </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-3">
-        {/* Tipo de Operación */}
+        {/* Tipo de Operaci?n */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-muted-foreground">Tipo de Operación</label>
+          <label className="text-xs font-medium text-muted-foreground">Tipo de Operaci?n</label>
           <Select
-            value={localFilters.operationType || 'all'}
+            value={filters.operationType || 'all'}
             onValueChange={(value) => 
-              setLocalFilters({ ...localFilters, operationType: value === 'all' ? undefined : (value as OperationType) })
+              onFiltersChange({ operationType: value === 'all' ? undefined : (value as OperationType) })
             }
           >
             <SelectTrigger className="h-8 text-xs sm:text-sm">
@@ -155,9 +144,9 @@ export function TransactionFiltersComponent({
         <div className="space-y-1">
           <label className="text-xs font-medium text-muted-foreground">Estado</label>
           <Select
-            value={localFilters.status || 'all'}
+            value={filters.status || 'all'}
             onValueChange={(value) => 
-              setLocalFilters({ ...localFilters, status: value === 'all' ? undefined : (value as TransactionStatus) })
+              onFiltersChange({ status: value === 'all' ? undefined : (value as TransactionStatus) })
             }
           >
             <SelectTrigger className="h-8 text-xs sm:text-sm">
@@ -179,8 +168,8 @@ export function TransactionFiltersComponent({
           <label className="text-xs font-medium text-muted-foreground">Fecha Desde</label>
           <Input
             type="date"
-            value={localFilters.fechaDesde || ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, fechaDesde: e.target.value || undefined })}
+            value={filters.fechaDesde || ''}
+            onChange={(e) => onFiltersChange({ fechaDesde: e.target.value || undefined })}
             className="h-8 text-xs sm:text-sm"
           />
         </div>
@@ -190,40 +179,40 @@ export function TransactionFiltersComponent({
           <label className="text-xs font-medium text-muted-foreground">Fecha Hasta</label>
           <Input
             type="date"
-            value={localFilters.fechaHasta || ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, fechaHasta: e.target.value || undefined })}
+            value={filters.fechaHasta || ''}
+            onChange={(e) => onFiltersChange({ fechaHasta: e.target.value || undefined })}
             className="h-8 text-xs sm:text-sm"
           />
         </div>
 
-        {/* Código de Socio */}
+        {/* C?digo de Socio */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-muted-foreground">Código de Socio</label>
+          <label className="text-xs font-medium text-muted-foreground">C?digo de Socio</label>
           <Input
-            value={localFilters.codigoSocio || ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, codigoSocio: e.target.value })}
+            value={localCodigoSocio}
+            onChange={(e) => setLocalCodigoSocio(e.target.value)}
             placeholder="000000/00"
             className="h-8 text-xs sm:text-sm font-mono"
           />
         </div>
 
-        {/* ID Transacción */}
+        {/* ID Transacci?n */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-muted-foreground">ID Transacción</label>
+          <label className="text-xs font-medium text-muted-foreground">ID Transacci?n</label>
           <Input
-            value={localFilters.idTransaccion || ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, idTransaccion: e.target.value })}
+            value={localIdTransaccion}
+            onChange={(e) => setLocalIdTransaccion(e.target.value)}
             placeholder="123456789"
             className="h-8 text-xs sm:text-sm font-mono"
           />
         </div>
 
-        {/* ID Autorización */}
+        {/* ID Autorizaci?n */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-muted-foreground">ID Autorización</label>
+          <label className="text-xs font-medium text-muted-foreground">ID Autorizaci?n</label>
           <Input
-            value={localFilters.idAutorizacion || ''}
-            onChange={(e) => setLocalFilters({ ...localFilters, idAutorizacion: e.target.value })}
+            value={localIdAutorizacion}
+            onChange={(e) => setLocalIdAutorizacion(e.target.value)}
             placeholder="1038960904"
             className="h-8 text-xs sm:text-sm font-mono"
           />

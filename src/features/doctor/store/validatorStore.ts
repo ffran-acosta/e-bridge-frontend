@@ -17,7 +17,6 @@ interface ValidatorState {
 interface ValidatorActions {
   fetchTransactions: (filters?: Partial<TransactionFilters>) => Promise<void>;
   updateFilters: (newFilters: Partial<TransactionFilters>) => void;
-  applyFilters: () => void; // Nueva función para aplicar filtros manualmente
   setPage: (page: number) => void;
   setLimit: (limit: number) => void;
   clearFilters: () => void;
@@ -52,7 +51,7 @@ const initialState: ValidatorState = {
   filters: {
     page: 1,
     limit: 20,
-    operationType: 'AP', // Por defecto mostrar solo autorizaciones
+    // Sin filtro por defecto - mostrar todos los tipos de operación
   },
 };
 
@@ -167,13 +166,8 @@ export const useValidatorStore = create<ValidatorStore>()(
           page: newFilters.page ?? 1, // Resetear a página 1 cuando cambian otros filtros
         };
         set({ filters: updatedFilters });
-        // NO hacer fetch automático - solo actualizar el estado
-      },
-
-      applyFilters: () => {
-        // Aplicar los filtros actuales haciendo la petición
-        const { filters: currentFilters } = get();
-        get().fetchTransactions(currentFilters);
+        // Trigger fetch automáticamente
+        get().fetchTransactions(updatedFilters);
       },
 
       setPage: (page: number) => {
@@ -194,7 +188,6 @@ export const useValidatorStore = create<ValidatorStore>()(
         const clearedFilters: TransactionFilters = {
           page: 1,
           limit: 20,
-          operationType: 'AP', // Mantener el filtro por defecto de autorizaciones
         };
         set({ filters: clearedFilters });
         get().fetchTransactions(clearedFilters);
