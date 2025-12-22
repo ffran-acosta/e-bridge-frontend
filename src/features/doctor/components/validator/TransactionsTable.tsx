@@ -23,12 +23,10 @@ const operationTypeLabels: Record<OperationType, string> = {
   LT: 'Listar',
 };
 
-const operationTypeColors: Record<OperationType, 'default' | 'secondary' | 'outline'> = {
-  ELG: 'default',
-  AP: 'secondary',
-  ATR: 'outline',
-  RA: 'secondary',
-  LT: 'outline',
+// Estilo similar al badge ART - usando variant outline con clases personalizadas
+const getOperationTypeClassName = (type: OperationType): string => {
+  const baseClasses = 'bg-white border-gray-300 text-xs font-medium px-2 py-0.5 rounded-sm text-black';
+  return baseClasses;
 };
 
 export function TransactionsTable({ transactions, onCancel, onRecover, isLoading = false }: TransactionsTableProps) {
@@ -102,7 +100,7 @@ export function TransactionsTable({ transactions, onCancel, onRecover, isLoading
                   className="border-b hover:bg-muted/30 transition-colors"
                 >
                   <td className="p-3">
-                    <Badge variant={operationTypeColors[transaction.operationType]}>
+                    <Badge variant="outline" className={getOperationTypeClassName(transaction.operationType)}>
                       {operationTypeLabels[transaction.operationType]}
                     </Badge>
                   </td>
@@ -178,7 +176,7 @@ export function TransactionsTable({ transactions, onCancel, onRecover, isLoading
           >
             {/* Header con tipo y estado */}
             <div className="flex items-center justify-between">
-              <Badge variant={operationTypeColors[transaction.operationType]}>
+              <Badge variant="outline" className={getOperationTypeClassName(transaction.operationType)}>
                 {operationTypeLabels[transaction.operationType]}
               </Badge>
               <TransactionStatusBadge status={transaction.status} />
