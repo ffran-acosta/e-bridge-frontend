@@ -20,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <AuthGuard allowedRoles={["SUPER_ADMIN", "ADMIN", "DOCTOR"]}>
             <DoctorLayout 
                 currentView={isPatientProfile ? 'patientProfile' : isProfilePage ? 'profile' : 'dashboard'}
-                onBackClick={isPatientProfile ? handleBackClick : undefined}
+                onBackClick={isPatientProfile || isProfilePage ? handleBackClick : undefined}
             >
                 {children}
             </DoctorLayout>

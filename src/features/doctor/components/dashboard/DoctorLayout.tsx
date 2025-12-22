@@ -179,7 +179,7 @@ export function DoctorLayout({
                     )}
                     
                     {/* Mostrar contenido según la sección activa */}
-                    {currentView === 'patientProfile' ? (
+                    {currentView === 'patientProfile' || currentView === 'profile' ? (
                         children
                     ) : activeSection === 'turnos' ? (
                         <div className="max-w-4xl mx-auto">
