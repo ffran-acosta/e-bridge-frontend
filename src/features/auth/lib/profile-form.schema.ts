@@ -11,7 +11,10 @@ export const updateProfileSchema = z.object({
         ])
         .optional(),
     licenseNumber: z.string().min(3, "La matrícula debe tener al menos 3 caracteres"),
-    specialtyId: z.string().uuid("Especialidad inválida")
+    specialtyId: z.string().uuid("Especialidad inválida"),
+    province: z.enum(["Santa Fe", "Buenos Aires"], {
+        errorMap: () => ({ message: "Debe seleccionar una provincia válida" })
+    }).optional()
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

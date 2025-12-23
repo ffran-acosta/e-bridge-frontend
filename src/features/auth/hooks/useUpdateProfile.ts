@@ -21,9 +21,10 @@ const mapUserDataToForm = (userData?: User | null): Partial<UpdateProfileInput> 
       firstName: '',
       lastName: '',
       email: '',
-      password: '',
+      password: undefined,
       licenseNumber: '',
-      specialtyId: ''
+      specialtyId: '',
+      province: undefined
     };
   }
 
@@ -31,9 +32,10 @@ const mapUserDataToForm = (userData?: User | null): Partial<UpdateProfileInput> 
     firstName: userData.firstName || '',
     lastName: userData.lastName || '',
     email: userData.email || '',
-    password: '', // Nunca precargamos la contraseña
+    password: undefined, // Nunca precargamos la contraseña - debe venir vacío
     licenseNumber: userData.doctor?.licenseNumber || '',
-    specialtyId: userData.doctor?.specialty?.id || ''
+    specialtyId: userData.doctor?.specialty?.id || '',
+    province: userData.doctor?.province as "Santa Fe" | "Buenos Aires" | undefined
   };
 };
 
@@ -62,7 +64,7 @@ export function useUpdateProfile({
     try {
       console.log('🎯 Actualizando perfil:', data);
       
-      // Preparar el body, excluyendo password si está vacío
+      // Preparar el body, excluyendo password si está vacío y province si no se proporcionó
       const requestBody: Record<string, string> = {
         firstName: data.firstName,
         lastName: data.lastName,
@@ -74,6 +76,11 @@ export function useUpdateProfile({
       // Solo incluir password si se proporcionó
       if (data.password && data.password.trim() !== '') {
         requestBody.password = data.password;
+      }
+
+      // Solo incluir province si se proporcionó
+      if (data.province) {
+        requestBody.province = data.province;
       }
 
       console.log('📡 Enviando request a:', AUTH_ENDPOINTS.profile);

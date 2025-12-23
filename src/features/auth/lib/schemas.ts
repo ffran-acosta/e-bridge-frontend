@@ -16,7 +16,10 @@ export const baseRegisterSchema = z.object({
 
 export const doctorRegisterSchema = baseRegisterSchema.extend({
     licenseNumber: z.string().min(3, "Matrícula inválida"),
-    specialtyId: z.string().uuid("Especialidad inválida")
+    specialtyId: z.string().uuid("Especialidad inválida"),
+    province: z.enum(["Santa Fe", "Buenos Aires"], {
+        errorMap: () => ({ message: "Debe seleccionar una provincia válida" })
+    })
 });
 
 export const adminRegisterSchema = baseRegisterSchema.extend({

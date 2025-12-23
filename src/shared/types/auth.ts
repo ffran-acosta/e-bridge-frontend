@@ -4,6 +4,7 @@ export type Role = "SUPER_ADMIN" | "ADMIN" | "DOCTOR";
 export type Doctor = {
     id: string;
     licenseNumber: string;
+    province: string;
     specialty: {
         id: string;
         name: string;

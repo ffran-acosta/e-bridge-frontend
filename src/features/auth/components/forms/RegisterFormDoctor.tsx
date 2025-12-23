@@ -10,6 +10,7 @@ import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger,
 
 const defaultValues: Partial<RegisterDoctorInput> = {
     specialtyId: "",
+    province: undefined,
 };
 
 export default function RegisterFormDoctor() {
@@ -101,6 +102,28 @@ export default function RegisterFormDoctor() {
                 />
                 {errors.specialtyId && (
                     <p className="text-sm text-destructive">{errors.specialtyId.message}</p>
+                )}
+            </div>
+
+            <div className="space-y-2">
+                <Label>Provincia</Label>
+                <Controller
+                    name="province"
+                    control={control}
+                    render={({ field }) => (
+                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                            <SelectTrigger className="w-full">
+                                <SelectValue placeholder="Seleccioná una provincia" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="Santa Fe">Santa Fe</SelectItem>
+                                <SelectItem value="Buenos Aires">Buenos Aires</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    )}
+                />
+                {errors.province && (
+                    <p className="text-sm text-destructive">{errors.province.message}</p>
                 )}
             </div>
 
