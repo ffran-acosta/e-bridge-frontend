@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useAuthStore } from "../../store/auth";
 import { RegisterDoctorInput, doctorRegisterSchema } from "../../lib/schemas";
-import { useSpecialties } from "../../hooks/useSpecialties";
+import { SpecialtySelectField } from "./SpecialtySelectField";
 import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared";
 
 const defaultValues: Partial<RegisterDoctorInput> = {
@@ -15,7 +15,6 @@ const defaultValues: Partial<RegisterDoctorInput> = {
 
 export default function RegisterFormDoctor() {
     const { loading, registerDoctor } = useAuthStore();
-    const { specialties, loading: specialtiesLoading } = useSpecialties();
 
     const {
         control,
@@ -81,30 +80,11 @@ export default function RegisterFormDoctor() {
                 )}
             </div>
 
-            <div className="space-y-2">
-                <Label>Especialidad</Label>
-                <Controller
-                    name="specialtyId"
-                    control={control}
-                    render={({ field }) => (
-                        <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={specialtiesLoading}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder={specialtiesLoading ? "Cargando especialidades..." : "Seleccioná una especialidad"} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {specialties.map((s) => (
-                                    <SelectItem key={s.id} value={s.id}>
-                                        {s.label}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    )}
-                />
-                {errors.specialtyId && (
-                    <p className="text-sm text-destructive">{errors.specialtyId.message}</p>
-                )}
-            </div>
+            <SpecialtySelectField
+                control={control}
+                name="specialtyId"
+                errors={errors}
+            />
 
             <div className="space-y-2">
                 <Label>Provincia</Label>

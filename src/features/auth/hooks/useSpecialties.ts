@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { api } from '@/lib/api';
-import { useAuthStore } from '../store/auth';
 import { SpecialtyOption } from '../constant/specialties';
 
 type SpecialtyResponse = {
@@ -30,7 +29,6 @@ export function useSpecialties() {
   const [specialties, setSpecialties] = useState<SpecialtyOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { apiWithAuth } = useAuthStore();
 
   const fetchSpecialties = useCallback(async () => {
     setLoading(true);
@@ -40,7 +38,7 @@ export function useSpecialties() {
       console.log('🔍 Iniciando carga de especialidades');
       console.log('📡 Llamando a /catalogs/especialidades/options?isActive=true');
       
-      const response = await apiWithAuth<SpecialtyResponse>('/catalogs/especialidades/options?isActive=true');
+      const response = await api<SpecialtyResponse>('/catalogs/especialidades/options?isActive=true');
 
       if (!response || !response.data) {
         throw new Error('Sin respuesta del servidor al obtener especialidades');

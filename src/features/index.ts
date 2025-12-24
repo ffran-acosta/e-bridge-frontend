@@ -6,7 +6,7 @@ export * from './auth/components/forms/RoleSelector';
 export * from './auth/constant/enpoints';
 export * from './auth/constant/specialties';
 export * from './auth/guards/AuthGuard';
-export * from './auth/hook/useAuthRedirect';
+export * from './auth/hooks/useAuthRedirect';
 export * from './auth/lib/redirects';
 export * from './auth/lib/schemas';
 export * from './auth/store/auth';

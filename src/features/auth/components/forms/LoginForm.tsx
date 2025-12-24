@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, PasswordInput, Button, useFormSubmission } from "@/shared";
 import { FormFieldWrapper } from "@/shared/components/forms/FormField";
-import { useAuthRedirect } from "../../hook/useAuthRedirect";
+import { useAuthRedirect } from "../../hooks/useAuthRedirect";
 import { LoginInput, loginSchema } from "../../lib/schemas";
 import { useAuthStore } from "../../store/auth";
 
