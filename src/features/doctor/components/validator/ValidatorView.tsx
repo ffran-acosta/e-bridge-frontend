@@ -9,12 +9,16 @@ import { TransactionFiltersComponent } from './components/TransactionFilters';
 import { TransactionPagination } from './components/TransactionPagination';
 import { ValidateStatusModal } from './modals/ValidateStatusModal';
 import { AuthorizeModal } from './modals/AuthorizeModal';
+import { CancelTransactionModal } from './modals/CancelTransactionModal';
 import { useValidatorStore } from '@/features/doctor/store/validatorStore';
+import type { Transaction } from './types';
 
 export function ValidatorView() {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isValidateModalOpen, setIsValidateModalOpen] = useState(false);
   const [isAuthorizeModalOpen, setIsAuthorizeModalOpen] = useState(false);
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   
   // Store de Zustand para transacciones
   const {
@@ -60,9 +64,17 @@ export function ValidatorView() {
   };
 
   const handleCancel = (transactionId: string, idTransaccion?: string | null) => {
-    // TODO: Implementar anulación de consulta
-    console.log('Anular transacción:', transactionId, idTransaccion);
-    // Aquí se llamará al endpoint de anulación
+    const transaction = transactions.find(t => t.id === transactionId);
+    if (transaction) {
+      setSelectedTransaction(transaction);
+      setIsCancelModalOpen(true);
+    }
+  };
+
+  const handleCancelSuccess = (data: any) => {
+    console.log('Transacción anulada exitosamente:', data);
+    // Refrescar la lista de transacciones después de anular
+    fetchTransactions();
   };
 
   const handleRecover = (transactionId: string, idAutorizacion?: string | null) => {
@@ -72,13 +84,15 @@ export function ValidatorView() {
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6 lg:space-y-8 py-4 sm:py-6 lg:py-8 px-2 sm:px-4 lg:px-0">
+    <div className="w-full space-y-4 sm:space-y-6 lg:space-y-8">
       {/* Credencial con logo Avalian - clickeable para expandir/colapsar */}
-      <CredentialCard 
-        logoType="avalian-1" 
-        isExpanded={isExpanded}
-        onToggle={handleToggleExpanded}
-      />
+      <div className="flex justify-center">
+        <CredentialCard 
+          logoType="avalian-1" 
+          isExpanded={isExpanded}
+          onToggle={handleToggleExpanded}
+        />
+      </div>
 
       {/* Botones de acción principales - directamente debajo de la credencial */}
       {isExpanded && (
@@ -148,6 +162,17 @@ export function ValidatorView() {
         isOpen={isAuthorizeModalOpen}
         onClose={() => setIsAuthorizeModalOpen(false)}
         onSuccess={handleAuthorizeSuccess}
+      />
+
+      {/* Modal de anulación */}
+      <CancelTransactionModal
+        isOpen={isCancelModalOpen}
+        onClose={() => {
+          setIsCancelModalOpen(false);
+          setSelectedTransaction(null);
+        }}
+        transaction={selectedTransaction}
+        onSuccess={handleCancelSuccess}
       />
     </div>
   );

@@ -186,7 +186,7 @@ export function DoctorLayout({
                             <AppointmentsCalendar />
                         </div>
                     ) : activeSection === 'validador' ? (
-                        <div className="max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto">
+                        <div className="max-w-4xl lg:max-w-6xl xl:max-w-7xl mx-auto w-full">
                             <ValidatorView />
                         </div>
                     ) : activeSection === 'exportar' ? (

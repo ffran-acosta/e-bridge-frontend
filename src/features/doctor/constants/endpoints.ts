@@ -32,8 +32,8 @@ export const DOCTOR_ENDPOINTS = {
     // Endpoints del validador
     validateEligibility: '/integrations/avalian/elegibilidad',
     listTransactions: '/integrations/avalian/transacciones',
-    authorize: '/doctor/validator/authorize',
-    cancelTransaction: (transactionNumber: string) => `/doctor/validator/transactions/${transactionNumber}/cancel`,
+    authorize: '/integrations/avalian/autorizacion',
+    cancelTransaction: '/integrations/avalian/anulacion',
     recoverAuthorization: (authorizationNumber: string) => `/doctor/validator/authorizations/${authorizationNumber}`,
     listAuthorizations: (dni?: string) => dni ? `/doctor/validator/authorizations?dni=${dni}` : '/doctor/validator/authorizations',
 } as const;

@@ -5,9 +5,8 @@ import { api } from '@/lib/api';
 import { DOCTOR_ENDPOINTS } from '../../../constants/endpoints';
 
 export interface AuthorizeRequest {
-  codigoSocio: string;
-  token: string;
-  tipoConsulta: string;
+  codigoSocio: string; // 8 dígitos o 11 si incluye token (todo junto)
+  codigoPrestacion: string; // Código de prestación, por ahora solo "420101"
 }
 
 export interface AuthorizeResponse {
@@ -35,27 +34,36 @@ export function useAuthorize() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AuthorizeResponse | null>(null);
 
-  const authorize = useCallback(async (data: AuthorizeRequest): Promise<AuthorizeResponse | null> => {
+  const authorize = useCallback(async (data: { codigoSocio: string; token?: string; codigoPrestacion: string }): Promise<AuthorizeResponse | null> => {
     setIsLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      // Limpiar el código de socio (remover la barra si existe)
+      // Limpiar el código de socio (remover caracteres no numéricos)
       const codigoSocioCleaned = data.codigoSocio.replace(/\D/g, '');
+      
+      // Si hay token, limpiarlo y concatenarlo al código de socio
+      const tokenCleaned = data.token ? data.token.replace(/\D/g, '') : '';
+      const codigoSocioFinal = tokenCleaned ? codigoSocioCleaned + tokenCleaned : codigoSocioCleaned;
+
+      console.log('📤 Enviando autorización:', {
+        codigoSocio: codigoSocioFinal,
+        codigoPrestacion: data.codigoPrestacion
+      });
+
+      const requestBody = {
+        codigoSocio: codigoSocioFinal,
+        codigoPrestacion: data.codigoPrestacion,
+      };
+
+      console.log('📤 Body a enviar:', requestBody);
 
       const response = await api<AuthorizeApiResponse>(
         DOCTOR_ENDPOINTS.authorize,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            codigoSocio: codigoSocioCleaned,
-            token: data.token,
-            tipoConsulta: data.tipoConsulta,
-          }),
+          body: requestBody, // api() ya hace JSON.stringify internamente
         }
       );
 

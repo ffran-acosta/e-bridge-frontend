@@ -5,67 +5,63 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Button, Card, CardContent, CardHeader, CardTitle } from '@/shared';
 import { Alert, AlertDescription } from '@/shared/components/ui/alert';
-import { Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared';
-import { Loader2, AlertCircle, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
-import { authorizeSchema, type AuthorizeFormData } from '../schemas/authorize.schema';
-import { SocioNumberInput } from '../components/SocioNumberInput';
-import { useAuthorize } from '../hooks/useAuthorize';
+import { Textarea } from '@/shared/components/ui/textarea';
+import { Loader2, AlertCircle, CheckCircle2, XCircle, X } from 'lucide-react';
+import { cancelTransactionSchema, type CancelTransactionFormData } from '../schemas/cancel.schema';
+import { useCancelTransaction } from '../hooks/useCancelTransaction';
 import { FormFieldWrapper } from '@/shared/components/forms/FormField';
+import type { Transaction } from '../types';
 
-interface AuthorizeModalProps {
+interface CancelTransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  transaction: Transaction | null;
   onSuccess?: (data: any) => void;
 }
 
-// Códigos de prestación disponibles (por ahora solo consulta)
-const prestacionCodes = [
-  { value: '420101', label: 'Consulta' },
-];
-
-export function AuthorizeModal({ 
+export function CancelTransactionModal({ 
   isOpen, 
   onClose,
+  transaction,
   onSuccess 
-}: AuthorizeModalProps) {
-  const form = useForm<AuthorizeFormData>({
-    resolver: zodResolver(authorizeSchema),
+}: CancelTransactionModalProps) {
+  const form = useForm<CancelTransactionFormData>({
+    resolver: zodResolver(cancelTransactionSchema),
     defaultValues: {
-      codigoSocio: '',
-      token: '',
-      codigoPrestacion: '420101', // Valor por defecto
+      motivo: '',
     },
   });
 
   const { 
-    authorize, 
+    cancelTransaction, 
     isLoading, 
     error, 
     result,
     clearError,
     clearResult 
-  } = useAuthorize();
+  } = useCancelTransaction();
 
   const handleClose = () => {
     form.reset({
-      codigoSocio: '',
-      token: '',
-      codigoPrestacion: '420101',
+      motivo: '',
     });
     clearError();
     clearResult();
     onClose();
   };
 
-  const onSubmit = async (data: AuthorizeFormData) => {
+  const onSubmit = async (data: CancelTransactionFormData) => {
+    if (!transaction) return;
+
     clearError();
     clearResult();
     
     try {
-      const response = await authorize({
-        codigoSocio: data.codigoSocio,
-        token: data.token || '',
-        codigoPrestacion: data.codigoPrestacion,
+      const response = await cancelTransaction({
+        codigoSocio: transaction.codigoSocio,
+        tipoIdAnul: 'IDTRAN',
+        idAnul: transaction.idTransaccion || '',
+        motivo: data.motivo || undefined,
       });
       
       if (response && onSuccess) {
@@ -73,72 +69,53 @@ export function AuthorizeModal({
       }
     } catch (err) {
       // El error ya se maneja en el hook
-      console.error('Error al autorizar:', err);
+      console.error('Error al anular transacción:', err);
     }
   };
+
+  if (!transaction) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Autorizar Consulta</DialogTitle>
+          <DialogTitle>Anular Transacción</DialogTitle>
           <DialogDescription>
-            Complete los datos para autorizar una consulta en Avalian
+            Anular la transacción {transaction.idTransaccion || transaction.id}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Número de Socio */}
-          <SocioNumberInput
-            value={form.watch('codigoSocio') || ''}
-            onChange={(value) => form.setValue('codigoSocio', value, { shouldValidate: true })}
-            error={form.formState.errors.codigoSocio?.message}
-            required
-          />
+          {/* Información de la transacción */}
+          <div className="bg-muted/30 rounded-lg p-4 space-y-2 text-sm">
+            <div>
+              <span className="text-muted-foreground">Código de Socio:</span>
+              <p className="font-mono font-medium">{transaction.codigoSocio}</p>
+            </div>
+            <div>
+              <span className="text-muted-foreground">ID Transacción:</span>
+              <p className="font-mono font-medium">{transaction.idTransaccion || '-'}</p>
+            </div>
+            {transaction.nombreSocio && (
+              <div>
+                <span className="text-muted-foreground">Socio:</span>
+                <p className="font-medium">{transaction.nombreSocio}</p>
+              </div>
+            )}
+          </div>
 
-          {/* Token (opcional) */}
+          {/* Motivo (opcional) */}
           <FormFieldWrapper 
-            label="Token (opcional)" 
-            error={form.formState.errors.token?.message}
+            label="Motivo (opcional)" 
+            error={form.formState.errors.motivo?.message}
           >
-            <Input
-              type="text"
-              value={form.watch('token') || ''}
-              onChange={(e) => {
-                const value = e.target.value.replace(/\D/g, '').slice(0, 3);
-                form.setValue('token', value, { shouldValidate: true });
-              }}
-              placeholder="000"
-              maxLength={3}
-              className="text-sm font-mono"
-              aria-invalid={!!form.formState.errors.token}
+            <Textarea
+              {...form.register('motivo')}
+              placeholder="Ingrese el motivo de la anulación..."
+              rows={3}
+              className="text-sm"
+              aria-invalid={!!form.formState.errors.motivo}
             />
-            <p className="text-xs text-muted-foreground mt-1">
-              Si el código de socio incluye token, ingrésalo aquí (3 dígitos)
-            </p>
-          </FormFieldWrapper>
-
-          {/* Código de Prestación */}
-          <FormFieldWrapper 
-            label="Código de Prestación" 
-            error={form.formState.errors.codigoPrestacion?.message}
-            required
-          >
-            <Select
-              value={form.watch('codigoPrestacion') || '420101'}
-              onValueChange={(value) => form.setValue('codigoPrestacion', value, { shouldValidate: true })}
-            >
-              <SelectTrigger className="h-9 text-sm">
-                <SelectValue placeholder="Seleccione un código" />
-              </SelectTrigger>
-              <SelectContent>
-                {prestacionCodes.map((prestacion) => (
-                  <SelectItem key={prestacion.value} value={prestacion.value}>
-                    {prestacion.label} ({prestacion.value})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </FormFieldWrapper>
 
           {/* Error del formulario */}
@@ -157,17 +134,11 @@ export function AuthorizeModal({
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-base">
                       <CheckCircle2 className="h-5 w-5 text-green-600" />
-                      Autorización Exitosa
+                      Anulación Exitosa
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-2">
-                      {result.idAutorizacion && (
-                        <div>
-                          <label className="text-sm font-medium text-muted-foreground">ID Autorización</label>
-                          <p className="text-sm font-mono font-medium">{result.idAutorizacion}</p>
-                        </div>
-                      )}
                       <div>
                         <label className="text-sm font-medium text-muted-foreground">ID Transacción</label>
                         <p className="text-sm font-mono font-medium">{result.idTransaccion}</p>
@@ -184,7 +155,7 @@ export function AuthorizeModal({
                   <XCircle className="h-4 w-4" />
                   <AlertDescription>
                     <div className="space-y-2">
-                      <p className="font-semibold">Autorización no exitosa</p>
+                      <p className="font-semibold">Anulación no exitosa</p>
                       <p className="text-sm">{result.mensaje}</p>
                       {result.idTransaccion && (
                         <p className="text-xs mt-2 text-muted-foreground">
@@ -211,17 +182,18 @@ export function AuthorizeModal({
             <Button
               type="submit"
               disabled={isLoading}
+              variant="destructive"
               className="flex items-center gap-2"
             >
               {isLoading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Autorizando...
+                  Anulando...
                 </>
               ) : (
                 <>
-                  <ShieldCheck className="h-4 w-4" />
-                  Autorizar
+                  <X className="h-4 w-4" />
+                  Anular
                 </>
               )}
             </Button>
@@ -231,3 +203,4 @@ export function AuthorizeModal({
     </Dialog>
   );
 }
+
