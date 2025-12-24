@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useAuthStore } from "../../store/auth";
 import { RegisterDoctorInput, doctorRegisterSchema } from "../../lib/schemas";
-import { SPECIALTIES } from "../../constant/specialties";
+import { useSpecialties } from "../../hooks/useSpecialties";
 import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared";
 
 const defaultValues: Partial<RegisterDoctorInput> = {
@@ -15,6 +15,7 @@ const defaultValues: Partial<RegisterDoctorInput> = {
 
 export default function RegisterFormDoctor() {
     const { loading, registerDoctor } = useAuthStore();
+    const { specialties, loading: specialtiesLoading } = useSpecialties();
 
     const {
         control,
@@ -86,12 +87,12 @@ export default function RegisterFormDoctor() {
                     name="specialtyId"
                     control={control}
                     render={({ field }) => (
-                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={specialtiesLoading}>
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Seleccioná una especialidad" />
+                                <SelectValue placeholder={specialtiesLoading ? "Cargando especialidades..." : "Seleccioná una especialidad"} />
                             </SelectTrigger>
                             <SelectContent>
-                                {SPECIALTIES.map((s) => (
+                                {specialties.map((s) => (
                                     <SelectItem key={s.id} value={s.id}>
                                         {s.label}
                                     </SelectItem>

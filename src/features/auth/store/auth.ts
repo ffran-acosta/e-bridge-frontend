@@ -138,7 +138,16 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     // Obtener datos del usuario actual
     getCurrentUser: async () => {
         try {
-            const response = await api<ApiResponse<{ data?: User | null }>>("/auth/me");
+            const response = await api<{
+                success: boolean;
+                statusCode: number;
+                timestamp: string;
+                path: string;
+                data: {
+                    statusCode: number;
+                    data: User | null;
+                };
+            }>("/auth/me");
             const userData = response?.data?.data;
 
             set({ user: userData || null });

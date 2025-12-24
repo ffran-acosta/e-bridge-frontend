@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { AlertCircle } from "lucide-react";
 import { UpdateProfileInput } from "../../lib/profile-form.schema";
-import { SPECIALTIES } from "../../constant/specialties";
+import { useSpecialties } from "../../hooks/useSpecialties";
 import { Button, Input, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Alert } from "@/shared";
 
 interface EditProfileFormProps {
@@ -24,6 +24,7 @@ export function EditProfileForm({
 }: EditProfileFormProps) {
     const router = useRouter();
     const { register, control, formState: { errors } } = form;
+    const { specialties, loading: specialtiesLoading, error: specialtiesError } = useSpecialties();
 
     return (
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -90,12 +91,17 @@ export function EditProfileForm({
                     name="specialtyId"
                     control={control}
                     render={({ field }) => (
-                        <Select value={field.value ?? ""} onValueChange={field.onChange}>
+                        <Select value={field.value ?? ""} onValueChange={field.onChange} disabled={specialtiesLoading}>
                             <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Seleccioná una especialidad" />
+                                <SelectValue placeholder={specialtiesLoading ? "Cargando especialidades..." : "Seleccioná una especialidad"} />
                             </SelectTrigger>
                             <SelectContent>
-                                {SPECIALTIES.map((s) => (
+                                {specialties.length === 0 && !specialtiesLoading && (
+                                    <SelectItem value="" disabled>
+                                        No hay especialidades disponibles
+                                    </SelectItem>
+                                )}
+                                {specialties.map((s) => (
                                     <SelectItem key={s.id} value={s.id}>
                                         {s.label}
                                     </SelectItem>
@@ -104,6 +110,9 @@ export function EditProfileForm({
                         </Select>
                     )}
                 />
+                {specialtiesError && (
+                    <p className="text-sm text-destructive">Error al cargar especialidades: {specialtiesError}</p>
+                )}
                 {errors.specialtyId && (
                     <p className="text-sm text-destructive">{errors.specialtyId.message}</p>
                 )}

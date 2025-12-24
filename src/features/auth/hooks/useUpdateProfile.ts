@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm, Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { JsonValue } from '@/lib/api';
@@ -28,13 +28,20 @@ const mapUserDataToForm = (userData?: User | null): Partial<UpdateProfileInput> 
     };
   }
 
+  const specialtyId = userData.doctor?.specialty?.id || '';
+  console.log('📋 Mapeando datos del usuario:', {
+    specialtyId,
+    specialty: userData.doctor?.specialty,
+    doctor: userData.doctor
+  });
+
   return {
     firstName: userData.firstName || '',
     lastName: userData.lastName || '',
     email: userData.email || '',
     password: undefined, // Nunca precargamos la contraseña - debe venir vacío
     licenseNumber: userData.doctor?.licenseNumber || '',
-    specialtyId: userData.doctor?.specialty?.id || '',
+    specialtyId: specialtyId,
     province: userData.doctor?.province as "Santa Fe" | "Buenos Aires" | undefined
   };
 };
@@ -52,6 +59,13 @@ export function useUpdateProfile({
     resolver: zodResolver(updateProfileSchema) as Resolver<UpdateProfileInput>,
     defaultValues: mapUserDataToForm(userData),
   });
+
+  // Actualizar valores del formulario cuando cambie userData
+  useEffect(() => {
+    const formValues = mapUserDataToForm(userData);
+    console.log('🔄 Actualizando valores del formulario:', formValues);
+    form.reset(formValues);
+  }, [userData, form]);
 
   const clearError = () => {
     setError(null);
@@ -86,7 +100,16 @@ export function useUpdateProfile({
       console.log('📡 Enviando request a:', AUTH_ENDPOINTS.profile);
       console.log('📡 Request body:', requestBody);
 
-      const response = await apiWithAuth<{ data: { data: User } }>(AUTH_ENDPOINTS.profile, {
+      const response = await apiWithAuth<{
+        success: boolean;
+        statusCode: number;
+        timestamp: string;
+        path: string;
+        data: {
+          statusCode: number;
+          data: User;
+        };
+      }>(AUTH_ENDPOINTS.profile, {
         method: 'PATCH',
         body: requestBody as unknown as JsonValue,
       });
