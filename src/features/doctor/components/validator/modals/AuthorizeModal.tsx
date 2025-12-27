@@ -79,15 +79,17 @@ export function AuthorizeModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
+      <DialogContent className="max-w-md max-h-[90vh] overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle>Autorizar Consulta</DialogTitle>
           <DialogDescription>
             Complete los datos para autorizar una consulta en Avalian
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <div className="flex-1 overflow-y-auto pr-2 -mr-2">
+          <div className="pr-2">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {/* Número de Socio */}
           <SocioNumberInput
             value={form.watch('codigoSocio') || ''}
@@ -153,10 +155,10 @@ export function AuthorizeModal({
           {result && (
             <>
               {result.status === 'OK' ? (
-                <Card className="border-green-200 bg-green-50/50">
+                <Card className="border-border bg-muted">
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-base">
-                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      <CheckCircle2 className="h-5 w-5 text-green-500" />
                       Autorización Exitosa
                     </CardTitle>
                   </CardHeader>
@@ -200,33 +202,48 @@ export function AuthorizeModal({
 
           {/* Botones */}
           <div className="flex justify-end gap-3 pt-4 border-t">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isLoading}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="flex items-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Autorizando...
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="h-4 w-4" />
-                  Autorizar
-                </>
-              )}
-            </Button>
+            {result && result.status === 'OK' ? (
+              // Si la operación fue exitosa, solo mostrar botón de cerrar
+              <Button
+                type="button"
+                onClick={handleClose}
+              >
+                Cerrar
+              </Button>
+            ) : (
+              // Si hay error o aún no hay resultado, mostrar Cancelar y Autorizar
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleClose}
+                  disabled={isLoading}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="flex items-center gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Autorizando...
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="h-4 w-4" />
+                      Autorizar
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
           </div>
         </form>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
