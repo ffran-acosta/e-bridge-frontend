@@ -52,10 +52,15 @@ export function AdminCard({
 
             {/* Assignment Interface */}
             {isSelected && showAssignmentInterface && onAssignDoctor && (
-                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
-                    <p className="text-sm font-medium text-foreground mb-2">
-                        Asignar médicos disponibles:
-                    </p>
+                <div className="mt-4 p-4 bg-muted/50 rounded-lg border border-border">
+                    <div className="flex items-center justify-between mb-3">
+                        <p className="text-sm font-semibold text-foreground">
+                            Asignar médicos a este administrador
+                        </p>
+                        <span className="text-xs text-muted-foreground">
+                            {admin.assignedDoctors?.length || 0} asignado{admin.assignedDoctors?.length !== 1 ? 's' : ''}
+                        </span>
+                    </div>
                     <div className="flex flex-wrap gap-2">
                         {availableDoctors
                             .filter(doctor =>
@@ -83,8 +88,8 @@ export function AdminCard({
                             admin.assignedDoctors &&
                             !admin.assignedDoctors.includes(d.id)
                         ).length === 0 && (
-                                <p className="text-xs text-muted-foreground">
-                                    Todos los médicos activos ya están asignados
+                                <p className="text-xs text-muted-foreground italic">
+                                    Todos los médicos activos ya están asignados a este administrador
                                 </p>
                             )}
                     </div>

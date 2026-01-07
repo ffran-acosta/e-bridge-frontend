@@ -31,24 +31,24 @@ export const transformDoctor = (backendDoctor: BackendDoctor): Doctor => ({
     id: backendDoctor.id,
     firstName: backendDoctor.user.firstName,
     lastName: backendDoctor.user.lastName,
-    email: backendDoctor.user.email,
+    email: backendDoctor.user.email ?? '',
     isActive: backendDoctor.user.isActive ?? true,
     licenseNumber: backendDoctor.licenseNumber,
     specialty: {
-        id: backendDoctor.specialty.id,
+        id: backendDoctor.specialty.id ?? backendDoctor.specialtyId ?? '',
         name: backendDoctor.specialty.name,
     },
-    assignedAdminsCount: backendDoctor._count?.adminLinks ?? 0, // ← Opcional con fallback
+    assignedAdminsCount: backendDoctor._count?.adminLinks ?? 0,
 });
 
 const transformAdmin = (backendAdmin: BackendAdmin): Admin => ({
     id: backendAdmin.id,
     firstName: backendAdmin.user.firstName,
     lastName: backendAdmin.user.lastName,
-    email: backendAdmin.user.email,
+    email: backendAdmin.user.email ?? '',
     isActive: backendAdmin.isActive,
-    assignedDoctors: backendAdmin.assignedDoctors.map(doc => doc.id),
-    assignedDoctorsCount: backendAdmin._count.doctorLinks,
+    assignedDoctors: backendAdmin.assignedDoctors?.map(doc => doc.id) ?? [],
+    assignedDoctorsCount: backendAdmin._count?.doctorLinks ?? 0,
 });
 
 const transformStats = (backendStats: BackendStats): DashboardStats => ({

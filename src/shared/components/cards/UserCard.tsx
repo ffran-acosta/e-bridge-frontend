@@ -2,6 +2,7 @@
 
 import { UserAvatar } from "@/shared/components";
 import { Badge } from "@/shared";
+import { StatusToggleButton } from "@/features";
 import { cn } from "@/lib/utils";
 
 interface UserCardProps {
@@ -56,7 +57,8 @@ export function UserCard({
   avatarVariant = "primary"
 }: UserCardProps) {
   const fullName = `${firstName} ${lastName}`;
-  const displayName = subtitle?.includes("Dr.") ? fullName : `Dr. ${fullName}`;
+  // Solo agregar "Dr." si viene explícitamente en el subtitle
+  const displayName = subtitle?.includes("Dr.") ? `Dr. ${fullName}` : fullName;
 
   return (
     <div
@@ -96,24 +98,12 @@ export function UserCard({
             </div>
 
             {showStatusToggle && onToggleStatus && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleStatus();
-                }}
-                className="ml-2"
-              >
-                {/* StatusToggleButton se puede pasar como prop o importar aquí */}
-                <div className={cn(
-                  "w-12 h-6 rounded-full transition-colors",
-                  isActive ? "bg-green-500" : "bg-gray-300"
-                )}>
-                  <div className={cn(
-                    "w-5 h-5 bg-white rounded-full shadow transform transition-transform",
-                    isActive ? "translate-x-6" : "translate-x-0.5"
-                  )} />
-                </div>
-              </button>
+              <StatusToggleButton
+                isActive={isActive}
+                onToggle={onToggleStatus}
+                size="sm"
+                stopPropagation={true}
+              />
             )}
           </div>
 

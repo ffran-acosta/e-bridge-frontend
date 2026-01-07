@@ -2,6 +2,7 @@
 
 import { UserAvatar } from "@/shared/components";
 import { Badge } from "@/shared";
+import { StatusToggleButton } from "@/features";
 import { cn } from "@/lib/utils";
 
 // Props más específicas y agrupadas
@@ -99,23 +100,12 @@ export function BaseUserCard({
             </div>
 
             {showStatusToggle && actions?.onToggleStatus && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  actions.onToggleStatus!();
-                }}
-                className="ml-2"
-              >
-                <div className={cn(
-                  "w-12 h-6 rounded-full transition-colors",
-                  user.isActive ? "bg-green-500" : "bg-gray-300"
-                )}>
-                  <div className={cn(
-                    "w-5 h-5 bg-white rounded-full shadow transform transition-transform",
-                    user.isActive ? "translate-x-6" : "translate-x-0.5"
-                  )} />
-                </div>
-              </button>
+              <StatusToggleButton
+                isActive={user.isActive}
+                onToggle={actions.onToggleStatus}
+                size="sm"
+                stopPropagation={true}
+              />
             )}
           </div>
 

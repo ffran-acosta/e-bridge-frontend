@@ -1,14 +1,14 @@
 export interface BackendUser {
-    id: string;
-    email: string;
+    id?: string;
+    email?: string;
     firstName: string;
     lastName: string;
-    role: string;
+    role?: string;
     isActive?: boolean;
 }
 
 export interface BackendSpecialty {
-    id: string;
+    id?: string;
     name: string;
     code: string;
 }
@@ -27,10 +27,10 @@ export interface BackendDoctor {
 
 export interface BackendAdmin {
     id: string;
-    userId: string;
+    userId?: string;
     isActive: boolean;
     user: BackendUser;
-    assignedDoctors: BackendDoctor[];
+    assignedDoctors?: BackendDoctor[];
     _count: {
         doctorLinks: number;
     };

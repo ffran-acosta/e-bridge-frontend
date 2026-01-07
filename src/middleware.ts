@@ -1,8 +1,8 @@
 // src/middleware.ts
 import { NextRequest, NextResponse } from 'next/server';
 
-const PUBLIC_ROUTES = ['/login', '/register'];
-const PROTECTED_ROUTES = ['/super-admin', '/admin', '/doctor', '/dashboard'];
+const PUBLIC_ROUTES = ['/login'];
+const PROTECTED_ROUTES = ['/super-admin', '/admin', '/doctor', '/dashboard', '/register'];
 
 // Función para validar si las cookies son válidas
 async function validateAuthCookies(request: NextRequest): Promise<boolean> {

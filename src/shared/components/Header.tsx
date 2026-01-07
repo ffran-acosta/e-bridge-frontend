@@ -5,13 +5,15 @@ import {
     Menu,
     User,
     LogOut,
-    ArrowLeft
+    ArrowLeft,
+    UserPlus
 } from 'lucide-react';
 import { Button } from '@/shared';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/shared';
 import { UserAvatar } from '@/shared/components/UserAvatar';
 import { useAuthStore } from '@/features';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface AppHeaderProps {
     title: string;
@@ -76,7 +78,17 @@ export function AppHeader({
                 {title && <h1 className="text-2xl font-semibold">{title}</h1>}
             </div>
 
-            <DropdownMenu>
+            <div className="flex items-center gap-3">
+                {user?.role === 'SUPER_ADMIN' && (
+                    <Link href="/register">
+                        <Button variant="outline" size="sm">
+                            <UserPlus className="h-4 w-4 mr-2" />
+                            Crear Usuario
+                        </Button>
+                    </Link>
+                )}
+
+                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex items-center space-x-2">
                         <UserAvatar
@@ -98,7 +110,8 @@ export function AppHeader({
                         Cerrar Sesión
                     </DropdownMenuItem>
                 </DropdownMenuContent>
-            </DropdownMenu>
+                </DropdownMenu>
+            </div>
         </header>
     );
 }
